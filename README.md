@@ -27,11 +27,11 @@ Make sure you have Git and Python installed on your machine.
 
 1. Clone the repo:
    ```bash
-   git clone https://github.com/bcetians/BCETHub.git
+   git clone https://github.com/bcetians/BCET-Hub.git
    ```
 2. Navigate to the project directory:
    ```bash
-   cd BCETHub
+   cd BCET-Hub
    ```
 3. Set up a virtual environment (recommended):
    ```bash

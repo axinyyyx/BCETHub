@@ -33,14 +33,14 @@
                 <i data-lucide="calendar"></i>
                 <span>Routine</span>
             </a>
-            <a href="{% url 'notes' %}" class="nav-item {% if request.resolver_match.url_name == 'notes' %}active{% endif %}">
-                <i data-lucide="notebook"></i>
-                <span>Notes</span>
+            <a href="{% url 'study' %}" class="nav-item {% if request.resolver_match.url_name == 'study' %}active{% endif %}">
+                <i data-lucide="book-text"></i>
+                <span>Study</span>
             </a>
-            <a href="{% url 'induction' %}" class="nav-item {% if request.resolver_match.url_name == 'induction' %}active{% endif %}">
+            <!-- <a href="{% url 'induction' %}" class="nav-item {% if request.resolver_match.url_name == 'induction' %}active{% endif %}">
                 <i data-lucide="award"></i>
                 <span>Induction</span>
-            </a>
+            </a> -->
             <a href="{% url 'mess_menu' %}" class="nav-item {% if request.resolver_match.url_name == 'mess_menu' %}active{% endif %}">
                 <i data-lucide="utensils"></i>
                 <span>Mess Menu</span>
