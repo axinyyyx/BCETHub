@@ -13,6 +13,14 @@
     </div>
 </div>
 
+<div class="developer">
+    <center>
+        <p>
+            developer <a href="https://instagram.com/rishabhsahill" target="_blank" rel="noopener">@rishabhsahill</a>
+        </p>
+    </center>
+</div>
+
 <style>
     .pwa-install-banner-container {
         margin: 24px 0 16px 0;
@@ -96,6 +104,16 @@
         pointer-events: none;
     }
 
+    .developer {
+        display: none;
+        margin: 16px 0;
+        color: #747474;
+    }
+
+    .developer p a {
+        text-decoration: none;
+        color: #f0f8ff;
+    }
 
     @media (max-width: 768px) {
         .pwa-banner-card {
@@ -107,6 +125,9 @@
         }
         .pwa-install-banner-container {
             display: flex;
+        }
+        .developer {
+            display: block;
         }
     }
 </style>
