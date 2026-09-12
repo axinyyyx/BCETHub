@@ -1,0 +1,194 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}BCETH{% endblock %}</title>
+    
+    <link rel="icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="{% static 'css/main-style.css' %}">
+
+    <script src="https://unpkg.com/htmx.org@2.0.6"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <link rel="manifest" href="{% static 'pwaj/manifest.json' %}">
+    <meta name="theme-color" content="#1e293b">
+</head>
+<body>
+    <script>
+        let deferredPrompt = null;
+
+        function isPWAInstalled() {
+            return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+        }
+
+        function checkPWAStatus() {
+            if (isPWAInstalled()) {
+                document.documentElement.classList.add('pwa-installed');
+            } else {
+                document.documentElement.classList.remove('pwa-installed');
+            }
+        }
+
+        checkPWAStatus();
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            if (!isPWAInstalled() && !sessionStorage.getItem('pwaPromptShown')) {
+                setTimeout(() => {
+                    openPWAPrompt();
+                    sessionStorage.setItem('pwaPromptShown', 'true');
+                }, 1000);
+            }
+        });
+
+        window.addEventListener('appinstalled', () => {
+            deferredPrompt = null;
+            document.documentElement.classList.add('pwa-installed');
+            closePWAModal();
+        });
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register("{% static 'js/serviceworker.js' %}")
+                    .then(function(reg) {
+                        console.log('PWA ServiceWorker registered:', reg.scope);
+                    })
+                    .catch(function(err) {
+                        console.log('PWA ServiceWorker failed:', err);
+                    });
+            });
+        }
+
+        function openPWAPrompt() {
+            if (isPWAInstalled()) return;
+            const modal = document.getElementById('pwaInstallModal');
+            if (modal) modal.classList.add('active');
+        }
+
+        function triggerNativePWAInstall() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        document.documentElement.classList.add('pwa-installed');
+                    }
+                    deferredPrompt = null;
+                    closePWAModal();
+                });
+            } else {
+                alert('Direct install browser me fully supported nahi hai. Menu (⋮) se "Add to Home Screen" select karein.');
+            }
+        }
+    </script>
+
+    {% if messages %}
+        <div class="toast-messages-container" id="toast-container">
+            {% for message in messages %}
+                <div class="toast-message {{ message.tags }}">
+                    <i data-lucide="info"></i> {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% include 'includes/navbar.html' %}
+    
+    <main>
+        {% include 'pwa.html' %}
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <div class="feedback-floating-wrapper" id="feedback-floating-wrapper">
+        <button type="button" class="feedback-fab-circle" id="feedback-toggle-btn" title="Feedback">
+            <span class="fab-pulse-dot"></span>
+            <i data-lucide="message-square-plus" class="fab-icon"></i>
+        </button>
+
+        <div class="feedback-popover" id="feedback-popover">
+            <div class="chatbot-header">
+                <div class="header-info">
+                    <div class="bot-avatar"><i data-lucide="bot"></i></div>
+                    <div>
+                        <h4>Help & Feedback</h4>
+                    </div>
+                </div>
+                <button type="button" class="close-btn" id="feedback-close-btn">&times;</button>
+            </div>
+
+            <form action="{% url 'submit_feedback' %}" method="POST" class="feedback-form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="fb-name">Your Name</label>
+                    <input type="text" id="fb-name" name="name" placeholder="Enter your full name" required class="custom-input">
+                </div>
+                <div class="form-group">
+                    <label for="fb-category">Category</label>
+                    <select id="fb-category" name="category" class="custom-select">
+                        <option value="BUG">🐛 Bug Report</option>
+                        <option value="IDEA">💡 Suggestion / Idea</option>
+                        <option value="OTHER">💬 General Feedback</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="fb-message">Message</label>
+                    <textarea id="fb-message" name="message" rows="3" placeholder="Describe feedback..." required class="custom-textarea"></textarea>
+                </div>
+                <button type="submit" class="btn-submit-feedback">
+                    <i data-lucide="send"></i> Send Message
+                </button>
+            </form>
+        </div>
+    </div>
+
+    {% include 'includes/footer.html' %}
+
+    <script src="{% static 'js/main-script.js' %}"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.lucide) lucide.createIcons();
+
+            const wrapper = document.getElementById('feedback-floating-wrapper');
+            const toggleBtn = document.getElementById('feedback-toggle-btn');
+            const popover = document.getElementById('feedback-popover');
+            const closeBtn = document.getElementById('feedback-close-btn');
+
+            if (wrapper && toggleBtn && popover) {
+                toggleBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    popover.classList.toggle('active');
+                });
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        popover.classList.remove('active');
+                    });
+                }
+                document.addEventListener('click', function(e) {
+                    if (!wrapper.contains(e.target)) popover.classList.remove('active');
+                });
+            }
+
+            const toastContainer = document.getElementById('toast-container');
+            if (toastContainer) {
+                setTimeout(function() {
+                    toastContainer.style.opacity = '0';
+                    toastContainer.style.transition = 'opacity 0.5s ease';
+                    setTimeout(() => toastContainer.remove(), 500);
+                }, 4000);
+            }
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

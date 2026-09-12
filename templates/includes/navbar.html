@@ -1,0 +1,60 @@
+<nav class="navbar">
+    <div class="nav-container">
+        <div class="left">
+            <a href="{% url 'home' %}" class="brand-link">
+                <p><span>BCET</span>Hub</p>
+            </a>
+        </div>
+        
+        <div class="search-container">
+            <form action="{% url 'search' %}" method="GET" class="search-form">
+                <i data-lucide="search" class="search-icon"></i>
+                <input type="text" 
+                       name="q" 
+                       id="search-input"
+                       value="{{ query|default:'' }}" 
+                       placeholder="Search courses, notes, sir name, day..." 
+                       aria-label="Search"
+                       hx-get="{% url 'live_search' %}"
+                       hx-trigger="input changed delay:150ms, keyup changed delay:150ms"
+                       hx-target="#live-search-popup"
+                       hx-on::after-swap="if(window.lucide) lucide.createIcons()"
+                       autocomplete="off">
+            </form>
+            <div id="live-search-popup" class="live-search-popup"></div>
+        </div>
+
+        <div class="right nav-links">
+            <a href="{% url 'home' %}" class="nav-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                <i data-lucide="home"></i>
+                <span>Home</span>
+            </a>
+            <a href="{% url 'routine' %}" class="nav-item {% if request.resolver_match.url_name == 'routine' %}active{% endif %}">
+                <i data-lucide="calendar"></i>
+                <span>Routine</span>
+            </a>
+            <a href="{% url 'notes' %}" class="nav-item {% if request.resolver_match.url_name == 'notes' %}active{% endif %}">
+                <i data-lucide="notebook"></i>
+                <span>Notes</span>
+            </a>
+            <a href="{% url 'induction' %}" class="nav-item {% if request.resolver_match.url_name == 'induction' %}active{% endif %}">
+                <i data-lucide="award"></i>
+                <span>Induction</span>
+            </a>
+            <a href="{% url 'mess_menu' %}" class="nav-item {% if request.resolver_match.url_name == 'mess_menu' %}active{% endif %}">
+                <i data-lucide="utensils"></i>
+                <span>Mess Menu</span>
+            </a>
+            <a href="{% url 'about' %}" class="nav-item {% if request.resolver_match.url_name == 'about' %}active{% endif %}">
+                <i data-lucide="info"></i>
+                <span>About</span>
+            </a>
+            
+            <!-- <button id="theme-toggle" class="nav-item theme-btn" aria-label="Toggle Theme">
+                <i data-lucide="moon" class="theme-icon"></i>
+                <span>Theme</span>
+            </button> -->
+            
+        </div>
+    </div>
+</nav>

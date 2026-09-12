@@ -1,0 +1,217 @@
+<div class="pwa-modal-overlay" id="pwaInstallModal">
+    <div class="pwa-modal-card">
+        <button type="button" class="pwa-modal-close" onclick="closePWAModal()">&times;</button>
+        
+        <div class="pwa-modal-header">
+            <div class="pwa-app-icon">
+                <i data-lucide="smartphone"></i>
+            </div>
+            <div>
+                <h3>BCET App</h3>
+                <p>Fast & Offline Routine Access</p>
+            </div>
+        </div>
+
+        <div class="pwa-modal-body">
+            <p class="pwa-desc">App install karke direct Home Screen se routine aur mess menu dekhein bina browser khole.</p>
+            
+           <div id="pwaManualInstruction" class="pwa-manual-instruction" style="display: none;">
+                <p><i data-lucide="info"></i> <strong>How to Install:</strong></p>
+                <ol>
+                    <li>Browser Menu (<strong>⋮</strong> or Share icon) par tap karein.</li>
+                    <li><strong>"Add to Home Screen"</strong> ya <strong>"Install App"</strong> select karein.</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="pwa-modal-footer">
+            <button type="button" id="btnPwaPrimaryInstall" class="btn-pwa-primary" onclick="triggerNativePWAInstall()">
+                <i data-lucide="download"></i> Install App
+            </button>
+            <button type="button" class="btn-pwa-secondary" onclick="closePWAModal()">Continue to Web</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    html.pwa-installed #pwaInstallModal {
+        display: none !important;
+    }
+
+    .pwa-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(15, 23, 42, 0.75);
+        backdrop-filter: blur(8px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+        padding: 16px;
+    }
+
+    .pwa-modal-overlay.active {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .pwa-modal-card {
+        background: #1e293b;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 24px;
+        max-width: 420px;
+        width: 100%;
+        position: relative;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        color: #ffffff;
+    }
+
+    .pwa-modal-close {
+        position: absolute;
+        top: 14px;
+        right: 18px;
+        background: none;
+        border: none;
+        color: #94a3b8;
+        font-size: 24px;
+        cursor: pointer;
+    }
+
+    .pwa-modal-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 16px;
+    }
+
+    .pwa-app-icon {
+        width: 48px;
+        height: 48px;
+        background: rgba(37, 99, 235, 0.2);
+        color: #60a5fa;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .pwa-modal-header h3 {
+        margin: 0;
+        font-size: 1.15rem;
+        font-weight: 700;
+    }
+
+    .pwa-modal-header p {
+        margin: 2px 0 0 0;
+        font-size: 0.8rem;
+        color: #94a3b8;
+    }
+
+    .pwa-desc {
+        font-size: 0.88rem;
+        color: #cbd5e1;
+        margin-bottom: 16px;
+        line-height: 1.4;
+    }
+
+    .pwa-manual-instruction {
+        background: rgba(37, 99, 235, 0.1);
+        border: 1px solid rgba(59, 130, 246, 0.2);
+        border-radius: 10px;
+        padding: 12px;
+        margin-bottom: 16px;
+        font-size: 0.82rem;
+        color: #93c5fd;
+    }
+
+    .pwa-manual-instruction p {
+        margin: 0 0 6px 0;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .pwa-manual-instruction ol {
+        margin: 0;
+        padding-left: 20px;
+        color: #cbd5e1;
+    }
+
+    .pwa-modal-footer {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-pwa-primary {
+        flex: 2;
+        background: #2563eb;
+        color: #ffffff;
+        border: none;
+        padding: 10px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        cursor: pointer;
+    }
+
+    .btn-pwa-secondary {
+        flex: 1.2;
+        background: rgba(255, 255, 255, 0.08);
+        color: #cbd5e1;
+        border: none;
+        padding: 10px;
+        border-radius: 10px;
+        font-weight: 500;
+        font-size: 0.85rem;
+        cursor: pointer;
+    }
+</style>
+
+<script>
+    function openPWAModal() {
+        if (isPWAInstalled()) return;
+        const modal = document.getElementById('pwaInstallModal');
+        const manualBox = document.getElementById('pwaManualInstruction');
+        
+        if (modal) modal.classList.add('active');
+        
+        // Show manual steps if browser doesn't support direct popup
+        if (!deferredPrompt && manualBox) {
+            manualBox.style.display = 'block';
+        } else if (manualBox) {
+            manualBox.style.display = 'none';
+        }
+    }
+
+    function closePWAModal() {
+        const modal = document.getElementById('pwaInstallModal');
+        if (modal) modal.classList.remove('active');
+    }
+
+    function triggerNativePWAInstall() {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    document.documentElement.classList.add('pwa-installed');
+                }
+                deferredPrompt = null;
+                closePWAModal();
+            });
+        } else {
+            const manualBox = document.getElementById('pwaManualInstruction');
+            if (manualBox) manualBox.style.display = 'block';
+        }
+    }
+</script>

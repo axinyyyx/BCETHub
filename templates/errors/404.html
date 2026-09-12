@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}404 - Page Not Found | BCET{% endblock %}
+
+{% block content %}
+<div class="page-wrapper error-wrapper">
+    <div class="error-card">
+        <div class="error-code">404</div>
+        <h2><i data-lucide="alert-triangle"></i> Page Not Found</h2>
+        <p>The requested schedule, routine, or page could not be found on BCET server.</p>
+        <div class="error-actions">
+            <a href="{% url 'home' %}" class="btn-primary"><i data-lucide="home"></i> Go Back Home</a>
+            <a href="{% url 'search' %}" class="btn-secondary"><i data-lucide="search"></i> Search Portal</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .page-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+        padding: 20px;
+    }
+    .error-code {
+        font-size: 6rem;
+        font-weight: bold;
+        color: #666768;
+    }
+    .error-card {
+        text-align: center;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    .error-actions {
+        margin-top: 20px;
+    }
+    .error-actions a {
+        margin: 0 10px;
+        text-decoration: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        font-weight: 500;
+    }
+    .btn-primary {
+        background-color: #3b82f6;
+        color: white;
+    }
+    .btn-secondary {
+        background-color: #e5e7eb;
+        color: #374151;
+    }
+</style>
+{% endblock %}
