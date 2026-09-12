@@ -1387,6 +1387,11 @@ footer {
   text-align: center;
 }
 
+.footer-links a {
+  color: var(--icon-gray);
+  text-decoration: none;
+}
+
 /* RESPONSIVE DESIGN (EXACT MATCH TO ORIGINAL) */
 @media (max-width: 900px) {
   .dashboard-grid {
