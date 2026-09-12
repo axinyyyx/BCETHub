@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Study Materials - BCETHub{% endblock %}
+
+{% block content %}
+<div class="study-materials-container">
+    <h1>Study Materials</h1>
+    <div class="study-container">
+        <a href="{% url 'notes' %}">Notes</a>
+        <a href="{% url 'pyq' %}">Previous Year Questions</a>
+        <p>Coming soon...</p>
+</div>
+
+<style>
+    .study-materials-container{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        text-align: center;
+        font-size: large;
+    }
+
+    .study-materials-container p {
+        font-size: 1.2rem;
+        color: #eb0202;
+    }
+</style>
+
+{% endblock %}

@@ -501,6 +501,14 @@ def submit_feedback(request):
 def qr_code(request):
     return render(request, 'blog/qr.html')
 
+# Study View
+def study(request):
+    return render(request, 'blog/study.html')
+
 # Notes View
 def notes(request):
     return render(request, 'blog/notes.html')
+
+# Previous Year Questions View
+def pyqs(request):
+    return render(request, 'blog/pyqs.html')

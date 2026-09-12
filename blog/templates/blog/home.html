@@ -4,6 +4,9 @@
 {% block title %}BCET Hub - Home{% endblock %}
 
 {% block content %}
+
+{% include 'blog/includes/notice.html' %}
+
 <div class="home-wrapper">
 
     <!-- Today Highlights Container -->
@@ -205,6 +208,6 @@
         </a>
      
     </section>
-    {% include 'blog/dev.html' %}
+   {% include 'blog/dev.html' %} 
 </div>
 {% endblock %}

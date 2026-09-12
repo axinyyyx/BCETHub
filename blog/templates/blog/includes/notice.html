@@ -1,0 +1,96 @@
+<div class="contribute-banner">
+    <div class="banner-left">
+        <div class="banner-icon">
+            <i data-lucide="git-pull-request" style="width: 18px; height: 18px;"></i>
+        </div>
+        <div class="banner-text">
+            <p>Want to contribute code or feature ideas?</p>
+        </div>
+    </div>
+    <a href="https://github.com/bcetians/BCETHub" target="_blank" rel="noopener" class="github-btn">
+        <i data-lucide="folder-git-2" style="width: 14px; height: 14px;"></i> GitHub
+    </a>
+</div>
+
+<style>
+    .contribute-banner {
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 14px;
+        padding: 14px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 20px;
+        transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .contribute-banner:hover {
+        border-color: rgba(0, 123, 255, 0.4);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .banner-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .banner-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background-color: rgba(0, 123, 255, 0.12);
+        color: var(--accent-blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .banner-text p {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0;
+        line-height: 1.4;
+    }
+
+    .github-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background-color: var(--input-bg);
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+        padding: 8px 14px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: all 0.2s ease;
+    }
+
+    .github-btn:hover {
+        background-color: var(--accent-blue);
+        color: #ffffff;
+        border-color: var(--accent-blue);
+        box-shadow: 0 0 12px rgba(0, 123, 255, 0.3);
+        transform: translateY(-1px);
+    }
+
+    @media (max-width: 576px) {
+        .contribute-banner {
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 14px;
+        }
+
+        .github-btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
