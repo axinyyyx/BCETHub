@@ -1,0 +1,77 @@
+{% if query %}
+    <div class="live-search-dropdown">
+        {% if faculty_results or routine_results or mess_results or induction_results or branch_results %}
+            <!-- Faculty Matches -->
+            {% if faculty_results %}
+                <div class="live-search-cat">
+                    <span class="cat-label"><i data-lucide="users"></i> Faculty & Staff</span>
+                    {% for fac in faculty_results|slice:":4" %}
+                        <a href="{% url 'search' %}?q={{ fac.name|urlencode }}" class="live-search-item">
+                            <span class="item-title">{{ fac.name }}</span>
+                            <span class="item-sub">{% if fac.short_code %}[{{ fac.short_code }}] - {% endif %}{{ fac.branch.code }}</span>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Routine / Subject Matches -->
+            {% if routine_results %}
+                <div class="live-search-cat">
+                    <span class="cat-label"><i data-lucide="book-open"></i> Routine & Subjects</span>
+                    {% for slot in routine_results|slice:":4" %}
+                        <a href="{% url 'routine' %}?sec={{ slot.section_name|urlencode }}&day={{ slot.day }}" class="live-search-item">
+                            <span class="item-title">{{ slot.subject_code }} - {{ slot.subject_name }}</span>
+                            <span class="item-sub">{{ slot.section_name }} | {{ slot.get_day_display }} Slot {{ slot.slot_number }} ({{ slot.faculty_code }})</span>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Mess Menu Matches -->
+            {% if mess_results %}
+                <div class="live-search-cat">
+                    <span class="cat-label"><i data-lucide="utensils"></i> Hostel Mess Menu</span>
+                    {% for mess in mess_results|slice:":3" %}
+                        <a href="{% url 'search' %}?q={{ mess.get_day_of_week_display|urlencode }}" class="live-search-item">
+                            <span class="item-title">{{ mess.get_day_of_week_display }} Menu</span>
+                            <span class="item-sub">Lunch: {{ mess.lunch|truncatechars:45 }}</span>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Induction Matches -->
+            {% if induction_results %}
+                <div class="live-search-cat">
+                    <span class="cat-label"><i data-lucide="award"></i> Induction Schedule</span>
+                    {% for ind in induction_results|slice:":3" %}
+                        <a href="{% url 'induction' %}" class="live-search-item">
+                            <span class="item-title">Day {{ ind.day_number }}: {{ ind.topic_programme }}</span>
+                            <span class="item-sub">{{ ind.date|date:"d M" }} @ {{ ind.venue }}</span>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Branch Matches -->
+            {% if branch_results %}
+                <div class="live-search-cat">
+                    <span class="cat-label"><i data-lucide="layers"></i> Departments</span>
+                    {% for b in branch_results|slice:":3" %}
+                        <a href="{% url 'search' %}?q={{ b.code|urlencode }}" class="live-search-item">
+                            <span class="item-title">{{ b.name }} ({{ b.code }})</span>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="live-search-footer">
+                <a href="{% url 'search' %}?q={{ query|urlencode }}">See all results for "{{ query }}" →</a>
+            </div>
+        {% else %}
+            <div class="no-live-results">
+                <p>No matches found for "{{ query }}"</p>
+            </div>
+        {% endif %}
+    </div>
+{% endif %}

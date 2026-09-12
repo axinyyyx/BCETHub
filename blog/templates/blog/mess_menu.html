@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Hostel Mess Menu & Meal Timings - BCET{% endblock %}
+
+{% block content %}
+<div class="page-wrapper">
+    <!-- Mess Page Header -->
+    <div class="page-header-card">
+        <h2>Hostel Mess Menu Chart & Meal Timings</h2>
+        <p>Bengal College of Engineering & Technology (Both Boys & Girls Hostel)</p>
+    </div>
+
+    <!-- Batch Timings Summary -->
+    <div class="dash-card timings-summary-card">
+        <div class="card-header">
+            <div class="header-left">
+                <i data-lucide="clock" class="header-icon icon-lunch"></i>
+                <div>
+                    <h3>Meal Schedule Timings</h3>
+                    <span class="day-tag">Hostel Batch Schedule</span>
+                </div>
+            </div>
+            {% if active_meal %}
+                <span class="status-badge badge-live"><span class="pulse-dot"></span></span>
+            {% else %}
+                <span class="status-badge badge-info"><i data-lucide="clock"></i></span>
+            {% endif %}
+        </div>
+
+        <div class="card-body timings-grid">
+            <!-- Junior Batch Schedule -->
+            <div class="timing-batch-card">
+                <h4><i data-lucide="graduation-cap"></i> 1st & 2nd Year Students</h4>
+                <ul class="time-list">
+                    <li><span>Breakfast:</span> <strong>07:45 AM - 08:45 AM</strong></li>
+                    <li><span>Lunch:</span> <strong>12:00 PM - 01:00 PM</strong></li>
+                    <li><span>Evening Hi-Tea:</span> <strong>05:00 PM - 05:30 PM</strong></li>
+                    <li><span>Dinner:</span> <strong>08:00 PM - 09:00 PM</strong></li>
+                </ul>
+            </div>
+
+            <!-- Senior Batch Schedule -->
+            <div class="timing-batch-card">
+                <h4><i data-lucide="award"></i> 3rd & 4th Year Students</h4>
+                <ul class="time-list">
+                    <li><span>Breakfast:</span> <strong>08:45 AM - 09:45 AM</strong></li>
+                    <li><span>Lunch:</span> <strong>01:00 PM - 02:00 PM</strong></li>
+                    <li><span>Evening Hi-Tea:</span> <strong>05:30 PM - 06:00 PM</strong></li>
+                    <li><span>Dinner:</span> <strong>09:00 PM - 10:00 PM</strong></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Weekly Mess Grid -->
+    <h3 class="section-title"><i data-lucide="calendar"></i> Weekly Hostel Menu</h3>
+    <div class="mess-menu-grid">
+        {% for menu in all_menus %}
+            <div class="mess-day-card {% if menu.day_of_week == today_day_code %}today-active-mess{% endif %}">
+                <div class="mess-day-header">
+                    <h4>{{ menu.get_day_of_week_display }}</h4>
+                    {% if menu.day_of_week == today_day_code %}
+                        <span class="status-badge badge-live"><span class="pulse-dot"></span> TODAY</span>
+                    {% endif %}
+                </div>
+
+                <div class="mess-meals-container">
+                    <div class="meal-block">
+                        <span class="meal-label"><i data-lucide="coffee"></i> Breakfast</span>
+                        <p class="meal-text">{{ menu.breakfast }}</p>
+                    </div>
+
+                    <div class="meal-block highlight-meal">
+                        <span class="meal-label"><i data-lucide="soup"></i> Lunch</span>
+                        <p class="meal-text">{{ menu.lunch }}</p>
+                    </div>
+
+                    <div class="meal-block">
+                        <span class="meal-label"><i data-lucide="cup-soda"></i> Evening Hi-Tea</span>
+                        <p class="meal-text">{{ menu.hi_tea }}</p>
+                    </div>
+
+                    <div class="meal-block">
+                        <span class="meal-label"><i data-lucide="utensils"></i> Dinner</span>
+                        <p class="meal-text">{{ menu.dinner }}</p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

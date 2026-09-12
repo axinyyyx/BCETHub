@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}21 Days Induction Programme Schedule 2026 - BCET{% endblock %}
+
+{% block content %}
+<div class="page-wrapper">
+    <!-- Induction Header Card -->
+    <div class="page-header-card">
+        <h2>21 Days Induction Programme Schedule, 2026</h2>
+        <p>Bengal College of Engineering & Technology | Orientation, Workshops, Guest Lectures & Diagnostic Tests</p>
+    </div>
+
+    <!-- Filter Tabs Bar -->
+    <div class="tab-filters-row">
+        <a href="?tab=all" class="tab-btn {% if filter_tab == 'all' %}active{% endif %}">All 21 Days</a>
+        <a href="?tab=today" class="tab-btn {% if filter_tab == 'today' %}active{% endif %}">Today's Session</a>
+        <a href="?tab=live" class="tab-btn {% if filter_tab == 'live' %}active{% endif %}"><span class="pulse-dot-sm"></span> Live Now</a>
+        <a href="?tab=upcoming" class="tab-btn {% if filter_tab == 'upcoming' %}active{% endif %}">Upcoming</a>
+        <a href="?tab=past" class="tab-btn {% if filter_tab == 'past' %}active{% endif %}">Past History</a>
+    </div>
+
+    <!-- Induction Cards Grid -->
+    <div class="induction-grid">
+        {% if evaluated_list %}
+            {% for item in evaluated_list %}
+                <div class="induction-full-card status-card-{{ item.status|lower }}">
+                    <div class="card-header-bar">
+                        <div class="header-day-info">
+                            <span class="day-number-tag">Day {{ item.session.day_number }}</span>
+                            <span class="date-str"><i data-lucide="calendar"></i> {{ item.session.date|date:"l, d F Y" }}</span>
+                        </div>
+                        <span class="status-badge badge-{{ item.status|lower }}">
+                            {% if item.status == 'LIVE' %}
+                                <span class="pulse-dot"></span>
+                            {% elif item.status == 'UPCOMING' %}
+                                <i data-lucide="clock"></i>
+                            {% else %}
+                                <i data-lucide="check-circle"></i>
+                            {% endif %}
+                        </span>
+                    </div>
+
+                    <div class="card-body-content">
+                        <h3 class="topic-title">{{ item.session.topic_programme }}</h3>
+                        <p class="speaker-text"><i data-lucide="user-check"></i> {{ item.session.assigned_persons_text }}</p>
+                        
+                        <div class="meta-bottom">
+                            <span><i data-lucide="clock"></i> {{ item.session.start_time|time:"h:i A" }} - {{ item.session.end_time|time:"h:i A" }}</span>
+                            <span><i data-lucide="map-pin"></i> <strong>Venue:</strong> {{ item.session.venue }}</span>
+                        </div>
+
+                        {% if item.session.material_file %}
+                            <div class="material-download-box" style="margin-top: 12px;">
+                                <a href="{{ item.session.material_file.url }}" class="btn-sm-outline" download style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(96, 165, 250, 0.4); border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: 500;">
+                                    <i data-lucide="download"></i> Download Study Material (PDF/PPT)
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state-box">
+                <i data-lucide="calendar-x" class="empty-icon"></i>
+                <h3>No induction sessions found for filter "{{ filter_tab }}"</h3>
+                <a href="?tab=all" class="btn-link">View All 21 Days Schedule →</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

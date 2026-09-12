@@ -1,0 +1,126 @@
+<div class="pwa-install-banner-container">
+    <div class="pwa-banner-card" id="pwaInstallBannerCard" role="button" tabindex="0">
+        <div class="banner-left">
+            <div class="banner-icon"><i data-lucide="smartphone"></i></div>
+            <div class="banner-text">
+                <h4>Install BCET App</h4>
+                <p>Add to Home Screen for fast routine & menu access</p>
+            </div>
+        </div>
+        <button type="button" class="btn-banner-install" aria-label="Install App">
+            <i data-lucide="download"></i> Install
+        </button>
+    </div>
+</div>
+
+<style>
+    .pwa-install-banner-container {
+        margin: 24px 0 16px 0;
+        width: 100%;
+        display: none;
+        justify-content: center;
+    }
+
+    html.pwa-installed .pwa-install-banner-container {
+        display: none !important;
+    }
+
+    .pwa-banner-card {
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.85), rgba(15, 23, 42, 0.95));
+        border: 1px solid var(--border-color, rgba(255, 255, 255, 0.12));
+        border-radius: 16px;
+        padding: 14px 18px;
+        max-width: 600px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        cursor: pointer;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+        transition: transform 0.2s ease, border-color 0.2s ease;
+        -webkit-tap-highlight-color: transparent;
+        user-select: none;
+    }
+
+    .pwa-banner-card:active {
+        transform: scale(0.98);
+    }
+
+    .banner-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        pointer-events: none;
+    }
+
+    .banner-icon {
+        width: 42px;
+        height: 42px;
+        background: rgba(37, 99, 235, 0.2);
+        color: var(--accent-blue, #60a5fa);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .banner-text h4 {
+        color: var(--text-primary, #ffffff);
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin: 0 0 2px 0;
+    }
+
+    .banner-text p {
+        color: var(--text-muted, #94a3b8);
+        font-size: 0.78rem;
+        margin: 0;
+    }
+
+    .btn-banner-install {
+        background-color: var(--accent-blue, #2563eb);
+        color: #ffffff;
+        border: none;
+        padding: 8px 14px;
+        border-radius: 8px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        flex-shrink: 0;
+        pointer-events: none;
+    }
+
+
+    @media (max-width: 768px) {
+        .pwa-banner-card {
+            padding: 12px 14px;
+        }
+
+        .banner-text p {
+            font-size: 0.72rem;
+        }
+        .pwa-install-banner-container {
+            display: flex;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const bannerCard = document.getElementById('pwaInstallBannerCard');
+        if (bannerCard) {
+            bannerCard.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (typeof triggerNativePWAInstall === 'function') {
+                    triggerNativePWAInstall();
+                }
+            });
+        }
+    });
+</script>

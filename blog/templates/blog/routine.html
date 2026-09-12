@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Class Routine Timetable - BCET{% endblock %}
+
+{% block content %}
+<div class="page-wrapper">
+    <div class="page-header-card">
+        <h2>Class Routine Timetable (Odd Semester 2026-27)</h2>
+        <p>View daily routine slots, subject codes, faculty details, and live class status.</p>
+    </div>
+
+    <!-- Filters Bar -->
+    <div class="filter-toolbar-card">
+        <form method="GET" action="{% url 'routine' %}" class="routine-filter-form">
+            <div class="filter-group">
+                <label for="sec"><i data-lucide="layers"></i> Section:</label>
+                <select name="sec" id="sec" class="custom-select" onchange="this.form.submit()">
+                    {% for sec in all_sections %}
+                        <option value="{{ sec }}" {% if sec == sec_filter %}selected{% endif %}>{{ sec }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="day"><i data-lucide="clock"></i> Day:</label>
+                <select name="day" id="day" class="custom-select" onchange="this.form.submit()">
+                    {% for d_code, d_name in days_list %}
+                        <option value="{{ d_code }}" {% if d_code == day_filter %}selected{% endif %}>
+                            {{ d_name }} {% if d_code == today_day_code %}(Today){% endif %}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </form>
+    </div>
+
+    <!-- Routine Table Card -->
+    <div class="dash-card">
+        <div class="card-header">
+            <div class="header-left">
+                <h3>{{ sec_filter }} Schedule</h3>
+                <span class="day-tag">{{ day_filter }}</span>
+            </div>
+            {% if day_filter == today_day_code %}
+                <span class="status-badge badge-live"><span class="pulse-dot"></span></span>
+            {% endif %}
+        </div>
+
+        <div class="card-body">
+            {% if evaluated_slots %}
+                <div class="routine-table-responsive">
+                    <table class="routine-table">
+                        <thead>
+                            <tr>
+                                <th>Slot No.</th>
+                                <th>Time Window</th>
+                                <th>Subject Code</th>
+                                <th>Subject Title</th>
+                                <th>Faculty</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in evaluated_slots %}
+                                <tr class="slot-row status-row-{{ item.status|lower }}">
+                                    <td><span class="slot-num-pill">Slot {{ item.slot.slot_number }}</span></td>
+                                    <td class="time-cell">{{ item.slot.start_time|time:"h:i A" }} - {{ item.slot.end_time|time:"h:i A" }}</td>
+                                    <td><span class="code-badge">{{ item.slot.subject_code }}</span></td>
+                                    <td class="sub-name-cell">{{ item.slot.subject_name }}</td>
+                                    <td class="fac-cell">
+                                        {% if item.slot.faculty_ref %}
+                                            <a href="{% url 'search' %}?q={{ item.slot.faculty_ref.name }}" class="fac-link">
+                                                <i data-lucide="user-check"></i> {{ item.slot.faculty_code }}
+                                            </a>
+                                        {% else %}
+                                            <span class="fac-code-raw">{{ item.slot.faculty_code|default:"--" }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="status-badge badge-{{ item.status|lower }}">
+                                            {% if item.status == 'LIVE' %}
+                                                <span class="pulse-dot"></span> LIVE NOW
+                                            {% elif item.status == 'UPCOMING' %}
+                                                <i data-lucide="clock"></i> UPCOMING
+                                            {% elif item.status == 'PAST' %}
+                                                <i data-lucide="check-circle"></i> COMPLETED
+                                            {% else %}
+                                                <i data-lucide="calendar"></i> {{ item.status }}
+                                            {% endif %}
+                                        </span>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="empty-state">No timetable entries found for {{ sec_filter }} on {{ day_filter }}.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

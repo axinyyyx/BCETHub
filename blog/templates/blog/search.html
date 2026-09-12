@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Search Results for "{{ query }}" - BCET{% endblock %}
+
+{% block content %}
+<div class="page-wrapper">
+    <!-- Search Header Card -->
+    <div class="page-header-card">
+        <h2><i data-lucide="search"></i> Search Results</h2>
+        {% if query %}
+            <p>Showing search results for: <span class="highlight-query">"{{ query }}"</span></p>
+        {% else %}
+            <p>Please enter a search query in the search bar above (e.g. <em>"Sunday"</em>, <em>"1st Year"</em>, <em>"CSE"</em>, <em>"Santanu Modak"</em>, <em>"AR"</em>).</p>
+        {% endif %}
+    </div>
+
+    {% if query %}
+        <!-- Faculty Results -->
+        {% if faculty_results %}
+            <section class="search-section">
+                <h3 class="section-title"><i data-lucide="users"></i> Faculty & Staff Members ({{ faculty_results|length }})</h3>
+                <div class="card-grid">
+                    {% for fac in faculty_results %}
+                        <div class="result-card faculty-card">
+                            <div class="card-badge">{{ fac.get_designation_display }}</div>
+                            <h4>{{ fac.name }}</h4>
+                            <p class="code-line"><i data-lucide="tag"></i> Code: <strong>{{ fac.short_code|default:"N/A" }}</strong></p>
+                            <p class="branch-line"><i data-lucide="book-open"></i> Department: {{ fac.branch.name }} ({{ fac.branch.code }})</p>
+                            {% if fac.email %}<p class="contact-line"><i data-lucide="mail"></i> {{ fac.email }}</p>{% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+        {% endif %}
+
+        <!-- Induction Session Results -->
+        {% if induction_results %}
+            <section class="search-section">
+                <h3 class="section-title"><i data-lucide="award"></i> Induction Program Sessions ({{ induction_results|length }})</h3>
+                <div class="induction-grid">
+                    {% for ind in induction_results %}
+                        <div class="induction-full-card">
+                            <div class="card-header-bar">
+                                <div class="header-day-info">
+                                    <span class="day-number-tag">Day {{ ind.day_number }}</span>
+                                    <span class="date-str"><i data-lucide="calendar"></i> {{ ind.date|date:"d M Y" }}</span>
+                                </div>
+                            </div>
+                            <div class="card-body-content">
+                                <h3 class="topic-title">{{ ind.topic_programme }}</h3>
+                                <p class="speaker-text"><i data-lucide="user-check"></i> <strong>Speakers:</strong> {{ ind.assigned_persons_text }}</p>
+                                <div class="meta-bottom">
+                                    <span><i data-lucide="clock"></i> {{ ind.start_time|time:"h:i A" }} - {{ ind.end_time|time:"h:i A" }}</span>
+                                    <span><i data-lucide="map-pin"></i> <strong>Venue:</strong> {{ ind.venue }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+        {% endif %}
+
+        <!-- Routine Slot Results -->
+        {% if routine_results %}
+            <section class="search-section">
+                <h3 class="section-title"><i data-lucide="calendar"></i> Class Timetable Matches ({{ routine_results|length }})</h3>
+                <div class="dash-card">
+                    <div class="card-body">
+                        <div class="routine-table-responsive">
+                            <table class="routine-table">
+                                <thead>
+                                    <tr>
+                                        <th>Section / LH</th>
+                                        <th>Day</th>
+                                        <th>Slot</th>
+                                        <th>Time Window</th>
+                                        <th>Subject Code</th>
+                                        <th>Subject Title</th>
+                                        <th>Faculty Code</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for slot in routine_results %}
+                                        <tr>
+                                            <td><strong>{{ slot.section_name }}</strong> <br><small>({{ slot.lh_room }})</small></td>
+                                            <td><span class="slot-num-pill">{{ slot.get_day_display }}</span></td>
+                                            <td>Slot {{ slot.slot_number }}</td>
+                                            <td>{{ slot.start_time|time:"h:i A" }} - {{ slot.end_time|time:"h:i A" }}</td>
+                                            <td><span class="code-badge">{{ slot.subject_code }}</span></td>
+                                            <td>{{ slot.subject_name }}</td>
+                                            <td>
+                                                {% if slot.faculty_ref %}
+                                                    <a href="{% url 'search' %}?q={{ slot.faculty_ref.name }}" class="fac-link">
+                                                        <i data-lucide="user-check"></i> {{ slot.faculty_code }}
+                                                    </a>
+                                                {% else %}
+                                                    {{ slot.faculty_code|default:"--" }}
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        {% endif %}
+
+        <!-- Mess Menu Results -->
+        {% if mess_results %}
+            <section class="search-section">
+                <h3 class="section-title"><i data-lucide="utensils"></i> Hostel Mess Menu Matches ({{ mess_results|length }})</h3>
+                <div class="mess-menu-grid">
+                    {% for mess in mess_results %}
+                        <div class="mess-day-card">
+                            <div class="mess-day-header">
+                                <h4>{{ mess.get_day_of_week_display }} Menu</h4>
+                            </div>
+                            <div class="mess-meals-container">
+                                <div class="meal-block"><span class="meal-label"><i data-lucide="coffee"></i> Breakfast</span><p class="meal-text">{{ mess.breakfast }}</p></div>
+                                <div class="meal-block highlight-meal"><span class="meal-label"><i data-lucide="soup"></i> Lunch</span><p class="meal-text">{{ mess.lunch }}</p></div>
+                                <div class="meal-block"><span class="meal-label"><i data-lucide="cup-soda"></i> Hi-Tea</span><p class="meal-text">{{ mess.hi_tea }}</p></div>
+                                <div class="meal-block"><span class="meal-label"><i data-lucide="utensils"></i> Dinner</span><p class="meal-text">{{ mess.dinner }}</p></div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+        {% endif %}
+
+        <!-- Branch Results -->
+        {% if branch_results %}
+            <section class="search-section">
+                <h3 class="section-title"><i data-lucide="layers"></i> Academic Departments</h3>
+                <div class="card-grid">
+                    {% for b in branch_results %}
+                        <div class="result-card branch-card">
+                            <span class="code-badge">{{ b.code }}</span>
+                            <h4>{{ b.name }}</h4>
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+        {% endif %}
+
+        {% if not faculty_results and not induction_results and not routine_results and not mess_results and not branch_results %}
+            <div class="empty-state-box">
+                <i data-lucide="search-x" class="empty-icon"></i>
+                <h3>No exact matches found for "{{ query }}"</h3>
+                <p>Try searching for terms like <strong>"Sunday"</strong>, <strong>"CSE"</strong>, <strong>"1st Year"</strong>, <strong>"Dr. Santanu Modak"</strong>, or <strong>"AR"</strong>.</p>
+            </div>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

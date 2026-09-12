@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}BCET Hub - Mass Bunk{% endblock %}
+
+{% block content %}
+    <h1>Today Attendance System</h1>
+
+    <div style="border: 1px solid #ccc; padding: 20px; margin-bottom: 20px;">
+        <h3>Total Live Votes For (CSE Core Section B): 
+            <!-- This container updates live every 2 seconds from anywhere -->
+            <span id="live-count" hx-get="/attendance/live/" hx-trigger="every 2s" hx-swap="outerHTML">
+                {{ pool_count }}
+            </span>
+        </h3>
+    </div>
+
+    <!-- Attendance Action Container -->
+    <div id="attendance-section">
+        {% if already_voted %}
+            <p style="color: green;">✓ You have already marked your attendance for today!</p>
+        {% else %}
+            <button hx-post="/attendance/mark/" 
+                    hx-target="#live-count" 
+                    hx-swap="outerHTML"
+                    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                    onclick="this.disabled=True; this.innerText='Submitting...';">
+                Mark Attendance
+            </button>
+        {% endif %}
+    </div>
+
+</body>
+</html>
+{% endblock %}

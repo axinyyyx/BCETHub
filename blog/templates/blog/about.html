@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About & Faculty Directory - BCET{% endblock %}
+
+{% block content %}
+<div class="page-wrapper">
+    <!-- Header Card -->
+    <div class="page-header-card">
+        <h2>Bengal College of Engineering & Technology</h2>
+        <p>Approved by AICTE, New Delhi & Affiliated to MAKAUT, Kolkata | ISO 9001:2008 Certified Institute</p>
+    </div>
+
+    <!-- About Info Card -->
+    <div class="dash-card">
+        <div class="card-header">
+            <div class="header-left">
+                <i data-lucide="building-2" class="header-icon"></i>
+                <div>
+                    <h3>About Our Institution</h3>
+                    <span class="day-tag">Established 2001</span>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <p class="about-text">
+                Bengal College of Engineering & Technology (BCET), Durgapur, was established under the aegis of SKS Educational Social Trust in 2001. The college offers top-tier engineering programs in Computer Science & Engineering, AI & ML, Data Science, Electronics & Communication, Electrical, Information Technology, Mechanical, and Civil Engineering.
+            </p>
+            <div class="contact-highlights-grid">
+                <div class="highlight-item">
+                    <i data-lucide="map-pin"></i>
+                    <div>
+                        <strong>Address</strong>
+                        <p>S.S.B. Sarani, Bidhannagar, Durgapur-12</p>
+                    </div>
+                </div>
+                <div class="highlight-item">
+                    <i data-lucide="user-check"></i>
+                    <div>
+                        <strong>Principal</strong>
+                        <p>Prof. (Dr.) Santanu Koley</p>
+                    </div>
+                </div>
+                <div class="highlight-item">
+                    <i data-lucide="shield-check"></i>
+                    <div>
+                        <strong>Registrar</strong>
+                        <p>Mr. S.S. Choubey</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Faculty & HOD Directory -->
+    <h3 class="section-title"><i data-lucide="users"></i> Faculty & HOD Directory</h3>
+    <div class="card-grid">
+        {% for fac in faculties %}
+            <div class="result-card faculty-card">
+                <div class="card-badge">{{ fac.get_designation_display }}</div>
+                <h4>{{ fac.name }}</h4>
+                <p class="code-line"><i data-lucide="tag"></i> Code: <strong>{{ fac.short_code|default:"--" }}</strong></p>
+                <p class="branch-line"><i data-lucide="book-open"></i> Department: {{ fac.branch.name }} ({{ fac.branch.code }})</p>
+                {% if fac.email %}
+                    <p class="contact-line"><i data-lucide="mail"></i> {{ fac.email }}</p>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

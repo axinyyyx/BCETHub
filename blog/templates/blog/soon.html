@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Coming Soon - BCET{% endblock %}
+
+{% block content %}
+<div class="page-wrapper">
+    <div class="soon-hero-card">
+        <i data-lucide="sparkles" class="soon-icon"></i>
+        <h2>Ruko Zara, Sabar Karo!</h2>
+        <p>Exciting new features (Exam Portal, Results, Notes Repository, and Event Notifications) are coming soon to BCET Portal.</p>
+        <a href="{% url 'home' %}" class="btn-primary-sm"><i data-lucide="arrow-left"></i> Return to Home Dashboard</a>
+    </div>
+</div>
+{% endblock %}

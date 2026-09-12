@@ -1,0 +1,210 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}BCET Hub - Home{% endblock %}
+
+{% block content %}
+<div class="home-wrapper">
+
+    <!-- Today Highlights Container -->
+    <div class="home-dynamic-cards" style="display: flex; flex-direction: column; gap: 1.5rem;">
+
+        <!-- Active Meal Card -->
+        <div class="dash-card lunch-highlight-card" style="order: {{ p_meal }};">
+            <div class="card-header">
+                <div class="header-left">
+                    <div>
+                        <h3>{{ displayed_meal.title }}</h3>
+                        <span class="day-tag">{{ today_day_name }} Special</span>
+                    </div>
+                </div>
+                {% if displayed_meal.is_serving %}
+                    <span class="status-badge badge-live"><span class="pulse-dot"></span></span>
+                {% else %}
+                    <span class="status-badge badge-info"><i data-lucide="clock"></i></span>
+                {% endif %}
+            </div>
+
+            <div class="card-body">
+                {% if displayed_meal.food %}
+                    <div class="meal-food-box">
+                        <div class="food-icon-tag"><i data-lucide="{{ displayed_meal.icon }}"></i></div>
+                        <p class="food-description">{{ displayed_meal.food }}</p>
+                    </div>
+
+                    <div class="timings-dual-row">
+                        <div class="timing-badge-item">
+                            <span class="year-label">1st & 2nd Year:</span>
+                            <span class="time-value">{{ displayed_meal.time_1_2 }}</span>
+                        </div>
+                        <div class="timing-badge-item">
+                            <span class="year-label">3rd & 4th Year:</span>
+                            <span class="time-value">{{ displayed_meal.time_3_4 }}</span>
+                        </div>
+                    </div>
+                {% else %}
+                    <p class="empty-state">Mess menu info not available for today.</p>
+                {% endif %}
+            </div>
+
+            <div class="card-footer">
+                <a href="{% url 'mess_menu' %}" class="btn-link">View Full Week Mess Menu <i data-lucide="arrow-right"></i></a>
+            </div>
+        </div>
+
+        <!-- Today Induction Card -->
+        <div class="dash-card induction-highlight-card" style="order: {{ p_induction }};">
+            <div class="card-header">
+                <div class="header-left">
+                    <div>
+                        <h3>21-Day Induction Program</h3>
+                        <span class="day-tag">Today's Session</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="card-body">
+                {% if today_induction %}
+                    <div class="induction-item-box status-live">
+                        <div class="item-top-row">
+                            <span class="induction-day-badge">Day {{ today_induction.day_number }}</span>
+                            <span class="status-badge badge-live"><span class="pulse-dot"></span></span>
+                        </div>
+                        <h4 class="induction-title">{{ today_induction.topic_programme }}</h4>
+                        <p class="induction-speaker"><i data-lucide="user"></i> {{ today_induction.assigned_persons_text }}</p>
+                        <div class="induction-meta">
+                            <span><i data-lucide="clock"></i> {{ today_induction.start_time|time:"h:i A" }} - {{ today_induction.end_time|time:"h:i A" }}</span>
+                            <span><i data-lucide="map-pin"></i> {{ today_induction.venue }}</span>
+                        </div>
+
+                        {% if today_induction.material_file %}
+                            <div class="material-download-box" style="margin-top: 10px;">
+                                <a href="{{ today_induction.material_file.url }}" class="btn-sm-outline" download style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(96, 165, 250, 0.4); border-radius: 6px; text-decoration: none; font-size: 0.8rem; font-weight: 500;">
+                                    <i data-lucide="download"></i> Download Material (PDF/PPT)
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <div class="next-induction-box">
+                        <p class="empty-state"><i data-lucide="info"></i> No induction session scheduled for today.</p>
+                        <p class="sub-heading">Explore full 21-day schedule in Induction tab.</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="card-footer">
+                <a href="{% url 'induction' %}" class="btn-link">Full 21-Day Schedule <i data-lucide="arrow-right"></i></a>
+            </div>
+        </div>
+
+        <!-- Class Routine Section -->
+        <section class="routine-section dash-card" style="order: {{ p_routine }};">
+            <div class="card-header routine-header">
+                <div class="header-left">
+                    <div>
+                        <h3>Today's Class Routine & Live Tracker</h3>
+                        <span class="day-tag">{{ today_day_name }} Routine</span>
+                    </div>
+                </div>
+
+                <form method="GET" action="{% url 'home' %}" class="sec-select-form">
+                    <label for="sec-select">Select Section:</label>
+                    <select name="sec" id="sec-select" class="custom-select" onchange="this.form.submit()">
+                        {% for sec in all_sections %}
+                            <option value="{{ sec }}" {% if sec == selected_sec %}selected{% endif %}>{{ sec }}</option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
+
+            <div class="card-body">
+                {% if evaluated_routine %}
+                    <div class="routine-table-responsive">
+                        <table class="routine-table">
+                            <thead>
+                                <tr>
+                                    <th>Slot</th>
+                                    <th>Time</th>
+                                    <th>Subject Code</th>
+                                    <th>Subject Title</th>
+                                    <th>Faculty</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in evaluated_routine %}
+                                    <tr class="slot-row status-row-{{ item.status|lower }}">
+                                        <td><span class="slot-num-pill">Slot {{ item.slot.slot_number }}</span></td>
+                                        <td class="time-cell">{{ item.slot.start_time|time:"h:i A" }} - {{ item.slot.end_time|time:"h:i A" }}</td>
+                                        <td><span class="code-badge">{{ item.slot.subject_code }}</span></td>
+                                        <td class="sub-name-cell">{{ item.slot.subject_name }}</td>
+                                        <td class="fac-cell">
+                                            {% if item.slot.faculty_ref %}
+                                                <a href="{% url 'search' %}?q={{ item.slot.faculty_ref.name }}" class="fac-link">
+                                                    <i data-lucide="user-check"></i> {{ item.slot.faculty_code }}
+                                                </a>
+                                            {% else %}
+                                                <span class="fac-code-raw">{{ item.slot.faculty_code|default:"--" }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <span class="status-badge badge-{{ item.status|lower }}">
+                                                {% if item.status == 'LIVE' %}
+                                                    <span class="pulse-dot"></span> LIVE NOW
+                                                {% elif item.status == 'UPCOMING' %}
+                                                    <i data-lucide="clock"></i> UPCOMING
+                                                {% else %}
+                                                    <i data-lucide="check-circle"></i> COMPLETED
+                                                {% endif %}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="empty-state">No routine classes scheduled for {{ selected_sec }} today ({{ today_day_name }}).</p>
+                {% endif %}
+            </div>
+
+            <div class="card-footer">
+                <a href="{% url 'routine' %}?sec={{ selected_sec|urlencode }}" class="btn-link">View Full Section Timetable <i data-lucide="arrow-right"></i></a>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Quick Navigation Hub -->
+    <section class="quick-nav-grid">
+        <a href="{% url 'routine' %}" class="quick-nav-card">
+            <i data-lucide="calendar" class="quick-icon"></i>
+            <h4>Class Timetables</h4>
+            <p>Explore weekly routines for CSE, AIML, ECE, EE, IT, ME, CE sections</p>
+        </a>
+
+        <a href="{% url 'induction' %}" class="quick-nav-card">
+            <i data-lucide="award" class="quick-icon"></i>
+            <h4>Induction Schedule</h4>
+            <p>Full 21-day induction program topics, guest speakers & venues</p>
+        </a>
+
+
+        <a href="{% url 'about' %}" class="quick-nav-card">
+            <i data-lucide="users" class="quick-icon"></i>
+            <h4>Faculty Directory</h4>
+            <p>Find details of HODs, Professors, and department faculty members</p>
+        </a>
+
+        <a href="{% url 'mess_menu' %}" class="quick-nav-card">
+            <i data-lucide="utensils" class="quick-icon"></i>
+            <h4>Hostel Mess Menu</h4>
+            <p>7-day breakfast, lunch, hi-tea & dinner menu with batch timings</p>
+        </a>
+     
+    </section>
+    {% include 'blog/dev.html' %}
+</div>
+{% endblock %}
