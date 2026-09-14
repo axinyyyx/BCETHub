@@ -14,10 +14,23 @@
     <div class="filter-toolbar-card">
         <form method="GET" action="{% url 'routine' %}" class="routine-filter-form">
             <div class="filter-group">
+                <label for="year"><i data-lucide="graduation-cap"></i> Year:</label>
+                <select name="year" id="year" class="custom-select" onchange="this.form.submit()">
+                    <option value="">All Years</option>
+                    {% for yr in all_years %}
+                        <option value="{{ yr.year }}" {% if yr.year == year_filter or yr.id|slugify == year_filter %}selected{% endif %}>
+                            {{ yr.get_year_display }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-group">
                 <label for="sec"><i data-lucide="layers"></i> Section:</label>
                 <select name="sec" id="sec" class="custom-select" onchange="this.form.submit()">
+                    <option value="">All Sections</option>
                     {% for sec in all_sections %}
-                        <option value="{{ sec }}" {% if sec == sec_filter %}selected{% endif %}>{{ sec }}</option>
+                        <option value="{{ sec.name }}" {% if sec.name == sec_filter %}selected{% endif %}>Sec {{ sec.name }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -39,7 +52,7 @@
     <div class="dash-card">
         <div class="card-header">
             <div class="header-left">
-                <h3>{{ sec_filter }} Schedule</h3>
+                <h3>{% if year_filter %}{{ year_filter }} Year - {% endif %}{% if sec_filter %}Section {{ sec_filter }}{% else %}All Sections{% endif %} Schedule</h3>
                 <span class="day-tag">{{ day_filter }}</span>
             </div>
             {% if day_filter == today_day_code %}
