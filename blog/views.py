@@ -3,8 +3,10 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.utils import timezone
 from django.db.models import Q
-from .models import Branch, AcademicYear, Pooling, Faculty, InductionProgram, RoutineSlot, MessTiming, DailyMessMenu, Feedback
-from django.http import HttpResponse
+from .models import (
+    Branch, AcademicYear, Pooling, Faculty, InductionProgram, RoutineSlot, 
+    MessTiming, DailyMessMenu, Feedback, Section, Notes, Course, Subject, Module, PYQ, CRProfile
+)
 from datetime import datetime
 
 DAYS_MAP = {
@@ -26,15 +28,6 @@ DAY_LOOKUP = {
     'saturday': 'SAT', 'sat': 'SAT',
     'sunday': 'SUN', 'sun': 'SUN',
 }
-
-UNIQUE_SECTIONS = [
-    'CSE 1st SEM (A)',
-    'CSE 1st SEM (B)',
-    'CSE 1st SEM (C)',
-    'CSE (AIML) 1st SEM',
-    '(ECE + EE) 1st SEM',
-    '(CSE(DS)+IT+ME+CE) 1st SEM',
-]
 
 DAYS_LIST = [
     ('MON', 'Monday'),
@@ -118,8 +111,18 @@ def home(request):
     today_induction = InductionProgram.objects.filter(date=today_date).first()
 
     # Fetch Today Routine
-    selected_sec = request.GET.get('sec', 'CSE 1st SEM (A)')
-    routine_slots = RoutineSlot.objects.filter(section_name=selected_sec, day=today_day_code).order_by('slot_number')
+    all_sections = Section.objects.all()
+    all_years = AcademicYear.objects.all()
+    selected_sec = request.GET.get('sec', 'A')
+    selected_year = request.GET.get('year', '1')
+    
+    routine_qs = RoutineSlot.objects.select_related('year', 'branch', 'section_name', 'faculty_ref').filter(day=today_day_code)
+    if selected_sec:
+        routine_qs = routine_qs.filter(section_name__name=selected_sec)
+    if selected_year:
+        routine_qs = routine_qs.filter(Q(year__year=selected_year) | Q(year_id=selected_year))
+
+    routine_slots = routine_qs.order_by('slot_number')
     
     evaluated_routine = []
     live_slot = None
@@ -197,7 +200,9 @@ def home(request):
         'live_slot': live_slot,
         'evaluated_routine': evaluated_routine,
         'selected_sec': selected_sec,
-        'all_sections': UNIQUE_SECTIONS,
+        'selected_year': selected_year,
+        'all_sections': all_sections,
+        'all_years': all_years,
         'p_meal': p_meal,
         'p_induction': p_induction,
         'p_routine': p_routine,
@@ -232,7 +237,7 @@ def live_search(request):
             Q(subject_name__icontains=query) |
             Q(faculty_code__icontains=query) |
             Q(lh_room__icontains=query) |
-            Q(section_name__icontains=query)
+            Q(section_name__name__icontains=query)
         )
         routine_results = (routine_results | routine_matches).distinct() if routine_results else routine_matches
 
@@ -284,9 +289,9 @@ def search(request):
             routine_results = RoutineSlot.objects.filter(day=day_code)
 
         if '1st' in query_lower or '1' in query_lower or 'first' in query_lower:
-            routine_results = (routine_results | RoutineSlot.objects.filter(section_name__icontains='1st')).distinct() if routine_results else RoutineSlot.objects.filter(section_name__icontains='1st')
+            routine_results = (routine_results | RoutineSlot.objects.filter(section_name__name__icontains='1st')).distinct() if routine_results else RoutineSlot.objects.filter(section_name__name__icontains='1st')
         elif '2nd' in query_lower or '2' in query_lower or 'second' in query_lower:
-            routine_results = RoutineSlot.objects.filter(section_name__icontains='2nd')
+            routine_results = RoutineSlot.objects.filter(section_name__name__icontains='2nd')
         
         faculty_results = Faculty.objects.filter(
             Q(name__icontains=query) |
@@ -306,7 +311,7 @@ def search(request):
             Q(subject_name__icontains=query) |
             Q(faculty_code__icontains=query) |
             Q(lh_room__icontains=query) |
-            Q(section_name__icontains=query)
+            Q(section_name__name__icontains=query)
         )
         routine_results = (routine_results | routine_matches).distinct() if routine_results else routine_matches
 
@@ -339,10 +344,22 @@ def routine(request):
     today_time = now.time()
     today_day_code = DAYS_MAP[now.weekday()][0]
 
-    sec_filter = request.GET.get('sec', 'CSE 1st SEM (A)')
+    all_sections = Section.objects.all()
+    all_years = AcademicYear.objects.all()
+    
+    sec_filter = request.GET.get('sec', 'A')
     day_filter = request.GET.get('day', today_day_code)
+    year_filter = request.GET.get('year', '1')
 
-    slots = RoutineSlot.objects.filter(section_name=sec_filter, day=day_filter).order_by('slot_number')
+    slots_qs = RoutineSlot.objects.select_related('year', 'branch', 'section_name', 'faculty_ref').all()
+    if sec_filter:
+        slots_qs = slots_qs.filter(section_name__name=sec_filter)
+    if day_filter:
+        slots_qs = slots_qs.filter(day=day_filter)
+    if year_filter:
+        slots_qs = slots_qs.filter(Q(year__year=year_filter) | Q(year_id=year_filter))
+
+    slots = slots_qs.order_by('slot_number')
     
     evaluated_slots = []
     for s in slots:
@@ -355,7 +372,9 @@ def routine(request):
     context = {
         'sec_filter': sec_filter,
         'day_filter': day_filter,
-        'all_sections': UNIQUE_SECTIONS,
+        'year_filter': year_filter,
+        'all_sections': all_sections,
+        'all_years': all_years,
         'days_list': DAYS_LIST,
         'evaluated_slots': evaluated_slots,
         'today_day_code': today_day_code,
@@ -507,8 +526,111 @@ def study(request):
 
 # Notes View
 def notes(request):
-    return render(request, 'blog/notes.html')
+    course_id = request.GET.get('course', '').strip()
+    branch_id = request.GET.get('branch', '').strip()
+    year_id = request.GET.get('year', '').strip()
+    section_id = request.GET.get('section', '').strip()
+    subject_id = request.GET.get('subject', '').strip()
+    search_query = request.GET.get('q', '').strip()
+
+    notes_qs = Notes.objects.select_related('course', 'branch', 'year', 'section', 'subject', 'module', 'cr').prefetch_related('images').all()
+
+    if course_id:
+        notes_qs = notes_qs.filter(course_id=course_id)
+    if branch_id:
+        notes_qs = notes_qs.filter(branch_id=branch_id)
+    if year_id:
+        notes_qs = notes_qs.filter(year_id=year_id)
+    if section_id:
+        notes_qs = notes_qs.filter(section_id=section_id)
+    if subject_id:
+        notes_qs = notes_qs.filter(subject_id=subject_id)
+    if search_query:
+        notes_qs = notes_qs.filter(
+            Q(title__icontains=search_query) |
+            Q(description__icontains=search_query) |
+            Q(subject__name__icontains=search_query) |
+            Q(subject__code__icontains=search_query) |
+            Q(module__name__icontains=search_query) |
+            Q(cr_name__icontains=search_query) |
+            Q(cr__name__icontains=search_query)
+        )
+
+    all_courses = Course.objects.all()
+    all_branches = Branch.objects.all()
+    all_years = AcademicYear.objects.all()
+    all_sections = Section.objects.all()
+    all_subjects = Subject.objects.all()
+
+    context = {
+        'notes': notes_qs,
+        'all_courses': all_courses,
+        'all_branches': all_branches,
+        'all_years': all_years,
+        'all_sections': all_sections,
+        'all_subjects': all_subjects,
+        'selected_course': course_id,
+        'selected_branch': branch_id,
+        'selected_year': year_id,
+        'selected_section': section_id,
+        'selected_subject': subject_id,
+        'search_query': search_query,
+    }
+    return render(request, 'blog/notes.html', context)
+
 
 # Previous Year Questions View
 def pyqs(request):
-    return render(request, 'blog/pyqs.html')
+    course_id = request.GET.get('course', '').strip()
+    branch_id = request.GET.get('branch', '').strip()
+    year_id = request.GET.get('year', '').strip()
+    semester = request.GET.get('semester', '').strip()
+    subject_id = request.GET.get('subject', '').strip()
+    exam_year = request.GET.get('exam_year', '').strip()
+    search_query = request.GET.get('q', '').strip()
+
+    pyqs_qs = PYQ.objects.select_related('course', 'branch', 'year', 'subject').prefetch_related('images').all()
+
+    if course_id:
+        pyqs_qs = pyqs_qs.filter(course_id=course_id)
+    if branch_id:
+        pyqs_qs = pyqs_qs.filter(branch_id=branch_id)
+    if year_id:
+        pyqs_qs = pyqs_qs.filter(year_id=year_id)
+    if semester:
+        pyqs_qs = pyqs_qs.filter(semester=semester)
+    if subject_id:
+        pyqs_qs = pyqs_qs.filter(subject_id=subject_id)
+    if exam_year:
+        pyqs_qs = pyqs_qs.filter(exam_year=exam_year)
+    if search_query:
+        pyqs_qs = pyqs_qs.filter(
+            Q(title__icontains=search_query) |
+            Q(description__icontains=search_query) |
+            Q(subject__name__icontains=search_query) |
+            Q(subject__code__icontains=search_query) |
+            Q(cr_name__icontains=search_query)
+        )
+
+    all_courses = Course.objects.all()
+    all_branches = Branch.objects.all()
+    all_years = AcademicYear.objects.all()
+    all_subjects = Subject.objects.all()
+    semesters_list = PYQ.SEMESTER_CHOICES
+
+    context = {
+        'pyqs': pyqs_qs,
+        'all_courses': all_courses,
+        'all_branches': all_branches,
+        'all_years': all_years,
+        'all_subjects': all_subjects,
+        'semesters_list': semesters_list,
+        'selected_course': course_id,
+        'selected_branch': branch_id,
+        'selected_year': year_id,
+        'selected_semester': semester,
+        'selected_subject': subject_id,
+        'selected_exam_year': exam_year,
+        'search_query': search_query,
+    }
+    return render(request, 'blog/pyqs.html', context)

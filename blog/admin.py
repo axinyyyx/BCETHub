@@ -1,13 +1,44 @@
 from django.contrib import admin
-from .models import Branch, AcademicYear, Pooling, Faculty, InductionProgram, MessTiming, DailyMessMenu, RoutineSlot, Feedback
+from .models import (
+    Branch, AcademicYear, Pooling, Faculty, InductionProgram, 
+    MessTiming, DailyMessMenu, RoutineSlot, Feedback, Section, 
+    Course, CRProfile, Notes, NoteImage, Module, Subject, PYQ, PYQImage
+)
+
+class NoteImageInline(admin.TabularInline):
+    model = NoteImage
+    extra = 3
+    fields = ('image', 'caption', 'order')
+
+@admin.register(Notes)
+class NotesAdmin(admin.ModelAdmin):
+    list_display = ('title', 'course', 'branch', 'year', 'section', 'subject', 'get_cr_name', 'uploaded_at', 'file')
+    list_filter = ('course', 'branch', 'year', 'section', 'subject')
+    search_fields = ('title', 'description', 'cr_name', 'cr__name')
+    inlines = [NoteImageInline]
+
+
+class PYQImageInline(admin.TabularInline):
+    model = PYQImage
+    extra = 3
+    fields = ('image', 'caption', 'order')
+
+@admin.register(PYQ)
+class PYQAdmin(admin.ModelAdmin):
+    list_display = ('title', 'course', 'branch', 'year', 'semester', 'subject', 'exam_year', 'cr_name', 'uploaded_at')
+    list_filter = ('course', 'branch', 'year', 'semester', 'exam_year', 'subject')
+    search_fields = ('title', 'description', 'cr_name')
+    inlines = [PYQImageInline]
+
 
 @admin.register(Pooling)
 class PoolingAdmin(admin.ModelAdmin):
-     list_display = ['id', 'pool']
-     
+    list_display = ['id', 'pool']
+
 @admin.register(Branch)
 class BranchAdmin(admin.ModelAdmin):
-    list_display = ('name', 'code')
+    list_display = ('name', 'code', 'course')
+    list_filter = ('course',)
     search_fields = ('name', 'code')
 
 @admin.register(AcademicYear)
@@ -31,7 +62,7 @@ class InductionProgramAdmin(admin.ModelAdmin):
 class RoutineSlotAdmin(admin.ModelAdmin):
     list_display = ('section_name', 'lh_room', 'day', 'slot_number', 'start_time', 'end_time', 'subject_code', 'faculty_code')
     list_filter = ('section_name', 'lh_room', 'day')
-    search_fields = ('section_name', 'subject_code', 'faculty_code', 'subject_name')
+    search_fields = ('section_name__name', 'subject_code', 'faculty_code', 'subject_name')
 
 @admin.register(MessTiming)
 class MessTimingAdmin(admin.ModelAdmin):
@@ -58,3 +89,28 @@ class FeedbackAdmin(admin.ModelAdmin):
         return obj.message[:60] + "..." if len(obj.message) > 60 else obj.message
     short_message.short_description = 'Message Preview'
 
+@admin.register(Section)
+class SectionAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    search_fields = ('name',)
+
+@admin.register(Course)
+class CourseAdmin(admin.ModelAdmin):
+    list_display = ('name', 'code')
+    search_fields = ('name', 'code')
+
+@admin.register(CRProfile)
+class CRProfileAdmin(admin.ModelAdmin):
+    list_display = ('name', 'year', 'branch', 'section', 'email', 'phone', 'is_active')
+    list_filter = ('year', 'branch', 'section', 'is_active')
+    search_fields = ('name', 'email', 'phone')
+
+@admin.register(Module)
+class ModuleAdmin(admin.ModelAdmin):
+    list_display = ('name', 'code')
+    search_fields = ('name', 'code')
+
+@admin.register(Subject)
+class SubjectAdmin(admin.ModelAdmin):
+    list_display = ('name', 'code')
+    search_fields = ('name', 'code')

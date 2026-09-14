@@ -21,7 +21,7 @@
            class="study-materials-link">Previous Year Questions</a>
     </div>
 
-    <div id="materials-display-area" class="materials-content-area"></div>
+    <div id="materials-display-area" class="materials-content-area" hx-get="{% url 'notes' %}" hx-trigger="load" hx-swap="innerHTML"></div>
 </div>
 
 <style>
@@ -34,11 +34,12 @@
         font-size: large;
         padding: 0 15px;
         box-sizing: border-box;
+        width: 100%;
     }
 
     .study-materials-container hr {
         width: 100%;
-        border: 1px solid #ccc;
+        border: 1px solid #333;
         margin: 20px 0;
     }
 
@@ -55,7 +56,8 @@
         flex: 1;
         min-height: 44px;
         padding: 10px 14px;
-        border: 1px solid #ccc;
+        border: 1px solid #3f3f46;
+        background-color: #18181b;
         border-radius: 8px;
         text-decoration: none;
         color: #d8d7d7;
@@ -74,21 +76,25 @@
     }
 
     .study-materials-link:hover {
-        background-color: #333;
+        background-color: #27272a;
         color: #fff;
     }
 
-    /* Content injection box */
+    .study-materials-link.active {
+        background-color: #2563eb;
+        color: #fff;
+        border-color: #3b82f6;
+    }
+
     .materials-content-area {
         width: 100%;
-        max-width: 800px;
+        max-width: 1200px;
         margin-top: 25px;
         text-align: left;
     }
 
     .study-materials-container p {
         font-size: 1.2rem;
-        color: #eb0202;
     }
 
     @media (max-width: 480px) {
@@ -102,4 +108,15 @@
         }
     }
 </style>
+
+<script>
+    document.querySelectorAll('.study-materials-link').forEach(button => {
+        button.addEventListener('click', function() {
+            document.querySelectorAll('.study-materials-link').forEach(el => el.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+</script>
+
+
 {% endblock %}

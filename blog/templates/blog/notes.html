@@ -1,21 +1,567 @@
 <div class="notess-container">
-    <h1>Notes</h1>
-    <div class="notes-container">
-       <p>Coming soon...</p>
+    <div class="header-row">
+        <h1>Course Notes & Study Material</h1>
+        <span class="count-pill">{{ notes|length }} Notes Found</span>
+    </div>
+    <hr>
+
+    <!-- Filters Section -->
+    <div class="filter-card">
+        <form method="GET" action="{% url 'notes' %}" hx-get="{% url 'notes' %}" hx-target="#materials-display-area" hx-swap="innerHTML" class="notes-filter-form">
+            <div class="filter-search-box">
+                <i data-lucide="search" class="search-icon"></i>
+                <input type="text" name="q" value="{{ search_query }}" placeholder="Search title, description, subject, or CR name..." class="filter-input-search">
+                {% if search_query or selected_course or selected_branch or selected_year or selected_section or selected_subject %}
+                    <a href="javascript:void(0);" hx-get="{% url 'notes' %}" hx-target="#materials-display-area" hx-swap="innerHTML" class="btn-clear-filter" title="Clear Filters">&times; Clear</a>
+                {% endif %}
+            </div>
+
+            <div class="filter-dropdowns-grid">
+                <div class="filter-item">
+                    <label><i data-lucide="book-open"></i> Course</label>
+                    <select name="course" onchange="this.form.dispatchEvent(new Event('submit', {bubbles: true}))" class="custom-select-sm">
+                        <option value="">All Courses</option>
+                        {% for c in all_courses %}
+                            <option value="{{ c.id }}" {% if selected_course == c.id|slugify %}selected{% endif %}>{{ c.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="filter-item">
+                    <label><i data-lucide="git-branch"></i> Branch</label>
+                    <select name="branch" onchange="this.form.dispatchEvent(new Event('submit', {bubbles: true}))" class="custom-select-sm">
+                        <option value="">All Branches</option>
+                        {% for b in all_branches %}
+                            <option value="{{ b.id }}" {% if selected_branch == b.id|slugify %}selected{% endif %}>{{ b.code }} ({{ b.name }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="filter-item">
+                    <label><i data-lucide="graduation-cap"></i> Year</label>
+                    <select name="year" onchange="this.form.dispatchEvent(new Event('submit', {bubbles: true}))" class="custom-select-sm">
+                        <option value="">All Years</option>
+                        {% for y in all_years %}
+                            <option value="{{ y.id }}" {% if selected_year == y.id|slugify %}selected{% endif %}>{{ y.get_year_display }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="filter-item">
+                    <label><i data-lucide="layers"></i> Section</label>
+                    <select name="section" onchange="this.form.dispatchEvent(new Event('submit', {bubbles: true}))" class="custom-select-sm">
+                        <option value="">All Sections</option>
+                        {% for s in all_sections %}
+                            <option value="{{ s.id }}" {% if selected_section == s.id|slugify %}selected{% endif %}>Sec {{ s.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="filter-item">
+                    <label><i data-lucide="bookmark"></i> Subject</label>
+                    <select name="subject" onchange="this.form.dispatchEvent(new Event('submit', {bubbles: true}))" class="custom-select-sm">
+                        <option value="">All Subjects</option>
+                        {% for sub in all_subjects %}
+                            <option value="{{ sub.id }}" {% if selected_subject == sub.id|slugify %}selected{% endif %}>{{ sub.code }} - {{ sub.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <button type="submit" style="display: none;"></button>
+        </form>
+    </div>
+    
+    <div class="notes-grid">
+        {% for note in notes %}
+            <div class="note-card">
+                <div class="note-header">
+                    <span class="badge course-badge">{{ note.course.code }}</span>
+                    <span class="badge branch-badge">{{ note.branch.code }}</span>
+                    <span class="badge sec-badge">Sec {{ note.section.name }}</span>
+                    {% if note.module %}
+                        <span class="badge module-badge">{{ note.module.name }}</span>
+                    {% endif %}
+                </div>
+
+                <h2 class="note-title">{{ note.title }}</h2>
+                {% if note.subject %}
+                    <p class="note-subject"><strong>Subject:</strong> {{ note.subject.name }} ({{ note.subject.code }})</p>
+                {% endif %}
+                <p class="note-desc">{{ note.description }}</p>
+
+                <div class="note-meta">
+                    <span><strong>Year:</strong> {{ note.year.get_year_display }}</span>
+                    <span><strong>CR:</strong> {{ note.cr.name }}</span>
+                </div>
+
+                <div class="note-action-group">
+                    {% if note.file %}
+                        <div class="note-file-actions">
+                            <a href="{{ note.file.url }}"  class="btn-open">
+                                <i data-lucide="book-open"></i> Open
+                            </a>
+                            <a href="{{ note.file.url }}" download class="btn-download">
+                                <i data-lucide="download"></i> Download
+                            </a>
+                        </div>
+                    {% endif %}
+
+                    {% if note.images.all %}
+                        <button type="button" class="btn-view-gallery" onclick="openGalleryModal('gallery-modal-{{ note.id }}')">
+                            <i data-lucide="images"></i> View {{ note.images.count }} Page Image{% if note.images.count > 1 %}s{% endif %}
+                        </button>
+                    {% endif %}
+                </div>
+
+                <!-- Modal Lightbox for multiple images -->
+                {% if note.images.all %}
+                    <div id="gallery-modal-{{ note.id }}" class="modal-overlay" style="display: none;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3>{{ note.title }} ({{ note.images.count }} Pages)</h3>
+                                <button type="button" class="close-btn" onclick="closeGalleryModal('gallery-modal-{{ note.id }}')">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="images-scroll-container">
+                                    {% for img in note.images.all %}
+                                        <div class="image-page-item">
+                                            <div class="image-wrapper">
+                                                <img src="{{ img.image.url }}" alt="{{ img.caption|default:'Note Page' }}" loading="lazy">
+                                            </div>
+                                            <div class="image-footer">
+                                                <span>{% if img.caption %}{{ img.caption }}{% else %}Page {{ img.order|default:forloop.counter }}{% endif %}</span>
+                                                <a href="{{ img.image.url }}" download class="btn-sm-download">Download Image</a>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        {% empty %}
+            <div class="empty-notes-card">
+                <i data-lucide="file-search" class="empty-icon"></i>
+                <h3>No notes found matching your search criteria</h3>
+                <p>Try clearing filters or adjusting your search query.</p>
+            </div>
+        {% endfor %}
     </div>
 </div>
 
 <style>
-    .notess-container{
+    .notess-container {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        box-sizing: border-box;
+    }
+
+    .header-row {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .notess-container h1 {
+        margin: 0;
+        color: #fff;
+        font-size: 1.5rem;
+    }
+
+    .count-pill {
+        background: #2563eb;
+        color: #fff;
+        font-size: 0.8rem;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-weight: 500;
+    }
+
+    .notess-container hr {
+        width: 100%;
+        border: 0;
+        border-top: 1px solid #333;
+        margin: 12px 0 20px 0;
+    }
+
+    /* Filter Bar Styles */
+    .filter-card {
+        width: 100%;
+        background: #18181b;
+        border: 1px solid #27272a;
+        border-radius: 10px;
+        padding: 14px;
+        margin-bottom: 24px;
+        box-sizing: border-box;
+    }
+
+    .notes-filter-form {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .filter-search-box {
+        position: relative;
+        display: flex;
+        align-items: center;
+        width: 100%;
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 12px;
+        color: #9ca3af;
+        width: 18px;
+        height: 18px;
+    }
+
+    .filter-input-search {
+        width: 100%;
+        padding: 10px 40px 10px 38px;
+        background: #09090b;
+        border: 1px solid #3f3f46;
+        border-radius: 8px;
+        color: #fff;
+        font-size: 0.9rem;
+        box-sizing: border-box;
+    }
+
+    .filter-input-search:focus {
+        outline: none;
+        border-color: #3b82f6;
+    }
+
+    .btn-clear-filter {
+        position: absolute;
+        right: 12px;
+        color: #ef4444;
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .filter-dropdowns-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 10px;
+    }
+
+    .filter-item {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .filter-item label {
+        font-size: 0.75rem;
+        color: #a1a1aa;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-weight: 500;
+    }
+
+    .filter-item label svg {
+        width: 14px;
+        height: 14px;
+    }
+
+    .custom-select-sm {
+        background: #09090b;
+        border: 1px solid #3f3f46;
+        color: #e4e4e7;
+        padding: 7px 8px;
+        border-radius: 6px;
+        font-size: 0.82rem;
+        cursor: pointer;
+        width: 100%;
+    }
+
+    .custom-select-sm:focus {
+        border-color: #3b82f6;
+        outline: none;
+    }
+
+    /* Notes Grid & Cards */
+    .notes-grid {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+        box-sizing: border-box;
+    }
+
+    .note-card {
+        background: #18181b;
+        border: 1px solid #27272a;
+        border-radius: 12px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        text-align: left;
+        transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .note-card:hover {
+        transform: translateY(-3px);
+        border-color: #3b82f6;
+    }
+
+    .note-header {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 10px;
+    }
+
+    .badge {
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 3px 8px;
+        border-radius: 4px;
+        text-transform: uppercase;
+    }
+
+    .course-badge { background: #2563eb; color: #fff; }
+    .branch-badge { background: #059669; color: #fff; }
+    .sec-badge { background: #4b5563; color: #fff; }
+    .module-badge { background: #0284c7; color: #fff; }
+
+    .note-title {
+        font-size: 1.15rem;
+        margin: 0 0 6px 0;
+        color: #f4f4f5;
+        line-height: 1.3;
+    }
+
+    .note-subject {
+        font-size: 0.85rem;
+        color: #38bdf8;
+        margin: 0 0 8px 0;
+    }
+
+    .note-desc {
+        font-size: 0.88rem;
+        color: #a1a1aa;
+        line-height: 1.4;
+        margin: 0 0 14px 0;
+        flex-grow: 1;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+    }
+
+    .note-meta {
+        font-size: 0.8rem;
+        color: #a1a1aa;
+        display: flex;
+        justify-content: space-between;
+        padding-top: 10px;
+        border-top: 1px solid #27272a;
+        margin-bottom: 12px;
+    }
+
+    .note-meta strong {
+        color: #e4e4e7;
+    }
+
+    .note-action-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .note-file-actions {
+        display: flex;
+        gap: 8px;
+    }
+    .btn-download, .btn-open {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        width: 100%;
+        background: #2563eb;
+        color: #fff;
+        padding: 8px 0;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 0.88rem;
+        font-weight: 500;
+        transition: background 0.2s;
+        box-sizing: border-box;
+    }
+
+    .btn-download:hover {
+        background: #1d4ed8;
+    }
+
+    .btn-view-gallery {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        width: 100%;
+        background: rgba(16, 185, 129, 0.15);
+        color: #34d399;
+        border: 1px solid rgba(52, 211, 153, 0.4);
+        padding: 8px 0;
+        border-radius: 6px;
+        font-size: 0.88rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .btn-view-gallery:hover {
+        background: rgba(16, 185, 129, 0.25);
+    }
+
+    .empty-notes-card {
+        grid-column: 1 / -1;
+        background: #18181b;
+        border: 1px dashed #3f3f46;
+        border-radius: 12px;
+        padding: 40px 20px;
+        text-align: center;
+        color: #a1a1aa;
+    }
+
+    .empty-icon {
+        width: 48px;
+        height: 48px;
+        margin-bottom: 12px;
+        color: #71717a;
+    }
+
+    /* Modal Overlay */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(5px);
+        z-index: 9999;
         display: flex;
         justify-content: center;
         align-items: center;
-        flex-direction: column;
-        text-align: center;
-        font-size: large;
+        padding: 15px;
+        box-sizing: border-box;
     }
-    .notess-container p {
-        font-size: 1.2rem;
-        color: #eb0202;
+
+    .modal-content {
+        background: #18181b;
+        border: 1px solid #3f3f46;
+        border-radius: 12px;
+        width: 100%;
+        max-width: 850px;
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-header {
+        padding: 14px 18px;
+        border-bottom: 1px solid #27272a;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-header h3 {
+        margin: 0;
+        color: #f4f4f5;
+        font-size: 1.1rem;
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        color: #a1a1aa;
+        font-size: 1.6rem;
+        cursor: pointer;
+        line-height: 1;
+    }
+
+    .close-btn:hover {
+        color: #fff;
+    }
+
+    .modal-body {
+        padding: 16px;
+        overflow-y: auto;
+    }
+
+    .images-scroll-container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .image-page-item {
+        background: #09090b;
+        border: 1px solid #27272a;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .image-wrapper img {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    .image-footer {
+        padding: 10px 14px;
+        background: #18181b;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.85rem;
+        color: #d4d4d8;
+    }
+
+    .btn-sm-download {
+        background: #2563eb;
+        color: #fff;
+        padding: 4px 10px;
+        border-radius: 4px;
+        text-decoration: none;
+        font-size: 0.78rem;
+    }
+
+    @media (max-width: 480px) {
+        .filter-dropdowns-grid {
+            grid-template-columns: 1fr 1fr;
+        }
     }
 </style>
+
+<script>
+    if (window.lucide) {
+        lucide.createIcons();
+    }
+
+    function openGalleryModal(id) {
+        var modal = document.getElementById(id);
+        if (modal) {
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function closeGalleryModal(id) {
+        var modal = document.getElementById(id);
+        if (modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    }
+</script>
