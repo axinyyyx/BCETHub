@@ -30,7 +30,7 @@
                 <select name="sec" id="sec" class="custom-select" onchange="this.form.submit()">
                     <option value="">All Sections</option>
                     {% for sec in all_sections %}
-                        <option value="{{ sec.name }}" {% if sec.name == sec_filter %}selected{% endif %}>Sec {{ sec.name }}</option>
+                        <option value="{{ sec.name }}" {% if sec.name == sec_filter %}selected{% endif %}>{{ sec.name }}</option>
                     {% endfor %}
                 </select>
             </div>

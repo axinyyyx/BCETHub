@@ -1,13 +1,13 @@
 import datetime
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponse
 from django.contrib import messages
 from django.utils import timezone
 from django.db.models import Q
 from .models import (
     Branch, AcademicYear, Pooling, Faculty, InductionProgram, RoutineSlot, 
-    MessTiming, DailyMessMenu, Feedback, Section, Notes, Course, Subject, Module, PYQ, CRProfile
+    MessTiming, DailyMessMenu, Feedback, Section, Notes, Course, Subject, 
+    PYQ, Assignment, Notice, Community
 )
-from datetime import datetime
 
 DAYS_MAP = {
     0: ('MON', 'Monday'),
@@ -115,7 +115,7 @@ def home(request):
     all_years = AcademicYear.objects.all()
     selected_sec = request.GET.get('sec', 'A')
     selected_year = request.GET.get('year', '1')
-    
+        
     routine_qs = RoutineSlot.objects.select_related('year', 'branch', 'section_name', 'faculty_ref').filter(day=today_day_code)
     if selected_sec:
         routine_qs = routine_qs.filter(section_name__name=selected_sec)
@@ -187,6 +187,8 @@ def home(request):
     if not today_induction:
         p_induction = 99
 
+    notice = Notice.objects.all()
+
     context = {
         'now': now,
         'today_date_str': now.strftime('%A, %d %B %Y'),
@@ -206,6 +208,7 @@ def home(request):
         'p_meal': p_meal,
         'p_induction': p_induction,
         'p_routine': p_routine,
+        'notice': notice,
     }
     return render(request, 'blog/home.html', context)
 
@@ -633,4 +636,64 @@ def pyqs(request):
         'selected_exam_year': exam_year,
         'search_query': search_query,
     }
-    return render(request, 'blog/pyqs.html', context)
+    return render(request, 'blog/pyqs.html', context)
+
+
+def assignments(request):
+    course_id = request.GET.get('course', '').strip()
+    branch_id = request.GET.get('branch', '').strip()
+    year_id = request.GET.get('year', '').strip()
+    semester = request.GET.get('semester', '').strip()
+    subject_id = request.GET.get('subject', '').strip()
+    search_query = request.GET.get('q', '').strip()
+
+    assignments = Assignment.objects.select_related('course', 'branch', 'year', 'subject')
+
+    if course_id:
+        assignments = assignments.filter(course_id=course_id)
+    if branch_id:
+        assignments = assignments.filter(branch_id=branch_id)
+    if year_id:
+        assignments = assignments.filter(year_id=year_id)
+    if semester:
+        assignments = assignments.filter(semester=semester)
+    if subject_id:
+        assignments = assignments.filter(subject_id=subject_id)
+    if search_query:
+        assignments = assignments.filter(
+            Q(title__icontains=search_query) |
+            Q(description__icontains=search_query) |
+            Q(subject__name__icontains=search_query) |
+            Q(subject__code__icontains=search_query) |
+            Q(author__icontains=search_query)
+        )
+
+    all_courses = Course.objects.all()
+    all_branches = Branch.objects.all()
+    all_years = AcademicYear.objects.all()
+    all_subjects = Subject.objects.all()
+    semesters_list = PYQ.SEMESTER_CHOICES
+
+    context = {
+        'assignments': assignments,
+        'all_courses': all_courses,
+        'all_branches': all_branches,
+        'all_years': all_years,
+        'all_subjects': all_subjects,
+        'semesters_list': semesters_list,
+        'selected_course': course_id,
+        'selected_branch': branch_id,
+        'selected_year': year_id,
+        'selected_semester': semester,
+        'selected_subject': subject_id,
+        'search_query': search_query,
+    }
+    return render(request, 'blog/assignments.html', context)
+
+def community(request):
+    community = Community.objects.all()
+    context = {
+        "community": community,
+       "coming_soon": "Community features are rolling out step by step. Stay tuned as new tools arrive!"
+    }
+    return render(request, 'blog/community.html', context)

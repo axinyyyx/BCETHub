@@ -1,4 +1,28 @@
-<div class="contribute-banner">
+{% for notice_ in notice %}
+    {% if notice_ %}
+        {% if notice_.is_active %}
+            <div class="notice-banner">
+                <div class="banner-left">
+                    {% if notice_.icon %}
+                        <div class="banner-icon">
+                            <i data-lucide="{{notice_.icon}}" style="width: 18px; height: 18px;"></i>
+                        </div>
+                    {% endif %}
+                    <div class="banner-text">
+                        <p>{{notice_.notice}}</p>
+                    </div>
+                </div>
+                {% if notice_.n_url %}
+                    <a href="{{notice_.n_url}}" target="_blank" rel="noopener" class="icon-btn">
+                        <i data-lucide="f{{notice_.n_url_icon}}" style="width: 14px; height: 14px;"></i> {{notice_.n_url_name}}
+                    </a>
+                {% endif %}
+            </div>
+        {% endif %}
+    {% endif %}
+{% endfor %}
+
+<!-- <div class="notice-banner">
     <div class="banner-left">
         <div class="banner-icon">
             <i data-lucide="git-pull-request" style="width: 18px; height: 18px;"></i>
@@ -7,13 +31,13 @@
             <p>Want to contribute code or feature ideas?</p>
         </div>
     </div>
-    <a href="https://github.com/bcetians/BCETHub" target="_blank" rel="noopener" class="github-btn">
+    <a href="https://github.com/bcetians/BCETHub" target="_blank" rel="noopener" class="icon-btn">
         <i data-lucide="folder-git-2" style="width: 14px; height: 14px;"></i> GitHub
     </a>
-</div>
+</div> -->
 
 <style>
-    .contribute-banner {
+    .notice-banner {
         background-color: var(--card-bg);
         border: 1px solid var(--border-color);
         border-radius: 14px;
@@ -26,7 +50,7 @@
         transition: border-color 0.25s ease, box-shadow 0.25s ease;
     }
 
-    .contribute-banner:hover {
+    .notice-banner:hover {
         border-color: rgba(0, 123, 255, 0.4);
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     }
@@ -57,7 +81,7 @@
         line-height: 1.4;
     }
 
-    .github-btn {
+    .icon-btn {
         display: inline-flex;
         align-items: center;
         gap: 8px;
@@ -73,7 +97,7 @@
         transition: all 0.2s ease;
     }
 
-    .github-btn:hover {
+    .icon-btn:hover {
         background-color: var(--accent-blue);
         color: #ffffff;
         border-color: var(--accent-blue);
@@ -82,13 +106,13 @@
     }
 
     @media (max-width: 576px) {
-        .contribute-banner {
+        .notice-banner {
             flex-direction: column;
             align-items: flex-start;
             padding: 14px;
         }
 
-        .github-btn {
+        .icon-btn {
             width: 100%;
             justify-content: center;
         }

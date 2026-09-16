@@ -2,7 +2,8 @@ from django.contrib import admin
 from .models import (
     Branch, AcademicYear, Pooling, Faculty, InductionProgram, 
     MessTiming, DailyMessMenu, RoutineSlot, Feedback, Section, 
-    Course, CRProfile, Notes, NoteImage, Module, Subject, PYQ, PYQImage
+    Course, CRProfile, Notes, NoteImage, Module, Subject, PYQ, 
+    PYQImage, Assignment, Notice, Community
 )
 
 class NoteImageInline(admin.TabularInline):
@@ -113,4 +114,20 @@ class ModuleAdmin(admin.ModelAdmin):
 @admin.register(Subject)
 class SubjectAdmin(admin.ModelAdmin):
     list_display = ('name', 'code')
-    search_fields = ('name', 'code')
+    search_fields = ('name', 'code')
+
+@admin.register(Assignment)
+class AssignmentAdmin(admin.ModelAdmin):
+    list_display = ('title', 'course', 'branch', 'year', 'semester', 'subject', 'author', 'uploaded_at')
+    list_filter = ('course', 'branch', 'year', 'semester', 'subject')
+    search_fields = ('title', 'description', 'author')
+
+@admin.register(Notice)
+class NoticeAdmin(admin.ModelAdmin):
+    list_display = ('notice', 'n_url', 'is_active')
+    list_filter = ('notice', 'n_url', 'is_active')
+
+@admin.register(Community)
+class CommunityAdmin(admin.ModelAdmin):
+    list_display = ('group_type', 'group_name')
+    list_filter = ('group_type', 'group_name', 'group_dec')
