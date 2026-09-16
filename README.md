@@ -1,6 +1,6 @@
 # BCET Hub 🚀
 
-An open-source, lightning-fast utility web app built for students of Bengal College of Engineering & Technology (BCET), Durgapur. Access daily class routines, notes, pyq's mess menus, live class trackers, and induction schedules instantly—with offline support.
+An open-source, lightning-fast utility web app built for students of Bengal College of Engineering & Technology (BCET), Durgapur. Access daily class routines, notes, pyq's mess menus, live class trackers, Student Clubs, Communities, and induction schedules instantly—with offline support.
 
 ## ✨ Features
 
