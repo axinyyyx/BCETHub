@@ -45,9 +45,13 @@
                 <i data-lucide="utensils"></i>
                 <span>Mess Menu</span>
             </a>
-            <a href="{% url 'about' %}" class="nav-item {% if request.resolver_match.url_name == 'about' %}active{% endif %}">
+            <!-- <a href="{% url 'about' %}" class="nav-item {% if request.resolver_match.url_name == 'about' %}active{% endif %}">
                 <i data-lucide="info"></i>
                 <span>About</span>
+            </a> -->
+            <a href="{% url 'community' %}" class="nav-item {% if request.resolver_match.url_name == 'community' %}active{% endif %}">
+                <i data-lucide="user-group"></i>
+                <span>Community</span>
             </a>
             
             <!-- <button id="theme-toggle" class="nav-item theme-btn" aria-label="Toggle Theme">

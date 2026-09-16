@@ -1,0 +1,66 @@
+<div class="bcet-club-card">
+    <div class="bcet-card-head">
+        <div class="bcet-club-identity">
+            <div class="bcet-club-avatar">
+                {% if com.group_logo %}
+                    <img src="{{ com.group_logo.url }}" alt="{{ com.group_name }}">
+                {% else %}
+                    <span>{{ com.group_name|slice:":2"|upper }}</span>
+                {% endif %}
+            </div>
+            <div class="bcet-club-info">
+                <h3 class="bcet-club-name">{{ com.group_name }}</h3>
+                <span class="bcet-club-category">{{ com.get_group_type_display }}</span>
+            </div>
+        </div>
+        {% if com.join %}
+        <a href="{{com.join}}" class="bcet-btn-join">Join</a>
+        {% endif %}
+    </div>
+
+    <div class="bcet-card-body">
+        <p class="bcet-club-desc">
+            {{ com.group_dec|default:"Welcome to our official BCET club. Connect with students and be part of upcoming college events and activities." }}
+        </p>
+    </div>
+
+    <div class="bcet-card-foot">
+        <div class="bcet-social-group">
+            {% if com.instagram %}
+                <a href="{% if com.instagram %}{{ com.instagram }}{% else %}#{% endif %}" class="bcet-social-btn" {% if com.instagram %}target="_blank"{% endif %}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                    <span>Instagram</span>
+                </a>
+            {% else %}
+            {% endif %}
+            {% if com.facebook %}
+                <a href="{% if com.facebook %}{{ com.facebook }}{% else %}#{% endif %}" class="bcet-social-btn" {% if com.facebook %}target="_blank"{% endif %}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                    <span>Facebook</span>
+                </a>
+            {% else %}
+            {% endif %}
+            {% if com.linkedin %}
+                <a href="{% if com.linkedin %}{{ com.linkedin }}{% else %}#{% endif %}" class="bcet-social-btn" {% if com.linkedin %}target="_blank"{% endif %}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+                    <span>LinkedIn</span>
+                </a>
+            {% else %}
+            {% endif %}
+            {% if com.discord %}
+                <a href="{% if com.discord %}{{ com.discord }}{% else %}#{% endif %}" class="bcet-social-btn" {% if com.discord %}target="_blank"{% endif %}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 5.5a16.04 16.04 0 0 0-4.04-1.23A10.85 10.85 0 0 0 13.5 6.2a15.82 15.82 0 0 0-5 0A10.85 10.85 0 0 0 7.04 4.27 16.04 16.04 0 0 0 3 5.5c-2.58 6.02-3.29 11.85-1.42 17.58a16.3 16.3 0 0 0 5.11 2.58c.41-.56.78-1.16 1.09-1.8a10.88 10.88 0 0 1-1.74-.84c.12-.09.24-.19.35-.29 3.34 1.55 6.96 1.55 10.26 0 .12.1.24.2.35.29-.55.32-1.13.6-1.74.84.31.64.68 1.24 1.09 1.8a16.3 16.3 0 0 0 5.12-2.58c2.09-6.33-.48-12.15-1.42-17.58ZM8.82 17.5c-1.01 0-1.84-.94-1.84-2.1 0-1.16.85-2.1 1.84-2.1 1.01 0 1.86.95 1.84 2.1 0 1.16-.84 2.1-1.84 2.1Zm6.36 0c-1.01 0-1.84-.94-1.84-2.1 0-1.16.85-2.1 1.84-2.1 1.01 0 1.86.95 1.84 2.1 0 1.16-.83 2.1-1.84 2.1Z"/></svg>
+                    <span>Discord</span>
+                </a>
+            {% else %}
+            {% endif %}
+            {% if com.other %}
+                <a href="{% if com.other %}{{ com.other }}{% else %}#{% endif %}" class="bcet-social-btn" {% if com.other %}target="_blank"{% endif %}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                    <span>{{ com.other_title|default:"Website" }}</span>
+                </a>
+            {% else %}
+            {% endif %}
+        </div>
+    </div>
+</div>

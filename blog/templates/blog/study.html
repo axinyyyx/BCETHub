@@ -19,6 +19,12 @@
            hx-target="#materials-display-area" 
            hx-swap="innerHTML" 
            class="study-materials-link">Previous Year Questions</a>
+
+        <a href="javascript:void(0);" 
+           hx-get="{% url 'assignments' %}" 
+           hx-target="#materials-display-area" 
+           hx-swap="innerHTML" 
+           class="study-materials-link">Assignments Reference</a>
     </div>
 
     <div id="materials-display-area" class="materials-content-area" hx-get="{% url 'notes' %}" hx-trigger="load" hx-swap="innerHTML"></div>
@@ -57,7 +63,7 @@
         min-height: 44px;
         padding: 10px 14px;
         border: 1px solid #3f3f46;
-        background-color: #18181b;
+        background-color: #1b1b1b;
         border-radius: 8px;
         text-decoration: none;
         color: #d8d7d7;
