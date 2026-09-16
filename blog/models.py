@@ -277,7 +277,7 @@ class Module(models.Model):
 class Subject(models.Model):
     name = models.CharField(max_length=200, help_text="Name of the subject")
     code = models.CharField(max_length=20, unique=True, help_text="e.g. DSA, CN, DBMS")
-    
+
     class Meta:
         verbose_name_plural = "Subjects"
 
@@ -421,4 +421,67 @@ class PYQImage(models.Model):
                 self.image.save(filename, ContentFile(output.read()), save=False)
             except Exception:
                 pass
-        super().save(*args, **kwargs)
+        super().save(*args, **kwargs)
+
+
+class Assignment(models.Model):
+    SEMESTER_CHOICES = [
+        ('1', '1st Semester'),
+        ('2', '2nd Semester'),
+        ('3', '3rd Semester'),
+        ('4', '4th Semester'),
+        ('5', '5th Semester'),
+        ('6', '6th Semester'),
+        ('7', '7th Semester'),
+        ('8', '8th Semester'),
+    ]
+
+    title = models.CharField(max_length=200, help_text="Title of the Assignment (e.g. End Sem Exam 2024)")
+    description = models.TextField(blank=True, null=True, help_text="Details / instructions for this paper")
+    file = models.FileField(upload_to='pyq_files/', blank=True, null=True, help_text="Upload Assignment PDF or DOCX file")
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='assignments')
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE, related_name='assignments')
+    year = models.ForeignKey(AcademicYear, on_delete=models.CASCADE, related_name='assignments')
+    semester = models.CharField(max_length=2, choices=SEMESTER_CHOICES, default='1')
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name='assignments', blank=True, null=True)
+    author = models.CharField(max_length=100, blank=True, null=True, help_text="Uploaded by / Contributor")
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-uploaded_at']
+        verbose_name = "Assignment"
+        verbose_name_plural = "Assignments"
+
+    def get_author_name(self):
+        return self.author if self.author else "Author / Contributor"
+
+class Notice(models.Model):
+    is_active = models.BooleanField(default=False)
+    icon = models.CharField(max_length=2000, help_text="Add lucide icon name.", blank=True, null=True)
+    notice = models.CharField(max_length=5000, blank=True, null=True)
+    n_url = models.CharField(max_length=5000, blank=True, null=True)
+    n_url_name = models.CharField(max_length=20, blank=True, null=True)
+    n_url_icon = models.CharField(max_length=2000, blank=True, null=True, help_text="Add lucide icon name.")
+
+_group = [
+    ('TC', 'Tech Club'),
+    ('SC', 'Sports Club'),
+    ('SOC', 'Social'),
+    ('other', 'Other')
+]
+
+class Community(models.Model):
+    group_type = models.CharField(max_length=2000, choices=_group)
+    group_name = models.CharField(max_length=2000)
+    group_dec = models.CharField(max_length=5000)
+    group_logo = models.FileField(upload_to='group-logo/', blank=True, null=True, help_text="Upload Group Logo's")
+    instagram =  models.CharField(max_length=2000, blank=True, null=True)
+    facebook =  models.CharField(max_length=2000, blank=True, null=True)
+    linkedin =  models.CharField(max_length=2000, blank=True, null=True)
+    discord =  models.CharField(max_length=2000, blank=True, null=True)
+    other =  models.CharField(max_length=2000, blank=True, null=True)
+    other_title =  models.CharField(max_length=2000, blank=True, null=True)
+    join =  models.CharField(max_length=2000, blank=True, null=True, help_text="WhatsApp Group Link")
+
+    def __str__(self):
+        return f"{self.group_type} & {self.group_name}"

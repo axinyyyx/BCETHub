@@ -1,0 +1,488 @@
+<div class="assignments-main-container">
+    <div class="header-row">
+        <h1>Assignments Reference</h1>
+        <span class="count-pill">{{ assignments|length }} Assignments Found</span>
+    </div>
+    <hr>
+
+    <!-- Filters Section -->
+    <div class="filter-card">
+        <form method="GET" action="{% url 'assignments' %}" hx-get="{% url 'assignments' %}" hx-target="#materials-display-area" hx-swap="innerHTML" class="assignments-filter-form">
+            <div class="filter-search-box">
+                <i data-lucide="search" class="search-icon"></i>
+                <input type="text" name="q" value="{{ search_query }}" placeholder="Search assignment title, subject code, or contributor name..." class="filter-input-search">
+                {% if search_query or selected_course or selected_branch or selected_year or selected_semester or selected_subject%}
+                    <a href="javascript:void(0);" hx-get="{% url 'assignments' %}" hx-target="#materials-display-area" hx-swap="innerHTML" class="btn-clear-filter" title="Clear Filters">&times; Clear</a>
+                {% endif %}
+            </div>
+
+            <div class="filter-dropdowns-grid">
+                <div class="filter-item">
+                    <label><i data-lucide="book-open"></i> Course</label>
+                    <select name="course" onchange="this.form.dispatchEvent(new Event('submit', {bubbles: true}))" class="custom-select-sm">
+                        <option value="">All Courses</option>
+                        {% for c in all_courses %}
+                            <option value="{{ c.id }}" {% if selected_course == c.id|slugify %}selected{% endif %}>{{ c.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="filter-item">
+                    <label><i data-lucide="git-branch"></i> Branch</label>
+                    <select name="branch" onchange="this.form.dispatchEvent(new Event('submit', {bubbles: true}))" class="custom-select-sm">
+                        <option value="">All Branches</option>
+                        {% for b in all_branches %}
+                            <option value="{{ b.id }}" {% if selected_branch == b.id|slugify %}selected{% endif %}>{{ b.code }} ({{ b.name }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="filter-item">
+                    <label><i data-lucide="layers"></i> Semester</label>
+                    <select name="semester" onchange="this.form.dispatchEvent(new Event('submit', {bubbles: true}))" class="custom-select-sm">
+                        <option value="">All Semesters</option>
+                        {% for sem_val, sem_label in semesters_list %}
+                            <option value="{{ sem_val }}" {% if selected_semester == sem_val %}selected{% endif %}>{{ sem_label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="filter-item">
+                    <label><i data-lucide="graduation-cap"></i> Academic Year</label>
+                    <select name="year" onchange="this.form.dispatchEvent(new Event('submit', {bubbles: true}))" class="custom-select-sm">
+                        <option value="">All Academic Years</option>
+                        {% for y in all_years %}
+                            <option value="{{ y.id }}" {% if selected_year == y.id|slugify %}selected{% endif %}>{{ y.get_year_display }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="filter-item">
+                    <label><i data-lucide="bookmark"></i> Subject</label>
+                    <select name="subject" onchange="this.form.dispatchEvent(new Event('submit', {bubbles: true}))" class="custom-select-sm">
+                        <option value="">All Subjects</option>
+                        {% for sub in all_subjects %}
+                            <option value="{{ sub.id }}" {% if selected_subject == sub.id|slugify %}selected{% endif %}>{{ sub.code }} - {{ sub.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <button type="submit" style="display: none;"></button>
+        </form>
+    </div>
+
+    <!-- assignments Grid -->
+    <div class="assignments-grid">
+        {% for assignments in assignments %}
+            <div class="assignments-card">
+                <div class="assignments-header">
+                    <span class="badge course-badge">{{ assignments.course.code }}</span>
+                    <span class="badge branch-badge">{{ assignments.branch.code }}</span>
+                    <span class="badge sem-badge">{{ assignments.get_semester_display }}</span>
+                </div>
+
+                <h2 class="assignments-title">{{ assignments.title }}</h2>
+                {% if assignments.subject %}
+                    <p class="assignments-subject"><strong>Subject:</strong> {{ assignments.subject.name }} ({{ assignments.subject.code }})</p>
+                {% endif %}
+                {% if assignments.description %}
+                    <p class="assignments-desc">{{ assignments.description }}</p>
+                {% endif %}
+
+                <div class="assignments-meta">
+                    <span><strong>Year:</strong> {{ assignments.year.get_year_display }}</span>
+                    <span><strong>By:</strong> {{ assignments.get_author_name }}</span>
+                </div>
+
+                <div class="assignments-action-group">
+                    {% if assignments.file %}
+                        <div class="view-file-actions">
+                            <a href="{{ assignments.file.url }}"  class="btn-view">
+                                    <i data-lucide="eye"></i> View
+                                </a>
+                            <a href="{{ assignments.file.url }}" download class="btn-download">
+                                <i data-lucide="file-text"></i> Download
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% empty %}
+            <div class="empty-assignments-card">
+                <i data-lucide="file-search" class="empty-icon"></i>
+                <h3>No Assignments Reference found</h3>
+                <p>Try resetting filters or modifying your search terms.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    .assignments-main-container {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        box-sizing: border-box;
+    }
+
+    .header-row {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .assignments-main-container h1 {
+        margin: 0;
+        color: #fff;
+        font-size: 1.5rem;
+    }
+
+    .count-pill {
+        background: #0284c7;
+        color: #fff;
+        font-size: 0.8rem;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-weight: 500;
+    }
+
+    .assignments-main-container hr {
+        width: 100%;
+        border: 0;
+        border-top: 1px solid #333;
+        margin: 12px 0 20px 0;
+    }
+
+    /* Filter Bar Styles */
+    .filter-card {
+        width: 100%;
+        background: #1b1b1b;
+        border: 1px solid #27272a;
+        border-radius: 10px;
+        padding: 14px;
+        margin-bottom: 24px;
+        box-sizing: border-box;
+    }
+
+    .assignments-filter-form {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .filter-search-box {
+        position: relative;
+        display: flex;
+        align-items: center;
+        width: 100%;
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 12px;
+        color: #9ca3af;
+        width: 18px;
+        height: 18px;
+    }
+
+    .filter-input-search {
+        width: 100%;
+        padding: 10px 40px 10px 38px;
+        background: #1b1b1b;
+        border: 1px solid #3f3f46;
+        border-radius: 8px;
+        color: #fff;
+        font-size: 0.9rem;
+        box-sizing: border-box;
+    }
+
+    .filter-input-search:focus {
+        outline: none;
+        border-color: #0284c7;
+    }
+
+    .btn-clear-filter {
+        position: absolute;
+        right: 12px;
+        color: #ef4444;
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .filter-dropdowns-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        gap: 10px;
+    }
+
+    .filter-item {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .filter-item label {
+        font-size: 0.75rem;
+        color: #a1a1aa;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-weight: 500;
+    }
+
+    .filter-item label svg {
+        width: 14px;
+        height: 14px;
+    }
+
+    .custom-select-sm {
+        background: #1b1b1b;
+        border: 1px solid #3f3f46;
+        color: #e4e4e7;
+        padding: 7px 8px;
+        border-radius: 6px;
+        font-size: 0.82rem;
+        cursor: pointer;
+        width: 100%;
+    }
+
+    .custom-select-sm:focus {
+        border-color: #0284c7;
+        outline: none;
+    }
+
+    /* assignments Grid & Cards */
+    .assignments-grid {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+        box-sizing: border-box;
+    }
+
+    .assignments-card {
+        background: #1b1b1b;
+        border: 1px solid #27272a;
+        border-radius: 12px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        text-align: left;
+        transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .assignments-card:hover {
+        transform: translateY(-3px);
+        border-color: #0284c7;
+    }
+
+    .assignments-header {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 10px;
+    }
+
+    .badge {
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 3px 8px;
+        border-radius: 4px;
+        text-transform: uppercase;
+    }
+
+    .course-badge { background: #2563eb; color: #fff; }
+    .branch-badge { background: #059669; color: #fff; }
+    .sem-badge { background: #d97706; color: #fff; }
+
+    .assignments-title {
+        font-size: 1.15rem;
+        margin: 0 0 6px 0;
+        color: #f4f4f5;
+        line-height: 1.3;
+    }
+
+    .assignments-subject {
+        font-size: 0.85rem;
+        color: #38bdf8;
+        margin: 0 0 8px 0;
+    }
+
+    .assignments-desc {
+        font-size: 0.88rem;
+        color: #a1a1aa;
+        line-height: 1.4;
+        margin: 0 0 14px 0;
+        flex-grow: 1;
+    }
+
+    .assignments-meta {
+        font-size: 0.8rem;
+        color: #a1a1aa;
+        display: flex;
+        justify-content: space-between;
+        padding-top: 10px;
+        border-top: 1px solid #27272a;
+        margin-bottom: 12px;
+    }
+
+    .assignments-meta strong {
+        color: #e4e4e7;
+    }
+
+    .assignments-action-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .view-file-actions {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .btn-download, .btn-view {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        width: 100%;
+        background: #2563eb;
+        color: #fff;
+        padding: 8px 0;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 0.88rem;
+        font-weight: 500;
+        transition: background 0.2s;
+        box-sizing: border-box;
+    }
+
+    .btn-download:hover, .btn-view:hover {
+        background: #0369a1;
+    }
+
+    .btn-view-gallery {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        width: 100%;
+        background: rgba(168, 85, 247, 0.15);
+        color: #c084fc;
+        border: 1px solid rgba(192, 132, 252, 0.4);
+        padding: 8px 0;
+        border-radius: 6px;
+        font-size: 0.88rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .btn-view-gallery:hover {
+        background: rgba(168, 85, 247, 0.25);
+    }
+
+    .empty-assignments-card {
+        grid-column: 1 / -1;
+        background: #1b1b1b;
+        border: 1px dashed #3f3f46;
+        border-radius: 12px;
+        padding: 40px 20px;
+        text-align: center;
+        color: #a1a1aa;
+    }
+
+    .empty-icon {
+        width: 48px;
+        height: 48px;
+        margin-bottom: 12px;
+        color: #71717a;
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(5px);
+        z-index: 9999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 15px;
+        box-sizing: border-box;
+    }
+
+    .modal-content {
+        background: #1b1b1b;
+        border: 1px solid #3f3f46;
+        border-radius: 12px;
+        width: 100%;
+        max-width: 850px;
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-header {
+        padding: 14px 18px;
+        border-bottom: 1px solid #27272a;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-header h3 {
+        margin: 0;
+        color: #f4f4f5;
+        font-size: 1.1rem;
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        color: #a1a1aa;
+        font-size: 1.6rem;
+        cursor: pointer;
+        line-height: 1;
+    }
+
+    .close-btn:hover {
+        color: #fff;
+    }
+
+    .modal-body {
+        padding: 16px;
+        overflow-y: auto;
+    }
+
+    .btn-sm-download {
+        background: #0284c7;
+        color: #fff;
+        padding: 4px 10px;
+        border-radius: 4px;
+        text-decoration: none;
+        font-size: 0.78rem;
+    }
+
+    @media (max-width: 480px) {
+        .filter-dropdowns-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+</style>
+
+<script>
+    if (window.lucide) {
+        lucide.createIcons();
+    }
+</script>

@@ -91,14 +91,18 @@
 
                 <div class="note-meta">
                     <span><strong>Year:</strong> {{ note.year.get_year_display }}</span>
-                    <span><strong>CR:</strong> {{ note.cr.name }}</span>
+                    {% if note.cr_name %}
+                        <span><strong>By:</strong> {{ note.cr_name }}</span>
+                    {% else %}
+                        <span><strong>CR:</strong> {{ note.cr.name }}</span>
+                    {% endif %}
                 </div>
 
                 <div class="note-action-group">
                     {% if note.file %}
                         <div class="note-file-actions">
-                            <a href="{{ note.file.url }}"  class="btn-open">
-                                <i data-lucide="book-open"></i> Open
+                            <a href="{{ note.file.url }}"  class="btn-view">
+                                <i data-lucide="eye"></i> View
                             </a>
                             <a href="{{ note.file.url }}" download class="btn-download">
                                 <i data-lucide="download"></i> Download
@@ -191,7 +195,7 @@
     /* Filter Bar Styles */
     .filter-card {
         width: 100%;
-        background: #18181b;
+        background: #1b1b1b;
         border: 1px solid #27272a;
         border-radius: 10px;
         padding: 14px;
@@ -223,7 +227,7 @@
     .filter-input-search {
         width: 100%;
         padding: 10px 40px 10px 38px;
-        background: #09090b;
+        background: #1b1b1b;
         border: 1px solid #3f3f46;
         border-radius: 8px;
         color: #fff;
@@ -273,7 +277,7 @@
     }
 
     .custom-select-sm {
-        background: #09090b;
+        background: #1b1b1b;
         border: 1px solid #3f3f46;
         color: #e4e4e7;
         padding: 7px 8px;
@@ -298,7 +302,7 @@
     }
 
     .note-card {
-        background: #18181b;
+        background: #1b1b1b;
         border: 1px solid #27272a;
         border-radius: 12px;
         padding: 16px;
@@ -379,7 +383,7 @@
         display: flex;
         gap: 8px;
     }
-    .btn-download, .btn-open {
+    .btn-download, .btn-view {
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -396,7 +400,7 @@
         box-sizing: border-box;
     }
 
-    .btn-download:hover {
+    .btn-download:hover, .btn-view:hover {
         background: #1d4ed8;
     }
 
