@@ -138,6 +138,10 @@
                     </select>
                 </div>
                 <div class="form-group">
+                    <label for="fb-contact">Your Contact</label>
+                    <input type="text" id="fb-contact" name="contact" placeholder="Enter your Contact P.No/Email..." required class="custom-input">
+                </div>
+                <div class="form-group">
                     <label for="fb-message">Message</label>
                     <textarea id="fb-message" name="message" rows="3" placeholder="Describe feedback..." required class="custom-textarea"></textarea>
                 </div>
@@ -150,7 +154,7 @@
 
     {% include 'includes/footer.html' %}
 
-    <!-- <script src="{% static 'js/main-script.js' %}"></script> -->
+    <script src="{% static 'js/main-script.js' %}"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
