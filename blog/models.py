@@ -237,6 +237,7 @@ class Feedback(models.Model):
 
     name = models.CharField(max_length=100, help_text="User Name")
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='BUG')
+    contact = models.CharField(max_length=200, help_text="User Contact", blank=True)
     message = models.TextField(help_text="User Message")
     created_at = models.DateTimeField(auto_now_add=True)
 
