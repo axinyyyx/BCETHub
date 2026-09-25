@@ -56,7 +56,7 @@
         </div>
 
         <!-- Today Induction Card -->
-        <div class="dash-card induction-highlight-card" style="order: {{ p_induction }};">
+        <!-- <div class="dash-card induction-highlight-card" style="order: {{ p_induction }};">
             <div class="card-header">
                 <div class="header-left">
                     <div>
@@ -100,7 +100,7 @@
             <div class="card-footer">
                 <a href="{% url 'induction' %}" class="btn-link">Full 21-Day Schedule <i data-lucide="arrow-right"></i></a>
             </div>
-        </div>
+        </div> -->
 
         <!-- Class Routine Section -->
         <section class="routine-section dash-card" style="order: {{ p_routine }};">
@@ -151,17 +151,19 @@
                             <tbody>
                                 {% for item in evaluated_routine %}
                                     <tr class="slot-row status-row-{{ item.status|lower }}">
-                                        <td><span class="slot-num-pill">Slot {{ item.slot.slot_number }}</span></td>
-                                        <td class="time-cell">{{ item.slot.start_time|time:"h:i A" }} - {{ item.slot.end_time|time:"h:i A" }}</td>
-                                        <td><span class="code-badge">{{ item.slot.subject_code }}</span></td>
-                                        <td class="sub-name-cell">{{ item.slot.subject_name }}</td>
+                                        <td><span class="slot-num-pill">{{ item.slot_number_display }}</span></td>
+                                        <td class="time-cell">{{ item.start_time|time:"h:i A" }} - {{ item.end_time|time:"h:i A" }}</td>
+                                        <td><span class="code-badge">{{ item.subject_code }}</span></td>
+                                        <td class="sub-name-cell">{{ item.subject_name }}</td>
                                         <td class="fac-cell">
-                                            {% if item.slot.faculty_ref %}
-                                                <a href="{% url 'search' %}?q={{ item.slot.faculty_ref.name }}" class="fac-link">
-                                                    <i data-lucide="user-check"></i> {{ item.slot.faculty_code }}
+                                            {% if item.faculty_ref %}
+                                                <a href="{% url 'search' %}?q={{ item.faculty_ref.name }}" class="fac-link">
+                                                    <i data-lucide="user-check"></i> {{ item.faculty_code }}
                                                 </a>
+                                            {% elif item.faculty_code and item.faculty_code != '--' %}
+                                                <span class="fac-code-raw">{{ item.faculty_code }}</span>
                                             {% else %}
-                                                <span class="fac-code-raw">{{ item.slot.faculty_code|default:"--" }}</span>
+                                                <span class="fac-code-raw">--</span>
                                             {% endif %}
                                         </td>
                                         <td>
@@ -200,10 +202,16 @@
             <p>Explore weekly routines for CSE, AIML, ECE, EE, IT, ME, CE sections</p>
         </a>
 
-        <a href="{% url 'induction' %}" class="quick-nav-card">
+        <!-- <a href="{% url 'induction' %}" class="quick-nav-card">
             <i data-lucide="award" class="quick-icon"></i>
             <h4>Induction Schedule</h4>
             <p>Full 21-day induction program topics, guest speakers & venues</p>
+        </a> -->
+    
+        <a href="{% url 'study' %}" class="quick-nav-card">
+            <i data-lucide="award" class="quick-icon"></i>
+            <h4>Study Materials</h4>
+            <p>Notes, PYQ's & Assigments Reference</p>
         </a>
 
 

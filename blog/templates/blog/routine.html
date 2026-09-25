@@ -77,17 +77,19 @@
                         <tbody>
                             {% for item in evaluated_slots %}
                                 <tr class="slot-row status-row-{{ item.status|lower }}">
-                                    <td><span class="slot-num-pill">Slot {{ item.slot.slot_number }}</span></td>
-                                    <td class="time-cell">{{ item.slot.start_time|time:"h:i A" }} - {{ item.slot.end_time|time:"h:i A" }}</td>
-                                    <td><span class="code-badge">{{ item.slot.subject_code }}</span></td>
-                                    <td class="sub-name-cell">{{ item.slot.subject_name }}</td>
+                                    <td><span class="slot-num-pill">{{ item.slot_number_display }}</span></td>
+                                    <td class="time-cell">{{ item.start_time|time:"h:i A" }} - {{ item.end_time|time:"h:i A" }}</td>
+                                    <td><span class="code-badge">{{ item.subject_code }}</span></td>
+                                    <td class="sub-name-cell">{{ item.subject_name }}</td>
                                     <td class="fac-cell">
-                                        {% if item.slot.faculty_ref %}
-                                            <a href="{% url 'search' %}?q={{ item.slot.faculty_ref.name }}" class="fac-link">
-                                                <i data-lucide="user-check"></i> {{ item.slot.faculty_code }}
+                                        {% if item.faculty_ref %}
+                                            <a href="{% url 'search' %}?q={{ item.faculty_ref.name }}" class="fac-link">
+                                                <i data-lucide="user-check"></i> {{ item.faculty_code }}
                                             </a>
+                                        {% elif item.faculty_code and item.faculty_code != '--' %}
+                                            <span class="fac-code-raw">{{ item.faculty_code }}</span>
                                         {% else %}
-                                            <span class="fac-code-raw">{{ item.slot.faculty_code|default:"--" }}</span>
+                                            <span class="fac-code-raw">--</span>
                                         {% endif %}
                                     </td>
                                     <td>
