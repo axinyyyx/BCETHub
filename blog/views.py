@@ -43,6 +43,36 @@ DAYS_LIST = [
 def get_ist_now():
     return timezone.localtime()
 
+def group_evaluated_slots(slots_qs, target_day, target_time, current_day):
+    evaluated = []
+    for slot in slots_qs:
+        status = slot.status(target_day=target_day, target_time=target_time, current_day=current_day)
+
+        fac_code = (slot.faculty_code or '').strip()
+        if slot.subject_code in ['LIB', 'LUNCH'] or fac_code.upper() in ['LIB', 'FACULTY', ''] or not fac_code:
+            fac_code_clean = '--'
+            fac_ref = None
+        else:
+            fac_code_clean = fac_code
+            fac_ref = slot.faculty_ref
+
+        evaluated.append({
+            'start_slot_number': slot.slot_number,
+            'end_slot_number': slot.slot_number,
+            'slot_number_display': f"Slot {slot.slot_number}",
+            'start_time': slot.start_time,
+            'end_time': slot.end_time,
+            'subject_code': slot.subject_code,
+            'subject_name': slot.subject_name,
+            'faculty_code': fac_code_clean,
+            'faculty_ref': fac_ref,
+            'status': status,
+            'raw_slots': [slot],
+            'slot': slot,
+        })
+    return evaluated
+
+
 # Home View
 def home(request):
     now = get_ist_now()
@@ -113,7 +143,7 @@ def home(request):
     # Fetch Today Routine
     all_sections = Section.objects.all()
     all_years = AcademicYear.objects.all()
-    selected_sec = request.GET.get('sec', 'A')
+    selected_sec = request.GET.get('sec', 'CSE - A')
     selected_year = request.GET.get('year', '1')
         
     routine_qs = RoutineSlot.objects.select_related('year', 'branch', 'section_name', 'faculty_ref').filter(day=today_day_code)
@@ -124,16 +154,8 @@ def home(request):
 
     routine_slots = routine_qs.order_by('slot_number')
     
-    evaluated_routine = []
-    live_slot = None
-    for slot in routine_slots:
-        st = slot.status(today_day_code, today_time)
-        if st == 'LIVE':
-            live_slot = slot
-        evaluated_routine.append({
-            'slot': slot,
-            'status': st
-        })
+    evaluated_routine = group_evaluated_slots(routine_slots, today_day_code, today_time, today_day_code)
+    live_slot = next((item for item in evaluated_routine if item['status'] == 'LIVE'), None)
 
     # Calculate Layout Priorities
     p_meal = 2
@@ -350,7 +372,7 @@ def routine(request):
     all_sections = Section.objects.all()
     all_years = AcademicYear.objects.all()
     
-    sec_filter = request.GET.get('sec', 'A')
+    sec_filter = request.GET.get('sec', 'CSE - A')
     day_filter = request.GET.get('day', today_day_code)
     year_filter = request.GET.get('year', '1')
 
@@ -364,13 +386,7 @@ def routine(request):
 
     slots = slots_qs.order_by('slot_number')
     
-    evaluated_slots = []
-    for s in slots:
-        st = s.status(target_day=day_filter, target_time=today_time, current_day=today_day_code)
-        evaluated_slots.append({
-            'slot': s,
-            'status': st
-        })
+    evaluated_slots = group_evaluated_slots(slots, day_filter, today_time, today_day_code)
 
     context = {
         'sec_filter': sec_filter,

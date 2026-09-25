@@ -4,9 +4,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-!d9g(t+zz^*9(f*!5tj_+$az+p56aobz1@auxk^=i^+)jwrt6x'
 
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['bcet.pythonanywhere.com']
 
 INSTALLED_APPS = [
     'jazzmin',
