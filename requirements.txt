@@ -1,3 +1,15 @@
 django
 pillow
 django-jazzmin
+# 26203
+# SIH26104 -> Voice Cloning Impersonation Attacks
+# SIH26090 -> Artisans
+# SIH26042 -> Translator
+
+
+# Team Leader:- Disha Maji 
+# Member 1:- Arman Dutta
+# Member 2:- Arman Ansari
+# Member 3:- Rishabh Kumar
+# Member 4:- Aashu Raj
+# Member 5:- Disha Choudhary
