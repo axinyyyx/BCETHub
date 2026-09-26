@@ -16,7 +16,6 @@
             <div class="filter-group">
                 <label for="year"><i data-lucide="graduation-cap"></i> Year:</label>
                 <select name="year" id="year" class="custom-select" onchange="this.form.submit()">
-                    <option value="">All Years</option>
                     {% for yr in all_years %}
                         <option value="{{ yr.year }}" {% if yr.year == year_filter or yr.id|slugify == year_filter %}selected{% endif %}>
                             {{ yr.get_year_display }}
@@ -28,7 +27,6 @@
             <div class="filter-group">
                 <label for="sec"><i data-lucide="layers"></i> Section:</label>
                 <select name="sec" id="sec" class="custom-select" onchange="this.form.submit()">
-                    <option value="">All Sections</option>
                     {% for sec in all_sections %}
                         <option value="{{ sec.name }}" {% if sec.name == sec_filter %}selected{% endif %}>{{ sec.name }}</option>
                     {% endfor %}
