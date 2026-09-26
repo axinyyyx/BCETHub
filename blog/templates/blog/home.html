@@ -116,7 +116,6 @@
                     <div style="display: flex; align-items: center; gap: 4px;">
                         <label for="yr-select">Year:</label>
                         <select name="year" id="yr-select" class="custom-select" onchange="this.form.submit()">
-                            <option value="">All</option>
                             {% for yr in all_years %}
                                 <option value="{{ yr.year }}" {% if yr.year == selected_year or yr.id|slugify == selected_year %}selected{% endif %}>{{ yr.get_year_display }}</option>
                             {% endfor %}
@@ -125,7 +124,6 @@
                     <div style="display: flex; align-items: center; gap: 4px;">
                         <label for="sec-select">Section:</label>
                         <select name="sec" id="sec-select" class="custom-select" onchange="this.form.submit()">
-                            <option value="">All</option>
                             {% for sec in all_sections %}
                                 <option value="{{ sec.name }}" {% if sec.name == selected_sec %}selected{% endif %}>{{ sec.name }}</option>
                             {% endfor %}
