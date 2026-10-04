@@ -1,6 +1,7 @@
 <div class="bcet-club-card">
     <div class="bcet-card-head">
         <div class="bcet-club-identity">
+            <a href="{% url 'community_page' slug=com.slug %}" class="bcet-club-link">
             <div class="bcet-club-avatar">
                 {% if com.group_logo %}
                     <img src="{{ com.group_logo.url }}" alt="{{ com.group_name }}">
@@ -8,8 +9,13 @@
                     <span>{{ com.group_name|slice:":2"|upper }}</span>
                 {% endif %}
             </div>
+            </a>
             <div class="bcet-club-info">
-                <h3 class="bcet-club-name">{{ com.group_name }}</h3>
+                <h3 class="bcet-club-name">
+                    <a href="{% url 'community_page' slug=com.slug %}" class="bcet-club-link">
+                        {{ com.group_name }}
+                    </a>
+                    </h3>
                 <span class="bcet-club-category">{{ com.get_group_type_display }}</span>
             </div>
         </div>
@@ -64,3 +70,14 @@
         </div>
     </div>
 </div>
+
+<style>
+    .bcet-club-link {
+        text-decoration: none;
+        color: inherit;
+    }
+    .bcet-club-link:hover {
+        text-decoration: none;
+        color: #1e90ff;
+    }
+</style>
