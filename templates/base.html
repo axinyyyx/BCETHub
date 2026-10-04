@@ -154,7 +154,7 @@
 
     {% include 'includes/footer.html' %}
 
-    <!-- <script src="{% static 'js/main-script.js' %}"></script> -->
+    <script src="{% static 'js/main-script.js' %}"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -192,6 +192,7 @@
         });
     </script>
     
+    <script src="{% static 'js/offline-routine-sync.js' %}"></script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>

@@ -1,0 +1,195 @@
+year,branch,section,lh_room,day,slot_number,start_time,end_time,subject_code,subject_name,faculty_code
+1,CSE-AIML,AIML,LH-233,FRI,1,09:30,10:20,ES-EE 101,Basic Electrical Engineering,AS(EE)
+1,CSE-AIML,AIML,LH-233,FRI,2,10:20,11:10,BS-PH 101,Physics-I (Gr-A),AR(PH)
+1,CSE-AIML,AIML,LH-233,FRI,3,11:10,12:00,MC-181,Constitution of India,TC(AIML)
+1,CSE-AIML,AIML,LH-233,FRI,4,12:00,12:50,LUNCH,Lunch Break,--
+1,CSE-AIML,AIML,LH-233,FRI,5,12:50,13:40,Bridge Class,Bridge Class,AC(CH)
+1,CSE-AIML,AIML,LH-233,FRI,6,13:40,14:30,Bridge Class,Bridge Class,BC(PH)
+1,CSE-AIML,AIML,LH-233,FRI,7,14:30,17:00,BS-PH 191,Physics-I Laboratory,BC(PH) + AR(PH)
+1,CSE-AIML,AIML,LH-233,SAT,1,09:30,10:20,BS-M 101,Mathematics - I,RG(M)
+1,CSE-AIML,AIML,LH-233,SAT,2,10:20,11:10,BS-PH 101,Physics-I (Gr-A),AR(PH)
+1,CSE-AIML,AIML,LH-233,SAT,3,11:10,12:00,ES-EE 101,Basic Electrical Engineering,AS(EE)
+1,CSE-AIML,AIML,LH-233,SAT,4,12:00,12:50,LUNCH,Lunch Break,--
+1,CSE-AIML,AIML,LH-233,SAT,5,12:50,14:30,MENTOR MENTEE MEETING,Mentor Mentee Interactive Session,FACULTY
+1,CSE-AIML,AIML,LH-233,SAT,6,14:30,17:00,ES-EE 191,Basic Electrical Engineering Laboratory,AS (EE) / BKP (EC)
+1,CSE-AIML,AIML,LH-233,THU,1,09:30,10:20,ES-EE 101,Basic Electrical Engineering,AS(EE)
+1,CSE-AIML,AIML,LH-233,THU,2,10:20,11:10,Basic Computing,Basic Computing & Programming,IM (AIML)
+1,CSE-AIML,AIML,LH-233,THU,3,11:10,12:00,BS-M 101,Mathematics - I,RG(M)
+1,CSE-AIML,AIML,LH-233,THU,4,12:00,12:50,LUNCH,Lunch Break,--
+1,CSE-AIML,AIML,LH-233,THU,5,12:50,13:40,LIB,Library / Self Study,--
+1,CSE-AIML,AIML,LH-233,THU,6,13:40,17:00,VAC-181,Value Addition Course (NCC/NSS/Yoga/Sports),SKHC(AIML) + SM (IT)
+1,CSE-AIML,AIML,LH-233,TUE,1,09:30,10:20,ES-EE 101,Basic Electrical Engineering,AM(EC)
+1,CSE-AIML,AIML,LH-233,TUE,2,10:20,11:10,MC-181,Constitution of India,TC(AIML)
+1,CSE-AIML,AIML,LH-233,TUE,3,11:10,12:00,BS-M 101,Mathematics - I,RG(M)
+1,CSE-AIML,AIML,LH-233,TUE,4,12:00,12:50,LUNCH,Lunch Break,--
+1,CSE-AIML,AIML,LH-233,TUE,5,12:50,13:40,AEC-101,English for Communication,SL (E)
+1,CSE-AIML,AIML,LH-233,TUE,6,13:40,17:00,ES-ME 191,Engineering Graphics & Design Laboratory,SM(ME) + DP(ME) {G1} / BKJ(ME) + AR(ME) {G2}
+1,CSE-AIML,AIML,LH-233,WED,1,09:30,10:20,AEC-101,English for Communication,SL (E)
+1,CSE-AIML,AIML,LH-233,WED,2,10:20,11:10,BS-M 101,Mathematics - I,RG(M)
+1,CSE-AIML,AIML,LH-233,WED,3,11:10,12:00,BS-PH 101,Physics-I (Gr-A),AR(PH)
+1,CSE-AIML,AIML,LH-233,WED,4,12:00,12:50,LUNCH,Lunch Break,--
+1,CSE-AIML,AIML,LH-233,WED,5,12:50,13:40,LIB,Library / Self Study,--
+1,CSE-AIML,AIML,LH-233,WED,6,13:40,14:30,Bridge Class,Bridge Class,PKS(M)
+1,CSE-AIML,AIML,LH-233,WED,7,14:30,15:20,SEC-181,Skill Enhancement Course (MOOCs/Skills),SH (DS)
+1,CSE-AIML,AIML,LH-233,WED,8,15:20,17:00,LIB,Library / Self Study,--
+1,CSE,CSE - A,LH-234,FRI,1,09:30,10:20,BS-M 101,Mathematics - I,BA(M)
+1,CSE,CSE - A,LH-234,FRI,2,10:20,11:10,ES-EE 101,Basic Electrical Engineering,SK(EE)
+1,CSE,CSE - A,LH-234,FRI,3,11:10,12:00,AEC-101,English for Communication,SL (E)
+1,CSE,CSE - A,LH-234,FRI,4,12:00,12:50,LUNCH,Lunch Break,--
+1,CSE,CSE - A,LH-234,FRI,5,12:50,13:40,LIB,Library / Self Study,--
+1,CSE,CSE - A,LH-234,FRI,6,13:40,17:00,VAC-181,Value Addition Course (NCC/NSS/Yoga/Sports),BM (CS) + SD(M)
+1,CSE,CSE - A,LH-234,SAT,1,09:30,10:20,MC-181,Constitution of India,OJ(CS)
+1,CSE,CSE - A,LH-234,SAT,2,10:20,11:10,ES-EE 101,Basic Electrical Engineering,BKP (EC)
+1,CSE,CSE - A,LH-234,SAT,3,11:10,12:00,Basic Computing,Basic Computing & Programming,MM (CS)
+1,CSE,CSE - A,LH-234,SAT,4,12:00,12:50,LUNCH,Lunch Break,--
+1,CSE,CSE - A,LH-234,SAT,5,12:50,15:20,MENTOR MENTEE MEETING,Mentor Mentee Interactive Session,FACULTY
+1,CSE,CSE - A,LH-234,SAT,6,15:20,16:10,SEC-181,Skill Enhancement Course (MOOCs/Skills),AD (CS)
+1,CSE,CSE - A,LH-234,SAT,7,16:10,17:00,LIB,Library / Self Study,--
+1,CSE,CSE - A,LH-234,THU,1,09:30,10:20,AEC-101,English for Communication,SL (E)
+1,CSE,CSE - A,LH-234,THU,2,10:20,11:10,BS-M 101,Mathematics - I,BA(M)
+1,CSE,CSE - A,LH-234,THU,3,11:10,12:00,BS-PH 101,Physics-I (Gr-A),AR(PH)
+1,CSE,CSE - A,LH-234,THU,4,12:00,12:50,LUNCH,Lunch Break,--
+1,CSE,CSE - A,LH-234,THU,5,12:50,13:40,Bridge Class,Bridge Class,AC(CH)
+1,CSE,CSE - A,LH-234,THU,6,13:40,17:00,ES-ME 191,Engineering Graphics & Design Laboratory,AR(ME) + DP(ME) {G1} / SM(ME) + BKJ(ME) {G2}
+1,CSE,CSE - A,LH-234,TUE,1,09:30,10:20,BS-PH 101,Physics-I (Gr-A),AR(PH)
+1,CSE,CSE - A,LH-234,TUE,2,10:20,11:10,ES-EE 101,Basic Electrical Engineering,SK(EE)
+1,CSE,CSE - A,LH-234,TUE,3,11:10,12:00,MC-181,Constitution of India,OJ(CS)
+1,CSE,CSE - A,LH-234,TUE,4,12:00,12:50,LUNCH,Lunch Break,--
+1,CSE,CSE - A,LH-234,TUE,5,12:50,13:40,LIB,Library / Self Study,--
+1,CSE,CSE - A,LH-234,TUE,6,13:40,14:30,Bridge Class,Bridge Class,KCF(M)
+1,CSE,CSE - A,LH-234,TUE,7,14:30,17:00,ES-EE 191,Basic Electrical Engineering Laboratory,SK(EE) / AM(EC)
+1,CSE,CSE - A,LH-234,WED,1,09:30,10:20,BS-M 101,Mathematics - I,BA(M)
+1,CSE,CSE - A,LH-234,WED,2,10:20,11:10,BS-PH 101,Physics-I (Gr-A),AR(PH)
+1,CSE,CSE - A,LH-234,WED,3,11:10,12:00,ES-EE 101,Basic Electrical Engineering,SK(EE)
+1,CSE,CSE - A,LH-234,WED,4,12:00,12:50,LUNCH,Lunch Break,--
+1,CSE,CSE - A,LH-234,WED,5,12:50,13:40,LIB,Library / Self Study,--
+1,CSE,CSE - A,LH-234,WED,6,13:40,14:30,Bridge Class,Bridge Class,AR(PH)
+1,CSE,CSE - A,LH-234,WED,7,14:30,17:00,BS-PH 191,Physics-I Laboratory,RKA(PH) + AR(PH)
+1,CSE,CSE - B,LH-235,FRI,1,09:30,10:20,ES-EE 101,Basic Electrical Engineering,SK (EE)
+1,CSE,CSE - B,LH-235,FRI,2,10:20,11:10,MC-181,Constitution of India,SBK(CS)
+1,CSE,CSE - B,LH-235,FRI,3,11:10,12:00,BS-M 101,Mathematics - I,BA(M)
+1,CSE,CSE - B,LH-235,FRI,4,12:00,12:50,LUNCH,Lunch Break,--
+1,CSE,CSE - B,LH-235,FRI,5,12:50,13:40,LIB,Library / Self Study,--
+1,CSE,CSE - B,LH-235,FRI,6,13:40,17:00,ES-ME 191,Engineering Graphics & Design Laboratory,SG(ME) + SM(ME) {G1} / GKP(ME) + DP(ME) {G2}
+1,CSE,CSE - B,LH-235,SAT,1,09:30,10:20,ES-EE 101,Basic Electrical Engineering,SK(EE)
+1,CSE,CSE - B,LH-235,SAT,2,10:20,11:10,BS-M 101,Mathematics - I,BA(M)
+1,CSE,CSE - B,LH-235,SAT,3,11:10,12:00,BS-PH 101,Physics-I (Gr-A),BC(PH)
+1,CSE,CSE - B,LH-235,SAT,4,12:00,12:50,LUNCH,Lunch Break,--
+1,CSE,CSE - B,LH-235,SAT,5,12:50,13:40,Bridge Class AC,Bridge Class (Chemistry),(CH)
+1,CSE,CSE - B,LH-235,SAT,6,13:40,14:30,Bridge Class,Bridge Class,PKS (M)
+1,CSE,CSE - B,LH-235,SAT,7,14:30,17:00,MENTOR MENTEE MEETING,Mentor Mentee Interactive Session,FACULTY
+1,CSE,CSE - B,LH-235,THU,1,09:30,10:20,MC-181,Constitution of India,SBK(CS)
+1,CSE,CSE - B,LH-235,THU,2,10:20,11:10,ES-EE 101,Basic Electrical Engineering,SK (EE)
+1,CSE,CSE - B,LH-235,THU,3,11:10,12:00,Basic Computing,Basic Computing & Programming,PPP (CS)
+1,CSE,CSE - B,LH-235,THU,4,12:00,12:50,LUNCH,Lunch Break,--
+1,CSE,CSE - B,LH-235,THU,5,12:50,13:40,LIB,Library / Self Study,--
+1,CSE,CSE - B,LH-235,THU,6,13:40,17:00,VAC-181,Value Addition Course (NCC/NSS/Yoga/Sports),PKC (CS) + BA(M)
+1,CSE,CSE - B,LH-235,TUE,1,09:30,10:20,ES-EE 101,Basic Electrical Engineering,BKP(EC)
+1,CSE,CSE - B,LH-235,TUE,2,10:20,11:10,BS-PH 101,Physics-I (Gr-A),BC(PH)
+1,CSE,CSE - B,LH-235,TUE,3,11:10,12:00,AEC-101,English for Communication,SL (E)
+1,CSE,CSE - B,LH-235,TUE,4,12:00,12:50,LUNCH,Lunch Break,--
+1,CSE,CSE - B,LH-235,TUE,5,12:50,13:40,LIB,Library / Self Study,--
+1,CSE,CSE - B,LH-235,TUE,6,13:40,14:30,Bridge Class,Bridge Class,BC(PH)
+1,CSE,CSE - B,LH-235,TUE,7,14:30,17:00,BS-PH 191,Physics-I Laboratory,BC(PH) + AR(PH)
+1,CSE,CSE - B,LH-235,WED,1,09:30,10:20,BS-PH 101,Physics-I (Gr-A),BC(PH)
+1,CSE,CSE - B,LH-235,WED,2,10:20,11:10,BS-M 101,Mathematics - I,BA(M)
+1,CSE,CSE - B,LH-235,WED,3,11:10,12:00,AEC-101,English for Communication,SL (E)
+1,CSE,CSE - B,LH-235,WED,4,12:00,12:50,LUNCH,Lunch Break,--
+1,CSE,CSE - B,LH-235,WED,5,12:50,14:30,SEC-181,Skill Enhancement Course (MOOCs/Skills),AK (CS)
+1,CSE,CSE - B,LH-235,WED,6,14:30,17:00,ES-EE 191,Basic Electrical Engineering Laboratory,SK(EE) / SMR (EC)
+1,CSE,CSE - C,LH-236,FRI,1,09:30,10:20,BS-PH 101,Physics-I (Gr-A),RKA(PH)
+1,CSE,CSE - C,LH-236,FRI,2,10:20,11:10,ES-EE 101,Basic Electrical Engineering,VPR(EC)
+1,CSE,CSE - C,LH-236,FRI,3,11:10,12:00,Basic Computing,Basic Computing & Programming,PKC (CS)
+1,CSE,CSE - C,LH-236,FRI,4,12:00,12:50,LUNCH,Lunch Break,--
+1,CSE,CSE - C,LH-236,FRI,5,12:50,14:30,LIB,Library / Self Study,--
+1,CSE,CSE - C,LH-236,FRI,6,14:30,17:00,ES-EE 191,Basic Electrical Engineering Laboratory,ASC(EE) / VPR(EC)
+1,CSE,CSE - C,LH-236,SAT,1,09:30,10:20,BS-M 101,Mathematics - I,AG(M)
+1,CSE,CSE - C,LH-236,SAT,2,10:20,11:10,BS-PH 101,Physics-I (Gr-A),RKA(PH)
+1,CSE,CSE - C,LH-236,SAT,3,11:10,12:00,AEC-101,English for Communication,SL (E)
+1,CSE,CSE - C,LH-236,SAT,4,12:00,12:50,LUNCH,Lunch Break,--
+1,CSE,CSE - C,LH-236,SAT,5,12:50,13:40,MC-181,Constitution of India,SD(CS)
+1,CSE,CSE - C,LH-236,SAT,6,13:40,17:00,ES-ME 191,Engineering Graphics & Design Laboratory,AR(ME) + DF(ME)
+1,CSE,CSE - C,LH-236,THU,1,09:30,10:20,BS-M 101,Mathematics - I,AG(M)
+1,CSE,CSE - C,LH-236,THU,2,10:20,11:10,ES-EE 101,Basic Electrical Engineering,AS(EE)
+1,CSE,CSE - C,LH-236,THU,3,11:10,12:00,BS-PH 101,Physics-I (Gr-A),RKA(PH)
+1,CSE,CSE - C,LH-236,THU,4,12:00,12:50,LUNCH,Lunch Break,--
+1,CSE,CSE - C,LH-236,THU,5,12:50,14:30,MENTOR MENTEE MEETING,Mentor Mentee Interactive Session,FACULTY
+1,CSE,CSE - C,LH-236,THU,6,14:30,17:00,BS-PH 191,Physics-I Laboratory,RKA(PH) + BC(PH)
+1,CSE,CSE - C,LH-236,TUE,1,09:30,10:20,BS-M 101,Mathematics - I,AG(M)
+1,CSE,CSE - C,LH-236,TUE,2,10:20,11:10,ES-EE 101,Basic Electrical Engineering,AS(EE)
+1,CSE,CSE - C,LH-236,TUE,3,11:10,12:00,MC-181,Constitution of India,SD(CS)
+1,CSE,CSE - C,LH-236,TUE,4,12:00,12:50,LUNCH,Lunch Break,--
+1,CSE,CSE - C,LH-236,TUE,5,12:50,13:40,Bridge Class,Bridge Class,AG(M)
+1,CSE,CSE - C,LH-236,TUE,6,13:40,14:30,Bridge Class,Bridge Class,AC(CH)
+1,CSE,CSE - C,LH-236,TUE,7,14:30,15:20,AEC-101,English for Communication,SL (E)
+1,CSE,CSE - C,LH-236,TUE,8,15:20,16:10,SEC-181,Skill Enhancement Course (MOOCs/Skills),SC (CS)
+1,CSE,CSE - C,LH-236,WED,1,09:30,10:20,ES-EE 101,Basic Electrical Engineering,AS(EE)
+1,CSE,CSE - C,LH-236,WED,2,10:20,11:10,BS-M 101,Mathematics - I,AG(M)
+1,CSE,CSE - C,LH-236,WED,3,11:10,12:00,Bridge Class,Bridge Class,RKA(PH)
+1,CSE,CSE - C,LH-236,WED,4,12:00,12:50,LUNCH,Lunch Break,--
+1,CSE,CSE - C,LH-236,WED,5,12:50,13:40,LIB,Library / Self Study,--
+1,CSE,CSE - C,LH-236,WED,6,13:40,17:00,VAC-181,Value Addition Course (NCC/NSS/Yoga/Sports),RR (CS) + SC(E)
+1,ECE,ECE+EE,LH-231,FRI,1,09:30,10:20,BS-CH 101,Chemistry-I (Gr-B),AC(CH)
+1,ECE,ECE+EE,LH-231,FRI,2,10:20,11:10,BS-M 101,Mathematics - I,SD(M)
+1,ECE,ECE+EE,LH-231,FRI,3,11:10,12:00,Bridge Class,Bridge Class,RKA(PH)
+1,ECE,ECE+EE,LH-231,FRI,4,12:00,12:50,LUNCH,Lunch Break,--
+1,ECE,ECE+EE,LH-231,FRI,5,12:50,13:40,AEC-101,English for Communication,SL (E)
+1,ECE,ECE+EE,LH-231,FRI,6,13:40,17:00,ES-ME 192,Workshop/Manufacturing Practices Laboratory,BKJ(ME) + BEG(ME) {G1} + DP(ME) {G2} / AR(ME)
+1,ECE,ECE+EE,LH-231,SAT,1,09:30,10:20,BS-CH 101,Chemistry-I (Gr-B),AC(CH)
+1,ECE,ECE+EE,LH-231,SAT,2,10:20,11:10,ES-EE 101,Basic Electrical Engineering,RS(EE)
+1,ECE,ECE+EE,LH-231,SAT,3,11:10,12:00,MC-182,Environmental Science,SM(IT)
+1,ECE,ECE+EE,LH-231,SAT,4,12:00,12:50,LUNCH,Lunch Break,--
+1,ECE,ECE+EE,LH-231,SAT,5,12:50,14:30,SEC-181,Skill Enhancement Course (MOOCs/Skills),SMR (EC)
+1,ECE,ECE+EE,LH-231,SAT,6,14:30,17:00,MENTOR MENTEE MEETING,Mentor Mentee Interactive Session,FACULTY
+1,ECE,ECE+EE,LH-231,THU,1,09:30,10:20,BS-M 101,Mathematics - I,SD(M)
+1,ECE,ECE+EE,LH-231,THU,2,10:20,11:10,ES-EE 101,Basic Electrical Engineering,RS(EE)
+1,ECE,ECE+EE,LH-231,THU,3,11:10,12:00,AEC-101,English for Communication,SL (E)
+1,ECE,ECE+EE,LH-231,THU,4,12:00,12:50,LUNCH,Lunch Break,--
+1,ECE,ECE+EE,LH-231,THU,5,12:50,13:40,LIB,Library / Self Study,--
+1,ECE,ECE+EE,LH-231,THU,6,13:40,14:30,Bridge Class,Bridge Class,SD(M)
+1,ECE,ECE+EE,LH-231,THU,7,14:30,17:00,ES-EE 191,Basic Electrical Engineering Laboratory,RS(EE)
+1,ECE,ECE+EE,LH-231,TUE,1,09:30,10:20,BS-CH 101,Chemistry-I (Gr-B),AC(CH)
+1,ECE,ECE+EE,LH-231,TUE,2,10:20,11:10,BS-M 101,Mathematics - I,SD(M)
+1,ECE,ECE+EE,LH-231,TUE,3,11:10,12:00,ES-EE 101,Basic Electrical Engineering,RS(EE)
+1,ECE,ECE+EE,LH-231,TUE,4,12:00,12:50,LUNCH,Lunch Break,--
+1,ECE,ECE+EE,LH-231,TUE,5,12:50,13:40,LIB,Library / Self Study,--
+1,ECE,ECE+EE,LH-231,TUE,6,13:40,17:00,VAC-181,Value Addition Course (NCC/NSS/Yoga/Sports),SM(ME) + NB (BIO)
+1,ECE,ECE+EE,LH-231,WED,1,09:30,10:20,ES-EE 101,Basic Electrical Engineering,VPR (EC)
+1,ECE,ECE+EE,LH-231,WED,2,10:20,11:10,MC-182,Environmental Science,SM(IT)
+1,ECE,ECE+EE,LH-231,WED,3,11:10,12:00,BS-M 101,Mathematics - I,SD(M)
+1,ECE,ECE+EE,LH-231,WED,4,12:00,12:50,LUNCH,Lunch Break,--
+1,ECE,ECE+EE,LH-231,WED,5,12:50,13:40,LIB,Library / Self Study,--
+1,ECE,ECE+EE,LH-231,WED,6,13:40,14:30,Bridge Class,Bridge Class,DD(CH)
+1,ECE,ECE+EE,LH-231,WED,7,14:30,17:00,BS-CH 191,Chemistry-I Laboratory,DD(CH)+AC(CH)
+1,IT,IT+ME+CE,LH-231,FRI,1,09:30,10:20,BS-CH 101,Chemistry-I (Gr-B),AC(CH)
+1,IT,IT+ME+CE,LH-231,FRI,2,10:20,11:10,BS-M 101,Mathematics - I,SD(M)
+1,IT,IT+ME+CE,LH-231,FRI,3,11:10,12:00,Bridge Class,Bridge Class,RKA(PH)
+1,IT,IT+ME+CE,LH-231,FRI,4,12:00,12:50,LUNCH,Lunch Break,--
+1,IT,IT+ME+CE,LH-231,FRI,5,12:50,13:40,AEC-101,English for Communication,SL (E)
+1,IT,IT+ME+CE,LH-231,FRI,6,13:40,17:00,ES-ME 192,Workshop/Manufacturing Practices Laboratory,BKJ(ME) + BEG(ME) {G1} + DP(ME) {G2} / AR(ME)
+1,IT,IT+ME+CE,LH-231,SAT,1,09:30,10:20,BS-CH 101,Chemistry-I (Gr-B),AC(CH)
+1,IT,IT+ME+CE,LH-231,SAT,2,10:20,11:10,ES-EE 101,Basic Electrical Engineering,RS(EE)
+1,IT,IT+ME+CE,LH-231,SAT,3,11:10,12:00,MC-182,Environmental Science,SM(IT)
+1,IT,IT+ME+CE,LH-231,SAT,4,12:00,12:50,LUNCH,Lunch Break,--
+1,IT,IT+ME+CE,LH-231,SAT,5,12:50,14:30,SEC-181,Skill Enhancement Course (MOOCs/Skills),SMR (EC)
+1,IT,IT+ME+CE,LH-231,SAT,6,14:30,17:00,MENTOR MENTEE MEETING,Mentor Mentee Interactive Session,FACULTY
+1,IT,IT+ME+CE,LH-231,THU,1,09:30,10:20,BS-M 101,Mathematics - I,SD(M)
+1,IT,IT+ME+CE,LH-231,THU,2,10:20,11:10,ES-EE 101,Basic Electrical Engineering,RS(EE)
+1,IT,IT+ME+CE,LH-231,THU,3,11:10,12:00,AEC-101,English for Communication,SL (E)
+1,IT,IT+ME+CE,LH-231,THU,4,12:00,12:50,LUNCH,Lunch Break,--
+1,IT,IT+ME+CE,LH-231,THU,5,12:50,13:40,LIB,Library / Self Study,--
+1,IT,IT+ME+CE,LH-231,THU,6,13:40,14:30,Bridge Class,Bridge Class,SD(M)
+1,IT,IT+ME+CE,LH-231,THU,7,14:30,17:00,ES-EE 191,Basic Electrical Engineering Laboratory,RS(EE)
+1,IT,IT+ME+CE,LH-231,TUE,1,09:30,10:20,BS-CH 101,Chemistry-I (Gr-B),AC(CH)
+1,IT,IT+ME+CE,LH-231,TUE,2,10:20,11:10,BS-M 101,Mathematics - I,SD(M)
+1,IT,IT+ME+CE,LH-231,TUE,3,11:10,12:00,ES-EE 101,Basic Electrical Engineering,RS(EE)
+1,IT,IT+ME+CE,LH-231,TUE,4,12:00,12:50,LUNCH,Lunch Break,--
+1,IT,IT+ME+CE,LH-231,TUE,5,12:50,13:40,LIB,Library / Self Study,--
+1,IT,IT+ME+CE,LH-231,TUE,6,13:40,17:00,VAC-181,Value Addition Course (NCC/NSS/Yoga/Sports),SM(ME) + NB (BIO)
+1,IT,IT+ME+CE,LH-231,WED,1,09:30,10:20,ES-EE 101,Basic Electrical Engineering,VPR (EC)
+1,IT,IT+ME+CE,LH-231,WED,2,10:20,11:10,MC-182,Environmental Science,SM(IT)
+1,IT,IT+ME+CE,LH-231,WED,3,11:10,12:00,BS-M 101,Mathematics - I,SD(M)
+1,IT,IT+ME+CE,LH-231,WED,4,12:00,12:50,LUNCH,Lunch Break,--
+1,IT,IT+ME+CE,LH-231,WED,5,12:50,13:40,LIB,Library / Self Study,--
+1,IT,IT+ME+CE,LH-231,WED,6,13:40,14:30,Bridge Class,Bridge Class,DD(CH)
+1,IT,IT+ME+CE,LH-231,WED,7,14:30,17:00,BS-CH 191,Chemistry-I Laboratory,DD(CH)+AC(CH)
