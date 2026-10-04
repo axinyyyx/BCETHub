@@ -107,15 +107,25 @@
 
         if (!cardBody || cardBody.closest('.lunch-highlight-card') || cardBody.closest('.induction-highlight-card')) return;
 
+        const isHomePage = document.querySelector('.routine-section') !== null;
         const todayDayCode = getTodayDayCode();
-        dayFilter = (dayFilter || todayDayCode).trim().toUpperCase();
+
+        // On Home Page, ALWAYS show Today's Live Routine, NOT selected day from routine page
+        if (isHomePage) {
+            dayFilter = todayDayCode;
+        } else {
+            dayFilter = (dayFilter || todayDayCode).trim().toUpperCase();
+        }
+
         yearFilter = String(yearFilter || '1').trim();
         secFilter = (secFilter || 'CSE - A').trim().toLowerCase();
 
         // Save selected filter in localStorage
         localStorage.setItem(PREF_YEAR_KEY, yearFilter);
         localStorage.setItem(PREF_SEC_KEY, secFilter);
-        localStorage.setItem(PREF_DAY_KEY, dayFilter);
+        if (!isHomePage) {
+            localStorage.setItem(PREF_DAY_KEY, dayFilter);
+        }
 
         const filtered = allSlots.filter(s => {
             const matchYear = !yearFilter || String(s.year).trim() === yearFilter;
@@ -126,14 +136,21 @@
 
         filtered.sort((a, b) => (parseInt(a.slot_number, 10) || 0) - (parseInt(b.slot_number, 10) || 0));
 
-        // Update headers if visible (strictly for routine section)
-        const headerSec = document.querySelector('.routine-section .routine-header h3, .page-wrapper .dash-card .header-left h3');
-        if (headerSec && secFilter && !headerSec.closest('.lunch-highlight-card')) {
-            headerSec.textContent = `${yearFilter} Year - Section ${secFilter.toUpperCase()} Schedule`;
-        }
-        const dayTag = document.querySelector('.routine-section .routine-header .day-tag, .page-wrapper .dash-card .header-left .day-tag');
-        if (dayTag && dayFilter && !dayTag.closest('.lunch-highlight-card')) {
-            dayTag.textContent = DAY_NAMES[dayFilter] ? `${DAY_NAMES[dayFilter]} Routine` : dayFilter;
+        // Update headers based on page type
+        if (isHomePage) {
+            const homeHeader = document.querySelector('.routine-section .routine-header h3');
+            if (homeHeader) homeHeader.textContent = "Today's Class Routine & Live Tracker";
+            const homeDayTag = document.querySelector('.routine-section .routine-header .day-tag');
+            if (homeDayTag) homeDayTag.textContent = `${DAY_NAMES[todayDayCode] || todayDayCode} Routine`;
+        } else {
+            const pageHeader = document.querySelector('.page-wrapper .dash-card .header-left h3');
+            if (pageHeader && !pageHeader.closest('.lunch-highlight-card')) {
+                pageHeader.textContent = `${yearFilter} Year - Section ${secFilter.toUpperCase()} Schedule`;
+            }
+            const pageDayTag = document.querySelector('.page-wrapper .dash-card .header-left .day-tag');
+            if (pageDayTag && !pageDayTag.closest('.lunch-highlight-card')) {
+                pageDayTag.textContent = DAY_NAMES[dayFilter] ? `${DAY_NAMES[dayFilter]} Routine` : dayFilter;
+            }
         }
 
         if (filtered.length === 0) {
