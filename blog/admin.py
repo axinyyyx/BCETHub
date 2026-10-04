@@ -1,10 +1,11 @@
 from django.contrib import admin
 from .models import (
     Branch, AcademicYear, Pooling, Faculty, InductionProgram, 
-    MessTiming, DailyMessMenu, RoutineSlot, Feedback, Section, 
+    MessTiming, DailyMessMenu, RoutineSlot, RoutineFile, Feedback, Section, 
     Course, CRProfile, Notes, NoteImage, Module, Subject, PYQ, 
     PYQImage, Assignment, Notice, Community
 )
+
 
 class NoteImageInline(admin.TabularInline):
     model = NoteImage
@@ -65,6 +66,13 @@ class RoutineSlotAdmin(admin.ModelAdmin):
     list_filter = ('section_name', 'lh_room', 'day')
     search_fields = ('section_name__name', 'subject_code', 'faculty_code', 'subject_name')
 
+@admin.register(RoutineFile)
+class RoutineFileAdmin(admin.ModelAdmin):
+    list_display = ('title', 'is_active', 'updated_at', 'file')
+    list_filter = ('is_active', 'updated_at')
+    search_fields = ('title',)
+
+
 @admin.register(MessTiming)
 class MessTimingAdmin(admin.ModelAdmin):
     list_display = ('meal_type', 'start_time', 'end_time', 'get_years')
@@ -124,8 +132,9 @@ class AssignmentAdmin(admin.ModelAdmin):
 
 @admin.register(Notice)
 class NoticeAdmin(admin.ModelAdmin):
-    list_display = ('notice', 'n_url', 'is_active')
-    list_filter = ('notice', 'n_url', 'is_active')
+    list_display = ('notice', 'n_url', 'is_active', 'updated_at')
+    list_filter = ('is_active', 'updated_at')
+
 
 @admin.register(Community)
 class CommunityAdmin(admin.ModelAdmin):

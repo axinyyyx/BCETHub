@@ -1,5 +1,9 @@
 from django.db import models
 from django.utils import timezone
+from django.utils.text import slugify
+from django.conf import settings
+import os
+import shutil
 
 class Course(models.Model):
     name = models.CharField(max_length=100, help_text="e.g. B.Tech, M.Tech, MBA")
@@ -463,6 +467,36 @@ class Notice(models.Model):
     n_url = models.CharField(max_length=5000, blank=True, null=True)
     n_url_name = models.CharField(max_length=20, blank=True, null=True)
     n_url_icon = models.CharField(max_length=2000, blank=True, null=True, help_text="Add lucide icon name.")
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Notice: {self.notice[:40]}" if self.notice else f"Notice #{self.id}"
+
+
+class RoutineFile(models.Model):
+    title = models.CharField(max_length=150, default="Class Routine Timetable (CSV/Excel)")
+    file = models.FileField(upload_to='routine/', help_text="Upload CSV file for Class Routine")
+    is_active = models.BooleanField(default=True, help_text="Set as active routine CSV file")
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Class Routine CSV File"
+        verbose_name_plural = "Class Routine CSV Files"
+
+    def __str__(self):
+        return f"{self.title} (Updated: {self.updated_at.strftime('%d %b %Y, %I:%M %p')})"
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.file and os.path.exists(self.file.path):
+            dest_media = os.path.join(settings.MEDIA_ROOT, 'routine', 'routine.csv')
+            os.makedirs(os.path.dirname(dest_media), exist_ok=True)
+            if os.path.abspath(self.file.path) != os.path.abspath(dest_media):
+                shutil.copy(self.file.path, dest_media)
+            
+            dest_static = os.path.join(settings.BASE_DIR, 'static', 'data', 'routine.csv')
+            os.makedirs(os.path.dirname(dest_static), exist_ok=True)
+            shutil.copy(self.file.path, dest_static)
 
 _group = [
     ('TC', 'Tech Club'),
@@ -483,6 +517,12 @@ class Community(models.Model):
     other =  models.CharField(max_length=2000, blank=True, null=True)
     other_title =  models.CharField(max_length=2000, blank=True, null=True)
     join =  models.CharField(max_length=2000, blank=True, null=True, help_text="WhatsApp Group Link")
+    slug = models.SlugField(max_length=2000, unique=True, blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.group_name)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.group_type} & {self.group_name}"

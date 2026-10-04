@@ -1,12 +1,19 @@
+import os
 import datetime
+from django.conf import settings
 from django.shortcuts import render, redirect, HttpResponse
 from django.contrib import messages
 from django.utils import timezone
+from django.http import JsonResponse
 from django.db.models import Q
 from .models import (
     Branch, AcademicYear, Pooling, Faculty, InductionProgram, RoutineSlot, 
     MessTiming, DailyMessMenu, Feedback, Section, Notes, Course, Subject, 
     PYQ, Assignment, Notice, Community
+)
+from .routine_utils import (
+    read_routine_csv, get_routine_file_version, get_filtered_routine_csv,
+    evaluate_slot_status
 )
 
 DAYS_MAP = {
@@ -43,35 +50,96 @@ DAYS_LIST = [
 def get_ist_now():
     return timezone.localtime()
 
-def group_evaluated_slots(slots_qs, target_day, target_time, current_day):
-    evaluated = []
-    for slot in slots_qs:
-        status = slot.status(target_day=target_day, target_time=target_time, current_day=current_day)
+def service_worker(request):
+    sw_path = os.path.join(settings.BASE_DIR, 'static', 'js', 'serviceworker.js')
+    if os.path.exists(sw_path):
+        with open(sw_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        return HttpResponse(content, content_type='application/javascript')
+    return HttpResponse('', content_type='application/javascript')
 
-        fac_code = (slot.faculty_code or '').strip()
-        if slot.subject_code in ['LIB', 'LUNCH'] or fac_code.upper() in ['LIB', 'FACULTY', ''] or not fac_code:
+def group_evaluated_csv_slots(slots, target_day, target_time, current_day):
+    evaluated = []
+    for s in slots:
+        status = evaluate_slot_status(s, target_day, target_time, current_day)
+        fac_code = (s.get('faculty_code') or '').strip()
+        if not fac_code or fac_code.upper() in ['LIB', 'FACULTY', '--']:
             fac_code_clean = '--'
             fac_ref = None
         else:
             fac_code_clean = fac_code
-            fac_ref = slot.faculty_ref
+            fac_ref = Faculty.objects.filter(short_code__iexact=fac_code_clean).first()
+
+        st_obj = None
+        et_obj = None
+        if s.get('start_time'):
+            try:
+                parts = s['start_time'].split(':')
+                st_obj = datetime.time(int(parts[0]), int(parts[1]))
+            except Exception:
+                pass
+        if s.get('end_time'):
+            try:
+                parts = s['end_time'].split(':')
+                et_obj = datetime.time(int(parts[0]), int(parts[1]))
+            except Exception:
+                pass
 
         evaluated.append({
-            'start_slot_number': slot.slot_number,
-            'end_slot_number': slot.slot_number,
-            'slot_number_display': f"Slot {slot.slot_number}",
-            'start_time': slot.start_time,
-            'end_time': slot.end_time,
-            'subject_code': slot.subject_code,
-            'subject_name': slot.subject_name,
+            'start_slot_number': s['slot_number'],
+            'end_slot_number': s['slot_number'],
+            'slot_number_display': f"Slot {s['slot_number']}",
+            'start_time': st_obj or s['start_time'],
+            'end_time': et_obj or s['end_time'],
+            'subject_code': s['subject_code'],
+            'subject_name': s['subject_name'],
             'faculty_code': fac_code_clean,
             'faculty_ref': fac_ref,
+            'lh_room': s['lh_room'],
+            'section_name': s['section'],
             'status': status,
-            'raw_slots': [slot],
-            'slot': slot,
         })
     return evaluated
 
+def group_evaluated_slots(slots_qs, target_day, target_time, current_day):
+    return group_evaluated_csv_slots(slots_qs, target_day, target_time, current_day)
+
+# Sync API endpoint for instant offline sync and notice check
+def sync_check(request):
+    routine_data = read_routine_csv()
+    r_ver = get_routine_file_version()
+    
+    notices_qs = Notice.objects.filter(is_active=True)
+    n_list = []
+    latest_n_time = 0
+    for n in notices_qs:
+        n_list.append({
+            'id': n.id,
+            'notice': n.notice,
+            'icon': n.icon or '',
+            'n_url': n.n_url or '',
+            'n_url_name': n.n_url_name or '',
+            'n_url_icon': n.n_url_icon or ''
+        })
+        if hasattr(n, 'updated_at') and n.updated_at:
+            ts = int(n.updated_at.timestamp())
+            if ts > latest_n_time:
+                latest_n_time = ts
+                
+    n_ver = f"{latest_n_time}_{len(n_list)}"
+    
+    unique_sections = sorted(list(set(row['section'] for row in routine_data if row.get('section'))))
+    unique_years = sorted(list(set(str(row['year']) for row in routine_data if row.get('year'))))
+
+    return JsonResponse({
+        'status': 'success',
+        'routine_version': str(r_ver),
+        'notice_version': str(n_ver),
+        'routine_data': routine_data,
+        'notices': n_list,
+        'sections': unique_sections,
+        'years': unique_years,
+    })
 
 # Home View
 def home(request):
@@ -140,21 +208,14 @@ def home(request):
     # Fetch Today Induction
     today_induction = InductionProgram.objects.filter(date=today_date).first()
 
-    # Fetch Today Routine
+    # Fetch Today Routine from CSV
     all_sections = Section.objects.all()
     all_years = AcademicYear.objects.all()
     selected_sec = request.GET.get('sec', 'CSE - A')
     selected_year = request.GET.get('year', '1')
         
-    routine_qs = RoutineSlot.objects.select_related('year', 'branch', 'section_name', 'faculty_ref').filter(day=today_day_code)
-    if selected_sec:
-        routine_qs = routine_qs.filter(section_name__name=selected_sec)
-    if selected_year:
-        routine_qs = routine_qs.filter(Q(year__year=selected_year) | Q(year_id=selected_year))
-
-    routine_slots = routine_qs.order_by('slot_number')
-    
-    evaluated_routine = group_evaluated_slots(routine_slots, today_day_code, today_time, today_day_code)
+    csv_slots = get_filtered_routine_csv(year_filter=selected_year, sec_filter=selected_sec, day_filter=today_day_code)
+    evaluated_routine = group_evaluated_csv_slots(csv_slots, today_day_code, today_time, today_day_code)
     live_slot = next((item for item in evaluated_routine if item['status'] == 'LIVE'), None)
 
     # Calculate Layout Priorities
@@ -376,17 +437,8 @@ def routine(request):
     day_filter = request.GET.get('day', today_day_code)
     year_filter = request.GET.get('year', '1')
 
-    slots_qs = RoutineSlot.objects.select_related('year', 'branch', 'section_name', 'faculty_ref').all()
-    if sec_filter:
-        slots_qs = slots_qs.filter(section_name__name=sec_filter)
-    if day_filter:
-        slots_qs = slots_qs.filter(day=day_filter)
-    if year_filter:
-        slots_qs = slots_qs.filter(Q(year__year=year_filter) | Q(year_id=year_filter))
-
-    slots = slots_qs.order_by('slot_number')
-    
-    evaluated_slots = group_evaluated_slots(slots, day_filter, today_time, today_day_code)
+    slots = get_filtered_routine_csv(year_filter=year_filter, sec_filter=sec_filter, day_filter=day_filter)
+    evaluated_slots = group_evaluated_csv_slots(slots, day_filter, today_time, today_day_code)
 
     context = {
         'sec_filter': sec_filter,
@@ -715,3 +767,15 @@ def community(request):
        "coming_soon": "Community features are rolling out step by step. Stay tuned as new tools arrive!"
     }
     return render(request, 'blog/community.html', context)
+
+def community_page(request, slug):
+    try:
+        community = Community.objects.get(slug=slug)
+    except Community.DoesNotExist:
+        return render(request, 'errors/404.html', status=404)
+
+    context = {
+        "community": community,
+        "coming_soon": "Community features are rolling out step by step. Stay tuned as new tools arrive!"
+    }
+    return render(request, 'blog/community_page.html', context)
