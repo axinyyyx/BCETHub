@@ -101,6 +101,38 @@
         if (window.lucide) window.lucide.createIcons();
     }
 
+    function syncSelectOptions(allSlots) {
+        if (!allSlots || !allSlots.length) return;
+        const sections = Array.from(new Set(allSlots.map(s => (s.section || '').trim()).filter(Boolean)));
+        const years = Array.from(new Set(allSlots.map(s => String(s.year || '').trim()).filter(Boolean))).sort();
+
+        const secSelects = document.querySelectorAll('#sec, #sec-select');
+        secSelects.forEach(sel => {
+            const existingValues = Array.from(sel.options).map(opt => opt.value.toLowerCase());
+            sections.forEach(secName => {
+                if (!existingValues.includes(secName.toLowerCase())) {
+                    const opt = document.createElement('option');
+                    opt.value = secName;
+                    opt.textContent = secName;
+                    sel.appendChild(opt);
+                }
+            });
+        });
+
+        const yrSelects = document.querySelectorAll('#year, #yr-select');
+        yrSelects.forEach(sel => {
+            const existingValues = Array.from(sel.options).map(opt => opt.value);
+            years.forEach(yrName => {
+                if (!existingValues.includes(yrName)) {
+                    const opt = document.createElement('option');
+                    opt.value = yrName;
+                    opt.textContent = yrName === '1' ? '1st Year' : yrName === '2' ? '2nd Year' : yrName === '3' ? '3rd Year' : `${yrName}th Year`;
+                    sel.appendChild(opt);
+                }
+            });
+        });
+    }
+
     function renderRoutineTable(allSlots, yearFilter, secFilter, dayFilter) {
         const cardBody = document.querySelector('.routine-card-body') || 
                          document.querySelector('.routine-section .card-body');
@@ -119,6 +151,9 @@
 
         yearFilter = String(yearFilter || '1').trim();
         secFilter = (secFilter || 'CSE - A').trim().toLowerCase();
+
+        // Ensure dropdown options match available routine sections/years
+        syncSelectOptions(allSlots);
 
         // Save selected filter in localStorage
         localStorage.setItem(PREF_YEAR_KEY, yearFilter);

@@ -1,16 +1,18 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}BCETH{% endblock %}</title>
-    
+
     <link rel="icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
     <link rel="stylesheet" href="{% static 'css/main-style.css' %}">
 
     <script src="https://unpkg.com/htmx.org@2.0.6"></script>
@@ -18,7 +20,124 @@
 
     <link rel="manifest" href="{% static 'pwaj/manifest.json' %}">
     <meta name="theme-color" content="#1e293b">
+    <style>
+    .google-glow-border {
+        --glow-angle: 0deg;
+        --glow-border-width: 1.5px;
+        --glow-radius: 14px;
+
+        position: relative;
+        isolation: isolate;
+
+        box-sizing: border-box;
+
+        border: var(--glow-border-width) solid var(--border-color);
+        border-radius: var(--glow-radius);
+
+        -webkit-tap-highlight-color: transparent;
+
+        transition:
+        border-color 0.25s ease,
+        box-shadow 0.25s ease,
+        transform 0.25s cubic-bezier(0.38, 0.72, 0, 1);
+        }
+
+        .google-glow-border::before {
+        content: "";
+
+        position: absolute;
+
+        inset: calc(var(--glow-border-width) * -1);
+
+        border-radius: inherit;
+
+        padding: var(--glow-border-width);
+
+        background:
+        conic-gradient(
+        from var(--glow-angle),
+
+        rgba(49, 134, 255, 0) 18%,
+        rgba(49, 134, 255, 0.08) 29%,
+
+        rgba(147, 120, 255, 0.18) 35%,
+        rgba(249, 107, 214, 0.42) 39%,
+
+        rgba(252, 65, 61, 0.72) 43%,
+        rgba(255, 107, 43, 0.95) 47%,
+
+        rgba(254, 199, 0, 1) 50%,
+        rgba(255, 219, 15, 0.95) 53%,
+
+        rgba(136, 222, 66, 0.82) 57%,
+        rgba(14, 188, 95, 0.9) 62%,
+
+        rgba(46, 170, 178, 0.72) 68%,
+        rgba(0, 169, 187, 0.72) 72%,
+
+        rgba(49, 134, 255, 0.35) 77%,
+        rgba(49, 134, 255, 0) 91%
+        );
+
+        -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+
+        -webkit-mask-composite: xor;
+
+        mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+
+        mask-composite: exclude;
+
+        opacity: 0;
+
+        pointer-events: none;
+
+        z-index: 10;
+
+        filter: blur(0.15px);
+
+        transition:
+        opacity 250ms cubic-bezier(0.38, 0.72, 0, 1);
+        }
+
+        .google-glow-border.is-glowing {
+        border-color: transparent !important;
+        }
+
+        .google-glow-border.is-glowing::before {
+        opacity: 1;
+        }
+
+        .google-glow-border.is-locked {
+        border-color: transparent !important;
+        }
+
+        .google-glow-border.is-locked::before {
+        opacity: 1;
+        }
+
+        .google-glow-border > * {
+        position: relative;
+        z-index: 2;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+        .google-glow-border:hover {
+        border-color: transparent;
+        }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+        .google-glow-border::before {
+        transition: none;
+        }
+        }
+    </style>
 </head>
+
 <body>
     <script>
         let deferredPrompt = null;
@@ -40,7 +159,7 @@
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            
+
             if (!isPWAInstalled() && !sessionStorage.getItem('pwaPromptShown')) {
                 setTimeout(() => {
                     openPWAPrompt();
@@ -56,12 +175,12 @@
         });
 
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
+            window.addEventListener('load', function () {
                 navigator.serviceWorker.register("{% static 'js/serviceworker.js' %}")
-                    .then(function(reg) {
+                    .then(function (reg) {
                         console.log('PWA ServiceWorker registered:', reg.scope);
                     })
-                    .catch(function(err) {
+                    .catch(function (err) {
                         console.log('PWA ServiceWorker failed:', err);
                     });
             });
@@ -90,17 +209,17 @@
     </script>
 
     {% if messages %}
-        <div class="toast-messages-container" id="toast-container">
-            {% for message in messages %}
-                <div class="toast-message {{ message.tags }}">
-                    <i data-lucide="info"></i> {{ message }}
-                </div>
-            {% endfor %}
+    <div class="toast-messages-container" id="toast-container">
+        {% for message in messages %}
+        <div class="toast-message {{ message.tags }}">
+            <i data-lucide="info"></i> {{ message }}
         </div>
+        {% endfor %}
+    </div>
     {% endif %}
 
     {% include 'includes/navbar.html' %}
-    
+
     <main>
         {% include 'pwa.html' %}
         {% block content %}
@@ -127,7 +246,8 @@
                 {% csrf_token %}
                 <div class="form-group">
                     <label for="fb-name">Your Name</label>
-                    <input type="text" id="fb-name" name="name" placeholder="Enter your full name" required class="custom-input">
+                    <input type="text" id="fb-name" name="name" placeholder="Enter your full name" required
+                        class="custom-input">
                 </div>
                 <div class="form-group">
                     <label for="fb-category">Category</label>
@@ -139,11 +259,13 @@
                 </div>
                 <div class="form-group">
                     <label for="fb-contact">Your Contact</label>
-                    <input type="text" id="fb-contact" name="contact" placeholder="Enter your Contact P.No/Email..." required class="custom-input">
+                    <input type="text" id="fb-contact" name="contact" placeholder="Enter your Contact P.No/Email..."
+                        required class="custom-input">
                 </div>
                 <div class="form-group">
                     <label for="fb-message">Message</label>
-                    <textarea id="fb-message" name="message" rows="3" placeholder="Describe feedback..." required class="custom-textarea"></textarea>
+                    <textarea id="fb-message" name="message" rows="3" placeholder="Describe feedback..." required
+                        class="custom-textarea"></textarea>
                 </div>
                 <button type="submit" class="btn-submit-feedback">
                     <i data-lucide="send"></i> Send Message
@@ -154,10 +276,10 @@
 
     {% include 'includes/footer.html' %}
 
-    <script src="{% static 'js/main-script.js' %}"></script>
+    <!-- <script src="{% static 'js/main-script.js' %}"></script> -->
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             if (window.lucide) lucide.createIcons();
 
             const wrapper = document.getElementById('feedback-floating-wrapper');
@@ -166,24 +288,24 @@
             const closeBtn = document.getElementById('feedback-close-btn');
 
             if (wrapper && toggleBtn && popover) {
-                toggleBtn.addEventListener('click', function(e) {
+                toggleBtn.addEventListener('click', function (e) {
                     e.stopPropagation();
                     popover.classList.toggle('active');
                 });
                 if (closeBtn) {
-                    closeBtn.addEventListener('click', function(e) {
+                    closeBtn.addEventListener('click', function (e) {
                         e.stopPropagation();
                         popover.classList.remove('active');
                     });
                 }
-                document.addEventListener('click', function(e) {
+                document.addEventListener('click', function (e) {
                     if (!wrapper.contains(e.target)) popover.classList.remove('active');
                 });
             }
 
             const toastContainer = document.getElementById('toast-container');
             if (toastContainer) {
-                setTimeout(function() {
+                setTimeout(function () {
                     toastContainer.style.opacity = '0';
                     toastContainer.style.transition = 'opacity 0.5s ease';
                     setTimeout(() => toastContainer.remove(), 500);
@@ -191,8 +313,10 @@
             }
         });
     </script>
-    
+
+    <script src="{% static 'js/google-glow-border.js' %}"></script>
     <script src="{% static 'js/offline-routine-sync.js' %}"></script>
     {% block extra_js %}{% endblock %}
 </body>
+
 </html>
