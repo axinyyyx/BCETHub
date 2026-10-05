@@ -15,7 +15,7 @@
         <form method="GET" action="{% url 'routine' %}" class="routine-filter-form">
             <div class="filter-group">
                 <label for="year"><i data-lucide="graduation-cap"></i> Year:</label>
-                <select name="year" id="year" class="custom-select" onchange="this.form.submit()">
+                <select name="year" id="year" class="custom-select" onchange="this.form.submit()" >
                     {% for yr in all_years %}
                         <option value="{{ yr.year }}" {% if yr.year == year_filter or yr.id|slugify == year_filter %}selected{% endif %}>
                             {{ yr.get_year_display }}

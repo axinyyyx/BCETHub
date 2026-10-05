@@ -6,7 +6,7 @@
 {% block content %}
 <div class="bcet-community-wrapper">
     <div class="bcet-hero">
-        <h1 class="bcet-hero-title">Student Clubs &amp; Communities</h1>
+        <h2 class="bcet-hero-title">Student Clubs &amp; Communities</h2>
         {% if coming_soon %}
             <p class="bcet-hero-desc">{{ coming_soon }}</p>
         {% else %}
@@ -48,32 +48,31 @@
         width: 100%;
         max-width: 1240px;
         margin: 0 auto;
-        padding: 32px 20px 80px 20px;
         box-sizing: border-box;
     }
 
     .bcet-hero {
-        text-align: center;
-        margin-bottom: 40px;
-    }
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 20px;
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
 
-    .bcet-hero-title {
-        font-size: clamp(24px, 4vw, 36px);
-        font-weight: 800;
-        letter-spacing: -0.02em;
-        color: #cbccce;
-        line-height: 1.25;
-        margin-bottom: 10px;
+        h2 {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--text-primary);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 4px;
+        }
+        p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
     }
-
-    .bcet-hero-desc {
-        font-size: clamp(14px, 1.8vw, 16px);
-        color: #8b8c8d;
-        max-width: 580px;
-        margin: 0 auto;
-        line-height: 1.6;
-    }
-
+    
     .bcet-group-block {
         margin-bottom: 46px;
     }
@@ -124,7 +123,8 @@
     }
 
     .bcet-club-card {
-        border: 1px solid #e2e8f0;
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
         border-radius: 16px;
         padding: 20px;
         display: flex;
@@ -276,8 +276,8 @@
         align-items: center;
         gap: 5px;
         padding: 6px 11px;
-        /* background: #f8fafc; */
-        border: 1px solid #e2e8f0;
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
         border-radius: 6px;
         font-size: 12px;
         font-weight: 600;
@@ -287,9 +287,9 @@
     }
 
     .bcet-social-btn:hover {
-        background: #000000;
+        box-shadow: 0 12px 24px -4px rgba(15, 23, 42, 0.08);
+        background-color: #0284c7;
         color: #ffffff;
-        border-color: #c1c1c4;
     }
 
     .bcet-social-btn svg {
@@ -319,9 +319,6 @@
     }
 
     @media (max-width: 768px) {
-        .bcet-community-wrapper {
-            padding: 20px 14px 60px 14px;
-        }
 
         .bcet-card-grid {
             grid-template-columns: 1fr;

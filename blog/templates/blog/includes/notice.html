@@ -14,7 +14,7 @@
                     </div>
                 </div>
                 {% if notice_.n_url %}
-                    <a href="{{notice_.n_url}}" target="_blank" rel="noopener" class="icon-btn">
+                    <a href="{{notice_.n_url}}" target="_blank" rel="noopener" class="icon-btn google-glow-border">
                         <i data-lucide="{{notice_.n_url_icon|default:'external-link'}}" style="width: 14px; height: 14px;"></i> {{notice_.n_url_name|default:'View'}}
                     </a>
                 {% endif %}
@@ -100,7 +100,7 @@
     }
 
     .icon-btn:hover {
-        background-color: var(--accent-blue);
+        /* background-color: var(--accent-blue); */
         color: #ffffff;
         border-color: var(--accent-blue);
         box-shadow: 0 0 12px rgba(0, 123, 255, 0.3);
