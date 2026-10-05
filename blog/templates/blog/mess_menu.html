@@ -57,7 +57,7 @@
     <h3 class="section-title"><i data-lucide="calendar"></i> Weekly Hostel Menu</h3>
     <div class="mess-menu-grid">
         {% for menu in all_menus %}
-            <div class="mess-day-card {% if menu.day_of_week == today_day_code %}today-active-mess{% endif %}">
+            <div class="mess-day-card {% if menu.day_of_week == today_day_code %}today-active-mess{% else %}{% endif %}">
                 <div class="mess-day-header">
                     <h4>{{ menu.get_day_of_week_display }}</h4>
                     {% if menu.day_of_week == today_day_code %}
