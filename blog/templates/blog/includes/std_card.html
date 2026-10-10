@@ -1,0 +1,74 @@
+<div class="note-card">
+    <div class="note-header">
+        <span class="badge course-badge">{{ note.course.code }}</span>
+        <span class="badge branch-badge">{{ note.branch.code }}</span>
+        <span class="badge sec-badge">Sec {{ note.section.name }}</span>
+        {% if note.module %}
+        <span class="badge module-badge">{{ note.module.name }}</span>
+        {% endif %}
+    </div>
+
+    <h2 class="note-title">{{ note.title }}</h2>
+    {% if note.subject %}
+    <p class="note-subject"><strong>Subject:</strong> {{ note.subject.name }} ({{ note.subject.code }})</p>
+    {% endif %}
+    <p class="note-desc">{{ note.description }}</p>
+
+    <div class="note-meta">
+        <span><strong>Year:</strong> {{ note.year.get_year_display }}</span>
+        {% if note.cr_name %}
+        <span><strong>By:</strong> {{ note.cr_name }}</span>
+        {% else %}
+        <span><strong>CR:</strong> {{ note.cr.name }}</span>
+        {% endif %}
+    </div>
+
+    <div class="note-action-group">
+        {% if note.file %}
+        <div class="note-file-actions">
+            <a href="{{ note.file.url }}" class="btn-view">
+                <i data-lucide="eye"></i> View
+            </a>
+            <a href="{{ note.file.url }}" download class="btn-download">
+                <i data-lucide="download"></i> Download
+            </a>
+        </div>
+        {% endif %}
+
+        {% if note.images.all %}
+        <button type="button" class="btn-view-gallery" onclick="openGalleryModal('gallery-modal-{{ note.id }}')">
+            <i data-lucide="images"></i> View {{ note.images.count }} Page Image{% if note.images.count > 1 %}s{% endif
+            %}
+        </button>
+        {% endif %}
+    </div>
+
+    <!-- Modal Lightbox for multiple images -->
+    {% if note.images.all %}
+    <div id="gallery-modal-{{ note.id }}" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>{{ note.title }} ({{ note.images.count }} Pages)</h3>
+                <button type="button" class="close-btn"
+                    onclick="closeGalleryModal('gallery-modal-{{ note.id }}')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="images-scroll-container">
+                    {% for img in note.images.all %}
+                    <div class="image-page-item">
+                        <div class="image-wrapper">
+                            <img src="{{ img.image.url }}" alt="{{ img.caption|default:'Note Page' }}" loading="lazy">
+                        </div>
+                        <div class="image-footer">
+                            <span>{% if img.caption %}{{ img.caption }}{% else %}Page {{
+                                img.order|default:forloop.counter }}{% endif %}</span>
+                            <a href="{{ img.image.url }}" download class="btn-sm-download">Download Image</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>

@@ -7,69 +7,78 @@
 
     <!-- Filters Section -->
     <div class="filter-card">
-        <form method="GET" action="{% url 'pyq' %}" hx-get="{% url 'pyq' %}" hx-target="#materials-display-area" hx-swap="innerHTML" class="pyq-filter-form">
+        <form method="GET" action="{% url 'pyq' %}" hx-get="{% url 'pyq' %}" hx-target="#materials-display-area"
+            hx-swap="innerHTML" class="pyq-filter-form">
             <div class="filter-search-box">
                 <i data-lucide="search" class="search-icon"></i>
-                <input type="text" name="q" value="{{ search_query }}" placeholder="Search paper title, subject code, or contributor name..." class="filter-input-search">
+                <input type="text" name="q" value="{{ search_query }}"
+                    placeholder="Search paper title, subject code, or contributor name..." class="filter-input-search">
                 {% if search_query or selected_course or selected_branch or selected_year or selected_semester or selected_subject or selected_exam_year %}
-                    <a href="javascript:void(0);" hx-get="{% url 'pyq' %}" hx-target="#materials-display-area" hx-swap="innerHTML" class="btn-clear-filter" title="Clear Filters">&times; Clear</a>
+                <a href="javascript:void(0);" hx-get="{% url 'pyq' %}" hx-target="#materials-display-area"
+                    hx-swap="innerHTML" class="btn-clear-filter" title="Clear Filters">&times; Clear</a>
                 {% endif %}
             </div>
 
             <div class="filter-dropdowns-grid">
                 <div class="filter-item">
                     <label><i data-lucide="book-open"></i> Course</label>
-                    <select name="course" onchange="this.form.dispatchEvent(new Event('submit', {bubbles: true}))" class="custom-select-sm">
+                    <select name="course" onchange="this.form.dispatchEvent(new Event('submit', {bubbles: true}))"
+                        class="custom-select-sm">
                         <option value="">All Courses</option>
                         {% for c in all_courses %}
-                            <option value="{{ c.id }}" {% if selected_course == c.id|slugify %}selected{% endif %}>{{ c.name }}</option>
+                        <option value="{{ c.id }}" {% if selected_course == c.id|slugify %}selected{% endif %}>{{ c.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
 
                 <div class="filter-item">
                     <label><i data-lucide="git-branch"></i> Branch</label>
-                    <select name="branch" onchange="this.form.dispatchEvent(new Event('submit', {bubbles: true}))" class="custom-select-sm">
+                    <select name="branch" onchange="this.form.dispatchEvent(new Event('submit', {bubbles: true}))"
+                        class="custom-select-sm">
                         <option value="">All Branches</option>
                         {% for b in all_branches %}
-                            <option value="{{ b.id }}" {% if selected_branch == b.id|slugify %}selected{% endif %}>{{ b.code }} ({{ b.name }})</option>
+                        <option value="{{ b.id }}" {% if selected_branch == b.id|slugify %}selected{% endif %}>{{ b.code }} ({{ b.name }})</option>
                         {% endfor %}
                     </select>
                 </div>
 
                 <div class="filter-item">
                     <label><i data-lucide="layers"></i> Semester</label>
-                    <select name="semester" onchange="this.form.dispatchEvent(new Event('submit', {bubbles: true}))" class="custom-select-sm">
+                    <select name="semester" onchange="this.form.dispatchEvent(new Event('submit', {bubbles: true}))"
+                        class="custom-select-sm">
                         <option value="">All Semesters</option>
                         {% for sem_val, sem_label in semesters_list %}
-                            <option value="{{ sem_val }}" {% if selected_semester == sem_val %}selected{% endif %}>{{ sem_label }}</option>
+                        <option value="{{ sem_val }}" {% if selected_semester == sem_val %}selected{% endif %}>{{ sem_label }}</option>
                         {% endfor %}
                     </select>
                 </div>
 
                 <div class="filter-item">
                     <label><i data-lucide="graduation-cap"></i> Academic Year</label>
-                    <select name="year" onchange="this.form.dispatchEvent(new Event('submit', {bubbles: true}))" class="custom-select-sm">
+                    <select name="year" onchange="this.form.dispatchEvent(new Event('submit', {bubbles: true}))"
+                        class="custom-select-sm">
                         <option value="">All Academic Years</option>
                         {% for y in all_years %}
-                            <option value="{{ y.id }}" {% if selected_year == y.id|slugify %}selected{% endif %}>{{ y.get_year_display }}</option>
+                        <option value="{{ y.id }}" {% if selected_year == y.id|slugify %}selected{% endif %}>{{ y.get_year_display }}</option>
                         {% endfor %}
                     </select>
                 </div>
 
                 <div class="filter-item">
                     <label><i data-lucide="bookmark"></i> Subject</label>
-                    <select name="subject" onchange="this.form.dispatchEvent(new Event('submit', {bubbles: true}))" class="custom-select-sm">
+                    <select name="subject" onchange="this.form.dispatchEvent(new Event('submit', {bubbles: true}))"
+                        class="custom-select-sm">
                         <option value="">All Subjects</option>
                         {% for sub in all_subjects %}
-                            <option value="{{ sub.id }}" {% if selected_subject == sub.id|slugify %}selected{% endif %}>{{ sub.code }} - {{ sub.name }}</option>
+                        <option value="{{ sub.id }}" {% if selected_subject == sub.id|slugify %}selected{% endif %}>{{ sub.code }} - {{ sub.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
 
                 <div class="filter-item">
                     <label><i data-lucide="calendar"></i> Exam Year</label>
-                    <select name="exam_year" onchange="this.form.dispatchEvent(new Event('submit', {bubbles: true}))" class="custom-select-sm">
+                    <select name="exam_year" onchange="this.form.dispatchEvent(new Event('submit', {bubbles: true}))"
+                        class="custom-select-sm">
                         <option value="">All Exam Years</option>
                         <option value="2025" {% if selected_exam_year == "2025" %}selected{% endif %}>2025</option>
                         <option value="2024" {% if selected_exam_year == "2024" %}selected{% endif %}>2024</option>
@@ -83,84 +92,16 @@
         </form>
     </div>
 
-    <!-- PYQ Grid -->
-    <div class="pyq-grid">
-        {% for pyq in pyqs %}
-            <div class="pyq-card">
-                <div class="pyq-header">
-                    <span class="badge course-badge">{{ pyq.course.code }}</span>
-                    <span class="badge branch-badge">{{ pyq.branch.code }}</span>
-                    <span class="badge sem-badge">{{ pyq.get_semester_display }}</span>
-                    <span class="badge exam-year-badge">{{ pyq.exam_year }} Exam</span>
-                </div>
-
-                <h2 class="pyq-title">{{ pyq.title }}</h2>
-                {% if pyq.subject %}
-                    <p class="pyq-subject"><strong>Subject:</strong> {{ pyq.subject.name }} ({{ pyq.subject.code }})</p>
-                {% endif %}
-                {% if pyq.description %}
-                    <p class="pyq-desc">{{ pyq.description }}</p>
-                {% endif %}
-
-                <div class="pyq-meta">
-                    <span><strong>Year:</strong> {{ pyq.year.get_year_display }}</span>
-                    <span><strong>By:</strong> {{ pyq.get_cr_name }}</span>
-                </div>
-
-                <div class="pyq-action-group">
-                    {% if pyq.file %}
-                        <div class="view-file-actions">
-                            <a href="{{ pyq.file.url }}"  class="btn-view">
-                                    <i data-lucide="eye"></i> View
-                                </a>
-                            <a href="{{ pyq.file.url }}" download class="btn-download">
-                                <i data-lucide="file-text"></i> Download
-                            </a>
-                        </div>
-                    {% endif %}
-
-                    {% if pyq.images.all %}
-                        <button type="button" class="btn-view-gallery" onclick="openGalleryModal('pyq-modal-{{ pyq.id }}')">
-                            <i data-lucide="images"></i> View {{ pyq.images.count }} Question Paper Page{% if pyq.images.count > 1 %}s{% endif %}
-                        </button>
-                    {% endif %}
-                </div>
-
-                <!-- Modal Lightbox for PYQ images -->
-                {% if pyq.images.all %}
-                    <div id="pyq-modal-{{ pyq.id }}" class="modal-overlay" style="display: none;">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h3>{{ pyq.title }} - {{ pyq.get_semester_display }} ({{ pyq.images.count }} Pages)</h3>
-                                <button type="button" class="close-btn" onclick="closeGalleryModal('pyq-modal-{{ pyq.id }}')">&times;</button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="images-scroll-container">
-                                    {% for img in pyq.images.all %}
-                                        <div class="image-page-item">
-                                            <div class="image-wrapper">
-                                                <img src="{{ img.image.url }}" alt="{{ img.caption|default:'Question Paper' }}" loading="lazy">
-                                            </div>
-                                            <div class="image-footer">
-                                                <span>{% if img.caption %}{{ img.caption }}{% else %}Page {{ img.order|default:forloop.counter }}{% endif %}</span>
-                                                <a href="{{ img.image.url }}" download class="btn-sm-download">Download Image</a>
-                                            </div>
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                {% endif %}
-            </div>
-        {% empty %}
-            <div class="empty-pyq-card">
-                <i data-lucide="file-search" class="empty-icon"></i>
-                <h3>No Previous Year Question Papers found</h3>
-                <p>Try resetting filters or modifying your search terms.</p>
-            </div>
-        {% endfor %}
+    <!-- PYQ Card -->
+    {% if pyqs %}
+        {% include 'blog/includes/pyqs_card.html' with pyqs=pyqs %}
+    {% else %}
+    <div class="empty-pyq-card">
+        <i data-lucide="file-search" class="empty-icon"></i>
+        <h3>No Previous Year Question Papers found</h3>
+        <p>Try resetting filters or modifying your search terms.</p>
     </div>
+    {% endif %}
 </div>
 
 <style>
@@ -186,7 +127,7 @@
     }
 
     .count-pill {
-        background: #0284c7;
+        background: #2563eb;
         color: #fff;
         font-size: 0.8rem;
         padding: 4px 10px;
@@ -300,265 +241,4 @@
         border-color: #0284c7;
         outline: none;
     }
-
-    /* PYQ Grid & Cards */
-    .pyq-grid {
-        width: 100%;
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 20px;
-        box-sizing: border-box;
-    }
-
-    .pyq-card {
-        background: #1b1b1b;
-        border: 1px solid #27272a;
-        border-radius: 12px;
-        padding: 16px;
-        display: flex;
-        flex-direction: column;
-        text-align: left;
-        transition: transform 0.2s ease, border-color 0.2s ease;
-    }
-
-    .pyq-card:hover {
-        transform: translateY(-3px);
-        border-color: #0284c7;
-    }
-
-    .pyq-header {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
-        margin-bottom: 10px;
-    }
-
-    .badge {
-        font-size: 0.72rem;
-        font-weight: 600;
-        padding: 3px 8px;
-        border-radius: 4px;
-        text-transform: uppercase;
-    }
-
-    .course-badge { background: #2563eb; color: #fff; }
-    .branch-badge { background: #059669; color: #fff; }
-    .sem-badge { background: #d97706; color: #fff; }
-    .exam-year-badge { background: #7c3aed; color: #fff; }
-
-    .pyq-title {
-        font-size: 1.15rem;
-        margin: 0 0 6px 0;
-        color: #f4f4f5;
-        line-height: 1.3;
-    }
-
-    .pyq-subject {
-        font-size: 0.85rem;
-        color: #38bdf8;
-        margin: 0 0 8px 0;
-    }
-
-    .pyq-desc {
-        font-size: 0.88rem;
-        color: #a1a1aa;
-        line-height: 1.4;
-        margin: 0 0 14px 0;
-        flex-grow: 1;
-    }
-
-    .pyq-meta {
-        font-size: 0.8rem;
-        color: #a1a1aa;
-        display: flex;
-        justify-content: space-between;
-        padding-top: 10px;
-        border-top: 1px solid #27272a;
-        margin-bottom: 12px;
-    }
-
-    .pyq-meta strong {
-        color: #e4e4e7;
-    }
-
-    .pyq-action-group {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .view-file-actions {
-        display: flex;
-        gap: 8px;
-    }
-    
-    .btn-download, .btn-view {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        width: 100%;
-        background: #2563eb;
-        color: #fff;
-        padding: 8px 0;
-        border-radius: 6px;
-        text-decoration: none;
-        font-size: 0.88rem;
-        font-weight: 500;
-        transition: background 0.2s;
-        box-sizing: border-box;
-    }
-
-    .btn-download:hover, .btn-view:hover {
-        background: #0369a1;
-    }
-
-    .btn-view-gallery {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        width: 100%;
-        background: rgba(168, 85, 247, 0.15);
-        color: #c084fc;
-        border: 1px solid rgba(192, 132, 252, 0.4);
-        padding: 8px 0;
-        border-radius: 6px;
-        font-size: 0.88rem;
-        font-weight: 500;
-        cursor: pointer;
-        transition: background 0.2s;
-    }
-
-    .btn-view-gallery:hover {
-        background: rgba(168, 85, 247, 0.25);
-    }
-
-    .empty-pyq-card {
-        grid-column: 1 / -1;
-        background: #1b1b1b;
-        border: 1px dashed #3f3f46;
-        border-radius: 12px;
-        padding: 40px 20px;
-        text-align: center;
-        color: #a1a1aa;
-    }
-
-    .empty-icon {
-        width: 48px;
-        height: 48px;
-        margin-bottom: 12px;
-        color: #71717a;
-    }
-
-    /* Modal Styles */
-    .modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: rgba(0, 0, 0, 0.85);
-        backdrop-filter: blur(5px);
-        z-index: 9999;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 15px;
-        box-sizing: border-box;
-    }
-
-    .modal-content {
-        background: #1b1b1b;
-        border: 1px solid #3f3f46;
-        border-radius: 12px;
-        width: 100%;
-        max-width: 850px;
-        max-height: 90vh;
-        display: flex;
-        flex-direction: column;
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
-    }
-
-    .modal-header {
-        padding: 14px 18px;
-        border-bottom: 1px solid #27272a;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .modal-header h3 {
-        margin: 0;
-        color: #f4f4f5;
-        font-size: 1.1rem;
-    }
-
-    .close-btn {
-        background: none;
-        border: none;
-        color: #a1a1aa;
-        font-size: 1.6rem;
-        cursor: pointer;
-        line-height: 1;
-    }
-
-    .close-btn:hover {
-        color: #fff;
-    }
-
-    .modal-body {
-        padding: 16px;
-        overflow-y: auto;
-    }
-
-    .images-scroll-container {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
-
-    .image-page-item {
-        background: #1b1b1b;
-        border: 1px solid #27272a;
-        border-radius: 8px;
-        overflow: hidden;
-    }
-
-    .image-wrapper img {
-        width: 100%;
-        height: auto;
-        display: block;
-    }
-
-    .image-footer {
-        padding: 10px 14px;
-        background: #1b1b1b;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 0.85rem;
-        color: #d4d4d8;
-    }
-
-    .btn-sm-download {
-        background: #0284c7;
-        color: #fff;
-        padding: 4px 10px;
-        border-radius: 4px;
-        text-decoration: none;
-        font-size: 0.78rem;
-    }
-
-    @media (max-width: 480px) {
-        .filter-dropdowns-grid {
-            grid-template-columns: 1fr 1fr;
-        }
-    }
 </style>
-
-<script>
-    if (window.lucide) {
-        lucide.createIcons();
-    }
-</script>

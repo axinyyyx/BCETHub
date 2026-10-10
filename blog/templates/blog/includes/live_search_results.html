@@ -1,10 +1,10 @@
 {% if query %}
     <div class="live-search-dropdown">
-        {% if faculty_results or routine_results or mess_results or induction_results or branch_results %}
+        {% if faculty_results or routine_results or mess_results or induction_results or branch_results or notes_results or pyqs_results or assignments_results or community_results %}
             <!-- Faculty Matches -->
             {% if faculty_results %}
                 <div class="live-search-cat">
-                    <span class="cat-label"><i data-lucide="users"></i> Faculty & Staff</span>
+                    <span class="cat-label">Faculty & Staff</span>
                     {% for fac in faculty_results|slice:":4" %}
                         <a href="{% url 'search' %}?q={{ fac.name|urlencode }}" class="live-search-item">
                             <span class="item-title">{{ fac.name }}</span>
@@ -17,7 +17,7 @@
             <!-- Routine / Subject Matches -->
             {% if routine_results %}
                 <div class="live-search-cat">
-                    <span class="cat-label"><i data-lucide="book-open"></i> Routine & Subjects</span>
+                    <span class="cat-label">Routine & Subjects</span>
                     {% for slot in routine_results|slice:":4" %}
                         <a href="{% url 'routine' %}?sec={{ slot.section_name|urlencode }}&day={{ slot.day }}" class="live-search-item">
                             <span class="item-title">{{ slot.subject_code }} - {{ slot.subject_name }}</span>
@@ -30,7 +30,7 @@
             <!-- Mess Menu Matches -->
             {% if mess_results %}
                 <div class="live-search-cat">
-                    <span class="cat-label"><i data-lucide="utensils"></i> Hostel Mess Menu</span>
+                    <span class="cat-label">Hostel Mess Menu</span>
                     {% for mess in mess_results|slice:":3" %}
                         <a href="{% url 'search' %}?q={{ mess.get_day_of_week_display|urlencode }}" class="live-search-item">
                             <span class="item-title">{{ mess.get_day_of_week_display }} Menu</span>
@@ -43,7 +43,7 @@
             <!-- Induction Matches -->
             {% if induction_results %}
                 <div class="live-search-cat">
-                    <span class="cat-label"><i data-lucide="award"></i> Induction Schedule</span>
+                    <span class="cat-label">Induction Schedule</span>
                     {% for ind in induction_results|slice:":3" %}
                         <a href="{% url 'induction' %}" class="live-search-item">
                             <span class="item-title">Day {{ ind.day_number }}: {{ ind.topic_programme }}</span>
@@ -56,10 +56,61 @@
             <!-- Branch Matches -->
             {% if branch_results %}
                 <div class="live-search-cat">
-                    <span class="cat-label"><i data-lucide="layers"></i> Departments</span>
+                    <span class="cat-label">Departments</span>
                     {% for b in branch_results|slice:":3" %}
                         <a href="{% url 'search' %}?q={{ b.code|urlencode }}" class="live-search-item">
                             <span class="item-title">{{ b.name }} ({{ b.code }})</span>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Note Matches -->
+            {% if notes_results %}
+                <div class="live-search-cat">
+                    <span class="cat-label">Notes</span>
+                    {% for note in notes_results|slice:":3" %}
+                        <a href="{% url 'search' %}?q={{ note.title|urlencode }}" class="live-search-item">
+                            <span class="item-title">{{ note.title }}</span>
+                            <span class="item-sub">{{ note.subject.name }} ({{ note.subject.code }}) - {{ note.cr_name }}</span>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Pyq Matches -->
+            {% if pyqs_results %}
+                <div class="live-search-cat">
+                    <span class="cat-label">Previous Year Questions</span>
+                    {% for pyq in pyqs_results|slice:":3" %}
+                        <a href="{% url 'search' %}?q={{ pyq.title|urlencode }}" class="live-search-item">
+                            <span class="item-title">{{ pyq.title }}</span>
+                            <span class="item-sub">{{ pyq.subject.name }} ({{ pyq.subject.code }}) - {{ pyq.year }}</span>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Assignment Matches -->
+            {% if assignments_results %}
+                <div class="live-search-cat">
+                    <span class="cat-label">Assignments</span>
+                    {% for assignment in assignments_results|slice:":3" %}
+                        <a href="{% url 'search' %}?q={{ assignment.title|urlencode }}" class="live-search-item">
+                            <span class="item-title">{{ assignment.title }}</span>
+                            <span class="item-sub">{{ assignment.subject.name }} ({{ assignment.subject.code }}) - {{ assignment.deadline|date:"d M Y" }}</span>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Community Matches -->
+            {% if community_results %}
+                <div class="live-search-cat">
+                    <span class="cat-label">Community</span>
+                    {% for community in community_results|slice:":3" %}
+                        <a href="{% url 'search' %}?q={{ community.group_name|urlencode }}" class="live-search-item">
+                            <span class="item-title">{{ community.group_name }}</span>
                         </a>
                     {% endfor %}
                 </div>

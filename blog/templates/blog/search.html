@@ -145,11 +145,54 @@
             </section>
         {% endif %}
 
-        {% if not faculty_results and not induction_results and not routine_results and not mess_results and not branch_results %}
+        
+        <!-- Assignments Results -->
+        {% if assignments_results %}
+            <section class="search-section">
+                <h3 class="section-title"><i data-lucide="file-text"></i> Assignments ({{ assignments_results|length }})</h3>
+                <div class="card">
+                    {% include 'blog/includes/assignments_card.html' with assignments=assignments_results %}
+                </div>
+            </section>
+            {% endif %}
+            
+        <!-- Notes Results -->
+        {% if notes_results %}
+            <section class="search-section">
+                <h3 class="section-title"><i data-lucide="book"></i> Notes ({{ notes_results|length }})</h3>
+                <div class="card">
+                    {% include 'blog/includes/notes_card.html' with notes=notes_results %}
+                </div>
+            </section>
+        {% endif %}
+
+        <!-- Previous Year Questions Results -->
+        {% if pyqs_results %}
+            <section class="search-section">
+                <h3 class="section-title"><i data-lucide="file-text"></i> Previous Year Questions ({{ pyqs_results|length }})</h3>
+                <div class="card-grid">
+                    {% include 'blog/includes/pyqs_card.html' with pyqs=pyqs_results %}
+                </div>
+            </section>
+        {% endif %}
+
+        <!-- Community Results -->
+        {% if community_results %}
+            <section class="search-section">
+                <h3 class="section-title"><i data-lucide="user-group"></i> Campus Communities & Clubs ({{ community_results|length }})</h3>
+                <div class="card-grid">
+                    {% for com in community_results %}
+                        {% include 'blog/includes/c_club.html' with com=com %}
+                    {% endfor %}
+                </div>
+            </section>
+        {% endif %}
+
+        {% if not faculty_results and not induction_results and not routine_results and not mess_results and not branch_results and not notes_results and not assignments_results and not pyqs_results and not community_results %}
             <div class="empty-state-box">
                 <i data-lucide="search-x" class="empty-icon"></i>
                 <h3>No exact matches found for "{{ query }}"</h3>
-                <p>Try searching for terms like <strong>"Sunday"</strong>, <strong>"CSE"</strong>, <strong>"1st Year"</strong>, <strong>"Dr. Santanu Modak"</strong>, or <strong>"AR"</strong>.</p>
+                <p>Try searching for terms like <strong>"Sunday"</strong>, <strong>"CSE"</strong>, <strong>"1st Year"</strong>, <strong>"Mr. Sk. Abdul Rahim"</strong>, or <strong>"SAR"</strong>.</p>
             </div>
         {% endif %}
     {% endif %}

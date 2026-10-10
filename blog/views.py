@@ -345,6 +345,46 @@ def live_search(request):
             Q(name__icontains=query) | Q(code__icontains=query)
         )
 
+        notes_results = Notes.objects.filter(
+            Q(title__icontains=query) |
+            Q(description__icontains=query) |
+            Q(subject__name__icontains=query) |
+            Q(subject__code__icontains=query) |
+            Q(cr_name__icontains=query) |
+            Q(cr__name__icontains=query)
+        ).distinct()
+        
+        assignments_results = Assignment.objects.filter(
+            Q(title__icontains=query) |
+            Q(description__icontains=query) |
+            Q(subject__name__icontains=query) |
+            Q(subject__code__icontains=query) |
+            Q(author__icontains=query)
+        ).distinct()
+
+        pyqs_results = PYQ.objects.filter(
+            Q(title__icontains=query) |
+            Q(description__icontains=query) |
+            Q(subject__name__icontains=query) |
+            Q(subject__code__icontains=query) |
+            Q(cr_name__icontains=query)
+        ).distinct()
+        
+        community_filter = (
+            Q(group_type__icontains=query) |
+            Q(group_name__icontains=query) | 
+            Q(group_dec__icontains=query) 
+        )
+
+        # Match group type display labels like "Tech Club"
+        for code, label in Community._meta.get_field('group_type').choices:
+            if query.strip().lower() in label.lower():
+                community_filter |= Q(group_type=code)
+
+        community_results = Community.objects.filter(
+            community_filter
+        ).distinct()
+
     context = {
         'query': query,
         'faculty_results': faculty_results,
@@ -352,6 +392,10 @@ def live_search(request):
         'mess_results': mess_results,
         'induction_results': induction_results,
         'branch_results': branch_results,
+        'community_results': community_results,
+        'notes_results': notes_results,
+        'assignments_results': assignments_results,
+        'pyqs_results': pyqs_results,
     }
     return render(request, 'blog/includes/live_search_results.html', context)
 
@@ -413,6 +457,46 @@ def search(request):
             Q(name__icontains=query) | Q(code__icontains=query)
         )
 
+        notes_results = Notes.objects.filter(
+            Q(title__icontains=query) |
+            Q(description__icontains=query) |
+            Q(subject__name__icontains=query) |
+            Q(subject__code__icontains=query) |
+            Q(cr_name__icontains=query) |
+            Q(cr__name__icontains=query)
+        ).distinct()
+        
+        assignments_results = Assignment.objects.filter(
+            Q(title__icontains=query) |
+            Q(description__icontains=query) |
+            Q(subject__name__icontains=query) |
+            Q(subject__code__icontains=query) |
+            Q(author__icontains=query)
+        ).distinct()
+
+        pyqs_results = PYQ.objects.filter(
+            Q(title__icontains=query) |
+            Q(description__icontains=query) |
+            Q(subject__name__icontains=query) |
+            Q(subject__code__icontains=query) |
+            Q(cr_name__icontains=query)
+        ).distinct()
+
+        community_filter = (
+            Q(group_type__icontains=query) |
+            Q(group_name__icontains=query) | 
+            Q(group_dec__icontains=query)
+        )
+
+        # Match group type display labels like "Tech Club"
+        for code, label in Community._meta.get_field('group_type').choices:
+            if query.strip().lower() in label.lower():
+                community_filter |= Q(group_type=code)
+
+        community_results = Community.objects.filter(
+            community_filter
+        ).distinct()
+
     context = {
         'query': query,
         'mess_results': mess_results,
@@ -420,6 +504,10 @@ def search(request):
         'induction_results': induction_results,
         'faculty_results': faculty_results,
         'branch_results': branch_results,
+        'notes_results': notes_results,
+        'assignments_results': assignments_results,
+        'pyqs_results': pyqs_results,
+        'community_results': community_results,
         'now': now,
     }
     return render(request, 'blog/search.html', context)
@@ -778,4 +866,4 @@ def community_page(request, slug):
         "community": community,
         "coming_soon": "Community features are rolling out step by step. Stay tuned as new tools arrive!"
     }
-    return render(request, 'blog/community_page.html', context)
+    return render(request, 'blog/includes/community_page.html', context)
