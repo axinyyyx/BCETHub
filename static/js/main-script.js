@@ -64,3 +64,15 @@ document.addEventListener('keydown', function(e) {
         return false;
     }
 });
+
+// Nav Mobile Screen Span Text 4 Letters
+// document.querySelectorAll('.nav-links span').forEach(span => {
+//     const text = span.textContent.trim();
+
+//     if (text.length === 4) {
+//         span.textContent = text.slice(0, 4)
+//     }
+//     if (text.length > 2 && text.length !== 4) {
+//         span.textContent = text.slice(0, 2) + ".." + text.slice(-1);
+//     }
+// });

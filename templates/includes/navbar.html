@@ -25,31 +25,31 @@
         </div>
 
         <div class="right nav-links">
-            <a href="{% url 'home' %}" class="nav-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+            <a href="{% url 'home' %}" class="nav-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}" title="Home">
                 <i data-lucide="home"></i>
                 <span>Home</span>
             </a>
-            <a href="{% url 'routine' %}" class="nav-item {% if request.resolver_match.url_name == 'routine' %}active{% endif %}">
+            <a href="{% url 'routine' %}" class="nav-item {% if request.resolver_match.url_name == 'routine' %}active{% endif %}" title="Routine">
                 <i data-lucide="calendar"></i>
                 <span>Routine</span>
             </a>
-            <a href="{% url 'study' %}" class="nav-item {% if request.resolver_match.url_name == 'study' %}active{% endif %}">
+            <a href="{% url 'study' %}" class="nav-item {% if request.resolver_match.url_name == 'study' %}active{% endif %}" title="Study">
                 <i data-lucide="book-text"></i>
                 <span>Study</span>
             </a>
-            <!-- <a href="{% url 'induction' %}" class="nav-item {% if request.resolver_match.url_name == 'induction' %}active{% endif %}">
+            <!-- <a href="{% url 'induction' %}" class="nav-item {% if request.resolver_match.url_name == 'induction' %}active{% endif %}" title="Induction">
                 <i data-lucide="award"></i>
                 <span>Induction</span>
             </a> -->
-            <a href="{% url 'mess_menu' %}" class="nav-item {% if request.resolver_match.url_name == 'mess_menu' %}active{% endif %}">
+            <a href="{% url 'mess_menu' %}" class="nav-item {% if request.resolver_match.url_name == 'mess_menu' %}active{% endif %}" title="Mess Menu">
                 <i data-lucide="utensils"></i>
                 <span>Mess Menu</span>
             </a>
-            <!-- <a href="{% url 'about' %}" class="nav-item {% if request.resolver_match.url_name == 'about' %}active{% endif %}">
+            <!-- <a href="{% url 'about' %}" class="nav-item {% if request.resolver_match.url_name == 'about' %}active{% endif %}" title="About">
                 <i data-lucide="info"></i>
                 <span>About</span>
             </a> -->
-            <a href="{% url 'community' %}" class="nav-item {% if request.resolver_match.url_name == 'community' %}active{% endif %}">
+            <a href="{% url 'community' %}" class="nav-item {% if request.resolver_match.url_name == 'community' %}active{% endif %}" title="Community">
                 <i data-lucide="user-group"></i>
                 <span>Community</span>
             </a>
