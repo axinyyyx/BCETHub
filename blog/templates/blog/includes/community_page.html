@@ -1,0 +1,218 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{community.group_name}} - BCETHub{% endblock %}
+
+{% block content %}
+<div class="main-container">
+
+    <div class="contentu">
+        <div class="profile">
+                <div class="pic">
+                    {% if community.group_logo %}
+                    <img src="{{ community.group_logo.url }}" alt="{{ community.group_name }}">
+                    {% endif %}
+                </div>
+                <div class="profile-info">
+                    <h1>{{ community.group_name }}</h1>
+                    <p>{{community.get_group_type_display }}</p>
+                </div>
+            </div>
+            <p>{{ community.group_dec }}</p>
+        <hr>
+        <div class="social-links">
+            {% if community.instagram %}
+                <a href="{{ community.instagram }}" target="_blank" class="google-glow-border">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                    <span>Instagram</span>
+                </a>
+            {% endif %}
+            {% if community.facebook %}
+                <a href="{{ community.facebook }}" target="_blank" class="google-glow-border">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                    <span>Facebook</span>
+                </a>
+            {% endif %}
+            {% if community.linkedin %}
+                <a href="{{ community.linkedin }}" target="_blank" class="google-glow-border">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+                    <span>LinkedIn</span>
+                </a>
+            {% endif %}
+            {% if community.discord %}
+                <a href="{{ community.discord }}" target="_blank" class="google-glow-border">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 5.5a16.04 16.04 0 0 0-4.04-1.23A10.85 10.85 0 0 0 13.5 6.2a15.82 15.82 0 0 0-5 0A10.85 10.85 0 0 0 7.04 4.27 16.04 16.04 0 0 0 3 5.5c-2.58 6.02-3.29 11.85-1.42 17.58a16.3 16.3 0 0 0 5.11 2.58c.41-.56.78-1.16 1.09-1.8a10.88 10.88 0 0 1-1.74-.84c.12-.09.24-.19.35-.29 3.34 1.55 6.96 1.55 10.26 0 .12.1.24.2.35.29-.55.32-1.13.6-1.74.84.31.64.68 1.24 1.09 1.8a16.3 16.3 0 0 0 5.12-2.58c2.09-6.33-.48-12.15-1.42-17.58ZM8.82 17.5c-1.01 0-1.84-.94-1.84-2.1 0-1.16.85-2.1 1.84-2.1 1.01 0 1.86.95 1.84 2.1 0 1.16-.84 2.1-1.84 2.1Zm6.36 0c-1.01 0-1.84-.94-1.84-2.1 0-1.16.85-2.1 1.84-2.1 1.01 0 1.86.95 1.84 2.1 0 1.16-.83 2.1-1.84 2.1Z"/></svg>
+                    <span>Discord</span>
+                </a>
+            {% endif %}
+            {% if community.other %}
+                <a href="{{ community.other }}" target="_blank" class="google-glow-border">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                    <span>{{ com.other_title|default:"Website" }}</span>
+                </a>
+            {% endif %}
+
+            {% if community.join %}
+                <a href="{{ community.join }}" target="_blank" class="bcet-btn-join google-glow-border">
+                    <i data-lucide="user-plus"></i> <span>Join</span>
+                </a>
+            {% endif %}
+
+            <a href="#" onclick="navigator.share({title: document.title, url: location.href})" class="google-glow-border">
+                <i data-lucide="share-2"></i> 
+                <span>Share</span>
+            </a>
+        </div>
+    </div>
+    <div class="contentd">
+        <h2>Hello, BCETians</h2>
+        <br>
+        <p>I'm excited to introduce you to our vibrant BCET community!</p>
+    </div>
+</div>
+<style>
+    .main-container {
+        margin: 0 auto;
+    }
+
+    .contentu {
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        margin-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .profile {
+       display: flex;
+        /* flex-direction: column; */
+        align-items: center;
+        justify-content: flex-start;
+        margin: 0px 0;
+        gap: 40px;
+    }
+
+    .profile-info {
+        display: flex;
+        flex-direction: column;
+        justify-content: initial;
+        align-items: flex-start;
+        gap: 5px;
+    }
+
+    .profile-info h1 {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+    .profile .bcet-btn-join {
+        border: 1px solid #e2e8f0;
+        color: #ffffff;
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+        min-height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        flex-shrink: 0;
+        text-decoration: none;
+    }
+
+    .profile .pic {
+        width: 100px;
+        height: 100px;
+        min-width: 100px;
+        min-height: 100px;
+        flex-shrink: 0;
+        overflow: hidden;
+        border-radius: 50%;
+        border: 2px solid #e2e8f0;
+    }
+
+    .profile .pic img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* .profile-dec {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    } */
+    
+    .profile-info p {
+        font-size: 15px;
+        font-weight: 500;
+        text-align: center;
+    }
+
+    .social-links {
+        max-width: 800px;
+        color: #e5e7e9;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .social-links a {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 11px;
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        font-size: 15px;
+        font-weight: 600;
+        color: #ffffff;
+        text-decoration: none;
+        max-width: 100%;
+        overflow-wrap: break-word;
+        transition: all 0.15s ease;
+    }
+
+    .social-links a:hover {
+        box-shadow: 0 12px 24px -4px rgba(15, 23, 42, 0.08);
+        color: #ffffff;
+    }
+
+    .social-links a svg {
+        flex-shrink: 0;
+    }
+
+    .contentd {
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        margin-bottom: 20px;
+    }
+
+    @media (max-width: 768px) {
+        .profile {
+            gap: 15px;
+        }
+        .profile-info h1 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .social-links a span{
+            display: none;
+        }
+    }
+
+</style>
+
+{% endblock %}
