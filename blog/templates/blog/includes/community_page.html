@@ -1,218 +1,1006 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{{community.group_name}} - BCETHub{% endblock %}
+{% block title %}{{ community.group_name }} - BCETHub{% endblock %}
 
 {% block content %}
-<div class="main-container">
-
-    <div class="contentu">
-        <div class="profile">
-                <div class="pic">
-                    {% if community.group_logo %}
-                    <img src="{{ community.group_logo.url }}" alt="{{ community.group_name }}">
-                    {% endif %}
-                </div>
-                <div class="profile-info">
-                    <h1>{{ community.group_name }}</h1>
-                    <p>{{community.get_group_type_display }}</p>
-                </div>
+<div class="bcet-profile-wrapper">
+    <!-- Club admin bar -->
+    {% if is_owner %}
+    <div class="bcet-owner-banner">
+        <div
+            class="bcet-owner-status"
+            hx-get="{% url 'greetings' %}"
+            hx-trigger="load"
+            hx-target="#output-div"
+            hx-swap="innerHTML"
+        >
+            <div>
+                <strong id="output-div">
+                </strong>
             </div>
-            <p>{{ community.group_dec }}</p>
-        <hr>
-        <div class="social-links">
-            {% if community.instagram %}
-                <a href="{{ community.instagram }}" target="_blank" class="google-glow-border">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
-                    <span>Instagram</span>
-                </a>
-            {% endif %}
-            {% if community.facebook %}
-                <a href="{{ community.facebook }}" target="_blank" class="google-glow-border">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
-                    <span>Facebook</span>
-                </a>
-            {% endif %}
-            {% if community.linkedin %}
-                <a href="{{ community.linkedin }}" target="_blank" class="google-glow-border">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
-                    <span>LinkedIn</span>
-                </a>
-            {% endif %}
-            {% if community.discord %}
-                <a href="{{ community.discord }}" target="_blank" class="google-glow-border">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 5.5a16.04 16.04 0 0 0-4.04-1.23A10.85 10.85 0 0 0 13.5 6.2a15.82 15.82 0 0 0-5 0A10.85 10.85 0 0 0 7.04 4.27 16.04 16.04 0 0 0 3 5.5c-2.58 6.02-3.29 11.85-1.42 17.58a16.3 16.3 0 0 0 5.11 2.58c.41-.56.78-1.16 1.09-1.8a10.88 10.88 0 0 1-1.74-.84c.12-.09.24-.19.35-.29 3.34 1.55 6.96 1.55 10.26 0 .12.1.24.2.35.29-.55.32-1.13.6-1.74.84.31.64.68 1.24 1.09 1.8a16.3 16.3 0 0 0 5.12-2.58c2.09-6.33-.48-12.15-1.42-17.58ZM8.82 17.5c-1.01 0-1.84-.94-1.84-2.1 0-1.16.85-2.1 1.84-2.1 1.01 0 1.86.95 1.84 2.1 0 1.16-.84 2.1-1.84 2.1Zm6.36 0c-1.01 0-1.84-.94-1.84-2.1 0-1.16.85-2.1 1.84-2.1 1.01 0 1.86.95 1.84 2.1 0 1.16-.83 2.1-1.84 2.1Z"/></svg>
-                    <span>Discord</span>
-                </a>
-            {% endif %}
-            {% if community.other %}
-                <a href="{{ community.other }}" target="_blank" class="google-glow-border">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                    <span>{{ com.other_title|default:"Website" }}</span>
-                </a>
-            {% endif %}
-
-            {% if community.join %}
-                <a href="{{ community.join }}" target="_blank" class="bcet-btn-join google-glow-border">
-                    <i data-lucide="user-plus"></i> <span>Join</span>
-                </a>
-            {% endif %}
-
-            <a href="#" onclick="navigator.share({title: document.title, url: location.href})" class="google-glow-border">
-                <i data-lucide="share-2"></i> 
-                <span>Share</span>
+        </div>
+        <div class="bcet-owner-actions">
+            <a href="{% url 'community_post_create' username=community.username %}" class="bcet-action-btn google-glow-border">
+                <i data-lucide="plus-circle"></i>
+                <span>Create Post</span>
+            </a>
+            <a href="{% url 'community_logout' %}" class="bcet-action-btn bcet-btn-danger">
+                <i data-lucide="log-out"></i>
+                <span>Logout</span>
             </a>
         </div>
     </div>
-    <div class="contentd">
-        <h2>Hello, BCETians</h2>
-        <br>
-        <p>I'm excited to introduce you to our vibrant BCET community!</p>
+    {% endif %}
+
+    <!-- Club profile card -->
+    <div class="bcet-profile-card">
+        <div class="bcet-profile-head">
+            <!-- Club avatar box -->
+            <div class="bcet-profile-avatar">
+                {% if community.group_logo %}
+                <img src="{{ community.group_logo.url }}" alt="{{ community.group_name }}" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';">
+                <span class="bcet-avatar-fallback" style="display: none;">{{ community.group_name|slice:":2"|upper }}</span>
+                {% else %}
+                <span class="bcet-avatar-fallback">{{ community.group_name|slice:":2"|upper }}</span>
+                {% endif %}
+            </div>
+
+            <div class="bcet-profile-details">
+                <div class="bcet-title-row">
+                    <h1 class="bcet-profile-name">{{ community.group_name }}</h1>
+                    <span class="bcet-category-pill">{{ community.get_group_type_display }}</span>
+                </div>
+                <div class="bcet-handle-row">
+                    <span class="bcet-username-handle">@{{ community.username }}</span>
+                </div>
+                <p class="bcet-profile-desc">
+                    {{ community.group_dec|default:"Welcome to our official BCET campus club. Follow our latest updates, activities, and events below." }}
+                </p>
+            </div>
+        </div>
+
+        <!-- Social link chips -->
+        <div class="bcet-profile-socials">
+            {% if community.instagram %}
+            <a href="{{ community.instagram }}" target="_blank" rel="noopener" class="bcet-chip social-links google-glow-border">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                <span>Instagram</span>
+            </a>
+            {% endif %}
+
+            {% if community.facebook %}
+            <a href="{{ community.facebook }}" target="_blank" rel="noopener" class="bcet-chip social-links google-glow-border">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                <span>Facebook</span>
+            </a>
+            {% endif %}
+
+            {% if community.linkedin %}
+            <a href="{{ community.linkedin }}" target="_blank" rel="noopener" class="bcet-chip social-links google-glow-border">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+                <span>LinkedIn</span>
+            </a>
+            {% endif %}
+
+            {% if community.discord %}
+            <a href="{{ community.discord }}" target="_blank" rel="noopener" class="bcet-chip social-links google-glow-border">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 5.5a16.04 16.04 0 0 0-4.04-1.23A10.85 10.85 0 0 0 13.5 6.2a15.82 15.82 0 0 0-5 0A10.85 10.85 0 0 0 7.04 4.27 16.04 16.04 0 0 0 3 5.5c-2.58 6.02-3.29 11.85-1.42 17.58a16.3 16.3 0 0 0 5.11 2.58c.41-.56.78-1.16 1.09-1.8a10.88 10.88 0 0 1-1.74-.84c.12-.09.24-.19.35-.29 3.34 1.55 6.96 1.55 10.26 0 .12.1.24.2.35.29-.55.32-1.13.6-1.74.84.31.64.68 1.24 1.09 1.8a16.3 16.3 0 0 0 5.12-2.58c2.09-6.33-.48-12.15-1.42-17.58ZM8.82 17.5c-1.01 0-1.84-.94-1.84-2.1 0-1.16.85-2.1 1.84-2.1 1.01 0 1.86.95 1.84 2.1 0 1.16-.84 2.1-1.84 2.1Zm6.36 0c-1.01 0-1.84-.94-1.84-2.1 0-1.16.85-2.1 1.84-2.1 1.01 0 1.86.95 1.84 2.1 0 1.16-.83 2.1-1.84 2.1Z"/></svg>
+                <span>Discord</span>
+            </a>
+            {% endif %}
+
+            {% if community.other %}
+            <a href="{{ community.other }}" target="_blank" rel="noopener" class="bcet-chip social-links google-glow-border">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                <span>{{ community.other_title|default:"Website" }}</span>
+            </a>
+            {% endif %}
+
+            {% if community.join %}
+            <a href="{{ community.join }}" target="_blank" rel="noopener" class="bcet-chip bcet-chip-join social-links google-glow-border">
+                <i data-lucide="user-plus"></i>
+                <span>Join Club</span>
+            </a>
+            {% endif %}
+
+            <button type="button" onclick="navigator.share ? navigator.share({title: '{{ community.group_name|escapejs }} - BCETHub', url: window.location.href}) : copyCommunityUrl(this)" class="bcet-chip social-links google-glow-border" id="btn-share-club">
+                <i data-lucide="share-2"></i>
+                <span>Share</span>
+            </button>
+
+            {% if not is_owner %}
+            <a href="{% url 'community_login' %}?next={{ request.path }}" class="bcet-chip bcet-chip-login social-links google-glow-border">
+                <i data-lucide="shield-check"></i>
+                <span>Club Login</span>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Feed posts section -->
+    <div class="bcet-posts-section">
+        <div class="bcet-section-header">
+            <div class="bcet-section-title-wrap">
+                <i data-lucide="rss"></i>
+                <h2>Community Feed &amp; Updates</h2>
+            </div>
+            <span class="bcet-post-count">{{ posts|length }} Post{{ posts|length|pluralize }}</span>
+        </div>
+
+        <!-- Post filter tabs -->
+        <div class="bcet-feed-tabs" id="feed-filter-tabs">
+            <button type="button" class="bcet-tab-btn is-active" onclick="filterPosts('all', this)">All ({{ posts|length }})</button>
+            <button type="button" class="bcet-tab-btn google-glow-border" onclick="filterPosts('event', this)">Events</button>
+            <button type="button" class="bcet-tab-btn google-glow-border" onclick="filterPosts('announcement', this)">Announcements</button>
+            <button type="button" class="bcet-tab-btn google-glow-border" onclick="filterPosts('activity', this)">Activities</button>
+            <button type="button" class="bcet-tab-btn google-glow-border" onclick="filterPosts('blog', this)">Blogs</button>
+            <button type="button" class="bcet-tab-btn google-glow-border" onclick="filterPosts('achievement', this)">Achievements</button>
+        </div>
+
+        {% if posts %}
+        <div class="bcet-posts-grid" id="bcet-posts-container">
+            {% for post in posts %}
+            <div class="bcet-post-item" data-type="{{ post.post_type|lower }}">
+                {% if post.cover_image %}
+                <div class="bcet-post-cover">
+                    <a href="{% url 'community_post_detail' username=community.username slug=post.slug %}">
+                        <img src="{{ post.cover_image.url }}" alt="{{ post.title }}" loading="lazy">
+                    </a>
+                </div>
+                {% endif %}
+
+                <div class="bcet-post-body">
+                    <div class="bcet-post-meta">
+                        <span class="bcet-type-tag {{ post.post_type|lower }}">{{ post.get_post_type_display }}</span>
+                        
+                        {% if post.computed_status_label %}
+                            <span class="bcet-event-status-tag {{ post.computed_event_status|lower }}">{{ post.computed_status_label }}</span>
+                        {% endif %}
+
+                        {% if is_owner %}
+                            <span class="bcet-status-pill {{ post.status|lower }}">{{ post.get_status_display }}</span>
+                        {% endif %}
+
+                        <span class="bcet-post-date">{{ post.created_at|date:"d M Y" }}</span>
+                    </div>
+
+                    <h3 class="bcet-post-title">
+                        <a href="{% url 'community_post_detail' username=community.username slug=post.slug %}" class="bcet-post-title-link">
+                            {{ post.title }}
+                        </a>
+                    </h3>
+
+                    {% if post.event_date or post.venue %}
+                    <div class="bcet-event-details">
+                        {% if post.event_date %}
+                        <span><i data-lucide="calendar"></i> {{ post.event_date|date:"d M Y, h:i A" }}</span>
+                        {% endif %}
+                        {% if post.venue %}
+                        <span><i data-lucide="map-pin"></i> {{ post.venue }}</span>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <p class="bcet-post-desc">{{ post.clean_snippet }}</p>
+
+                    <!-- Registration action link -->
+                    {% if post.link_url %}
+                    <div class="bcet-post-link-bar">
+                        <a href="{{ post.link_url }}" target="_blank" rel="noopener" class="bcet-chip bcet-chip-link">
+                            <i data-lucide="external-link"></i>
+                            <span>{{ post.link_title|default:"Registration / Form Link" }}</span>
+                        </a>
+                    </div>
+                    {% endif %}
+
+                    {% if post.images.all %}
+                    <div class="bcet-post-gallery">
+                        {% for img in post.images.all %}
+                        <a href="{{ img.image.url }}" target="_blank" class="bcet-gallery-thumb">
+                            <img src="{{ img.image.url }}" alt="Gallery Image" loading="lazy">
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <div class="bcet-post-card-foot">
+                        <a href="{% url 'community_post_detail' username=community.username slug=post.slug %}" class="bcet-chip bcet-chip-read">
+                            <span>Read Full Post</span>
+                            <i data-lucide="arrow-right"></i>
+                        </a>
+
+                        <div class="bcet-post-sub-actions">
+                            <button type="button" onclick="navigator.share ? navigator.share({title: '{{ post.title|escapejs }} - {{ community.group_name|escapejs }}', url: window.location.origin + '{% url 'community_post_detail' username=community.username slug=post.slug %}'}) : copyPostUrl(this, window.location.origin + '{% url 'community_post_detail' username=community.username slug=post.slug %}')" class="bcet-chip btn-icon-only" title="Share Post">
+                                <i data-lucide="share-2"></i>
+                            </button>
+
+                            {% if is_owner %}
+                            <a href="{% url 'community_post_edit' username=community.username post_id=post.id %}" class="bcet-chip btn-icon-only" title="Edit Post">
+                                <i data-lucide="edit-3"></i>
+                            </a>
+                            <form method="POST" action="{% url 'community_post_delete' username=community.username post_id=post.id %}" onsubmit="return confirm('Delete this post?');" class="bcet-inline-form">
+                                {% csrf_token %}
+                                <button type="submit" class="bcet-chip btn-icon-only bcet-btn-danger" title="Delete Post">
+                                    <i data-lucide="trash-2"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div id="filter-empty-state" class="bcet-empty-posts" style="display: none;">
+            <i data-lucide="filter"></i>
+            <h3>No posts found</h3>
+            <p>No community updates match this specific post type category.</p>
+        </div>
+        {% else %}
+        <div class="bcet-empty-posts">
+            <i data-lucide="newspaper"></i>
+            <h3>No updates published yet</h3>
+            <p>Stay tuned! {{ community.group_name }} will publish upcoming events, announcements, and blogs here.</p>
+            {% if is_owner %}
+            <a href="{% url 'community_post_create' username=community.username %}" class="first-post-btn">
+                <i data-lucide="plus"></i>
+                <span>Create First Post</span>
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
     </div>
 </div>
+
+<script>
+    // Filter feed posts
+    function filterPosts(type, btn) {
+        const tabs = document.querySelectorAll('#feed-filter-tabs .bcet-tab-btn');
+        tabs.forEach(t => t.classList.remove('is-active') || t.classList.add('google-glow-border'));
+        if (btn) btn.classList.add('is-active') || btn.classList.remove('google-glow-border');
+
+        const items = document.querySelectorAll('#bcet-posts-container .bcet-post-item');
+        let visibleCount = 0;
+
+        items.forEach(item => {
+            const itemType = item.getAttribute('data-type');
+            if (type === 'all' || itemType === type) {
+                item.style.display = 'flex';
+                visibleCount++;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+
+        const empty = document.getElementById('filter-empty-state');
+        if (empty) {
+            empty.style.display = (visibleCount === 0 && items.length > 0) ? 'block' : 'none';
+        }
+    }
+
+    // Copy community link
+    function copyCommunityUrl(btn) {
+        navigator.clipboard.writeText(window.location.href).then(() => {
+            if (btn) {
+                const orig = btn.innerHTML;
+                btn.innerHTML = '<i data-lucide="check"></i> <span>Copied!</span>';
+                if (window.lucide) lucide.createIcons();
+                setTimeout(() => {
+                    btn.innerHTML = orig;
+                    if (window.lucide) lucide.createIcons();
+                }, 2000);
+            }
+        });
+    }
+
+    // Copy post link
+    function copyPostUrl(btn, url) {
+        navigator.clipboard.writeText(url).then(() => {
+            if (btn) {
+                const orig = btn.innerHTML;
+                btn.innerHTML = '<i data-lucide="check"></i>';
+                if (window.lucide) lucide.createIcons();
+                setTimeout(() => {
+                    btn.innerHTML = orig;
+                    if (window.lucide) lucide.createIcons();
+                }, 2000);
+            }
+        });
+    }
+</script>
+
 <style>
-    .main-container {
-        margin: 0 auto;
-    }
-
-    .contentu {
-        padding: 20px;
-        border-radius: 8px;
-        border: 1px solid #e2e8f0;
-        margin-bottom: 20px;
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
-
-    .profile {
-       display: flex;
-        /* flex-direction: column; */
+    /* Chip outline buttons */
+    .bcet-chip {
+        display: inline-flex;
         align-items: center;
-        justify-content: flex-start;
-        margin: 0px 0;
-        gap: 40px;
+        gap: 6px;
+        padding: 7px 14px;
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-primary);
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        white-space: nowrap;
     }
 
-    .profile-info {
-        display: flex;
-        flex-direction: column;
-        justify-content: initial;
-        align-items: flex-start;
-        gap: 5px;
+    .bcet-chip:hover {
+        border-color: var(--text-primary);
+        color: var(--text-primary);
+        transform: translateY(-1px);
+}
+
+    .bcet-chip svg,
+    .bcet-chip i[data-lucide] {
+        width: 15px;
+        height: 15px;
+        flex-shrink: 0;
     }
 
-    .profile-info h1 {
-        font-size: 24px;
+    /* Post type badges */
+    .bcet-type-tag {
+        display: inline-flex;
+        align-items: center;
+        padding: 3px 8px;
+        border-radius: 5px;
+        font-size: 10.5px;
         font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .bcet-type-tag.event {
+        background: rgba(56, 189, 248, 0.12);
+        color: #38bdf8;
+        border: 1px solid rgba(56, 189, 248, 0.35);
+    }
+
+    .bcet-type-tag.announcement {
+        background: rgba(245, 158, 11, 0.12);
+        color: #fbbf24;
+        border: 1px solid rgba(245, 158, 11, 0.35);
+    }
+
+    .bcet-type-tag.activity {
+        background: rgba(168, 85, 247, 0.12);
+        color: #c084fc;
+        border: 1px solid rgba(168, 85, 247, 0.35);
+    }
+
+    .bcet-type-tag.achievement {
+        background: rgba(236, 72, 153, 0.12);
+        color: #f472b6;
+        border: 1px solid rgba(236, 72, 153, 0.35);
+    }
+
+    .bcet-type-tag.blog {
+        background: rgba(34, 197, 94, 0.12);
+        color: #4ade80;
+        border: 1px solid rgba(34, 197, 94, 0.35);
+    }
+
+    /* Status pill badges */
+    .bcet-status-pill {
+        font-size: 10px;
+        font-weight: 700;
+        padding: 3px 7px;
+        border-radius: 5px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid var(--border-color);
+        color: var(--text-muted);
+    }
+
+    .bcet-status-pill.published {
+        background: rgba(34, 197, 94, 0.1);
+        border-color: rgba(34, 197, 94, 0.3);
+        color: #4ade80;
+    }
+
+    .bcet-status-pill.draft {
+        background: rgba(245, 158, 11, 0.1);
+        border-color: rgba(245, 158, 11, 0.3);
+        color: #fbbf24;
+    }
+
+    .bcet-avatar-fallback {
+        font-size: 26px;
+        font-weight: 800;
+        color: #38bdf8;
+    }
+
+    /* Profile wrapper */
+    .bcet-profile-wrapper {
+        width: 100%;
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 16px 40px 16px;
+        box-sizing: border-box;
+    }
+
+    /* Admin top banner */
+    .bcet-owner-banner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 20px;
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 14px;
+        margin-bottom: 22px;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .bcet-owner-status {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .bcet-owner-status strong {
+        display: block;
+        font-size: 13.5px;
         color: var(--text-primary);
     }
 
-    .profile .bcet-btn-join {
-        border: 1px solid #e2e8f0;
-        color: #ffffff;
-        width: 40px;
-        height: 40px;
-        min-width: 40px;
-        min-height: 40px;
+    .bcet-owner-status span {
+        font-size: 14.5px;
+        color: var(--text-muted);
+    }
+
+    .bcet-owner-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .bcet-action-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-primary);
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+
+    .bcet-action-btn:hover {
+        border-color: #0284c7;
+        color:  var(--text-primary);
+    }
+
+    .bcet-action-btn svg {
+        width: 15px;
+        height: 15px;
+    }
+
+    .bcet-btn-danger {
+        color:#ef4444 !important;
+        border-color:#ef4444 !important;
+    }
+
+    .bcet-btn-danger:hover {
+        background-color: #ef4444 !important;
+        color: #ffffff !important;
+    }
+
+    /* Club header card */
+    .bcet-profile-card {
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 28px;
+        margin-bottom: 28px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .bcet-profile-head {
+        display: flex;
+        align-items: flex-start;
+        gap: 24px;
+        margin-bottom: 20px;
+    }
+
+    .bcet-profile-avatar {
+        width: 96px;
+        height: 96px;
+        min-width: 96px;
         border-radius: 50%;
+        background-color: var(--card-bg);
+        border: 2px solid var(--border-color);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 12px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        flex-shrink: 0;
-        text-decoration: none;
-    }
-
-    .profile .pic {
-        width: 100px;
-        height: 100px;
-        min-width: 100px;
-        min-height: 100px;
-        flex-shrink: 0;
         overflow: hidden;
-        border-radius: 50%;
-        border: 2px solid #e2e8f0;
+        flex-shrink: 0;
     }
 
-    .profile .pic img {
-        display: block;
+    .bcet-profile-avatar img {
         width: 100%;
         height: 100%;
         object-fit: cover;
     }
 
-    /* .profile-dec {
+    .bcet-profile-avatar span {
+        font-size: 30px;
+        font-weight: 800;
+        color: var(--text-muted);
+    }
+
+    .bcet-profile-details {
+        flex: 1 1 auto;
         min-width: 0;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    } */
-    
-    .profile-info p {
-        font-size: 15px;
-        font-weight: 500;
-        text-align: center;
     }
 
-    .social-links {
-        max-width: 800px;
-        color: #e5e7e9;
+    .bcet-title-row {
         display: flex;
-        gap: 10px;
+        align-items: center;
+        gap: 12px;
         flex-wrap: wrap;
+        margin-bottom: 6px;
     }
 
-    .social-links a {
+    .bcet-profile-name {
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin: 0;
+    }
+
+    .bcet-category-pill {
         display: inline-flex;
         align-items: center;
-        gap: 5px;
-        padding: 6px 11px;
+        padding: 4px 10px;
+        border: 1px solid var(--border-color);
+        font-size: 11px;
+        font-weight: 700;
+        border-radius: 5px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .bcet-handle-row {
+        margin-bottom: 12px;
+    }
+
+    .bcet-username-handle {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-muted);
+    }
+
+    .bcet-profile-desc {
+        font-size: 14px;
+        line-height: 1.65;
+        color: var(--text-muted);
+        margin: 0;
+    }
+
+    /* Social links row */
+    .bcet-profile-socials {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        padding-top: 20px;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .bcet-chip-join {
+        border-color: var(--border-color) !important;
+        color: var(--text-primary) !important;
+    }
+
+    .bcet-chip-join:hover {
+        border-color: var(--text-primary) !important;
+        color: var(--text-primary) !important;
+    }
+
+    .bcet-chip-login {
+        margin-left: auto;
+        border-color: var(--border-color) !important;
+        color: var(--text-primary) !important;
+    }
+
+    .bcet-chip-read {
+        padding: 6px 12px !important;
+        font-size: 12px !important;
+    }
+
+    .btn-icon-only {
+        padding: 6px 10px !important;
+    }
+
+    .btn-icon-only svg {
+        width: 14px;
+        height: 14px;
+    }
+
+    /* Feed section container */
+    .bcet-posts-section {
+        margin-top: 28px;
+    }
+
+    .bcet-section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .bcet-section-title-wrap {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .bcet-section-title-wrap h2 {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0;
+    }
+
+    .bcet-section-title-wrap svg {
+        width: 20px;
+        height: 20px;
+        color: #38bdf8;
+    }
+
+    .bcet-post-count {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-muted);
         background-color: var(--card-bg);
         border: 1px solid var(--border-color);
-        border-radius: 6px;
-        font-size: 15px;
-        font-weight: 600;
-        color: #ffffff;
-        text-decoration: none;
-        max-width: 100%;
-        overflow-wrap: break-word;
-        transition: all 0.15s ease;
+        padding: 4px 12px;
+        border-radius: 5px;
     }
 
-    .social-links a:hover {
-        box-shadow: 0 12px 24px -4px rgba(15, 23, 42, 0.08);
-        color: #ffffff;
-    }
-
-    .social-links a svg {
-        flex-shrink: 0;
-    }
-
-    .contentd {
-        padding: 20px;
-        border-radius: 8px;
-        border: 1px solid #e2e8f0;
+    /* Filter tabs styling */
+    .bcet-feed-tabs {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 8px;
         margin-bottom: 20px;
     }
 
+    .bcet-tab-btn {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 14px;
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 5px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-muted);
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.15s ease;
+    }
+
+    .bcet-tab-btn:hover {
+        border-color: #0284c7;
+        color: var(--text-primary);
+    }
+
+    .bcet-tab-btn.is-active {
+        background: rgba(56, 189, 248, 0.15);
+        border-color: #0284c7;
+        color: #38bdf8;
+    }
+
+    /* Feed cards grid */
+    .bcet-posts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 22px;
+    }
+
+    .bcet-post-item {
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 14px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+    }
+
+    .bcet-post-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+        border-color: #d9dddf;
+    }
+
+    .bcet-post-cover {
+        width: 100%;
+        height: 180px;
+        overflow: hidden;
+        background-color: #12141a;
+    }
+
+    .bcet-post-cover img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.3s ease;
+    }
+
+    .bcet-post-item:hover .bcet-post-cover img {
+        transform: scale(1.02);
+    }
+
+    .bcet-post-body {
+        padding: 18px;
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 auto;
+    }
+
+    .bcet-post-meta {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+        flex-wrap: wrap;
+    }
+
+    .bcet-post-date {
+        font-size: 11px;
+        color: var(--text-muted);
+        margin-left: auto;
+    }
+
+    /* Event status badge */
+    .bcet-event-status-tag {
+        font-size: 10px;
+        font-weight: 700;
+        padding: 3px 8px;
+        border-radius: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .bcet-event-status-tag.upcoming {
+        background: rgba(34, 197, 94, 0.15);
+        color: #4ade80;
+        border: 1px solid rgba(34, 197, 94, 0.35);
+    }
+
+    .bcet-event-status-tag.completed {
+        background: rgba(148, 163, 184, 0.15);
+        color: #94a3b8;
+        border: 1px solid rgba(148, 163, 184, 0.3);
+    }
+
+    .bcet-event-status-tag.cancelled {
+        background: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+        border: 1px solid rgba(239, 68, 68, 0.35);
+    }
+
+    .bcet-post-title {
+        font-size: 17px;
+        font-weight: 700;
+        margin: 0 0 10px 0;
+        line-height: 1.35;
+    }
+
+    .bcet-post-title-link {
+        color: var(--text-primary);
+        text-decoration: none;
+        transition: color 0.15s ease;
+    }
+
+    /* Event meta card */
+    .bcet-event-details {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 12px;
+        padding: 8px 12px;
+        background: rgba(15, 23, 42, 0.5);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 12px;
+        color: var(--text-muted);
+    }
+
+    .bcet-event-details span {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .bcet-event-details svg {
+        width: 13px;
+        height: 13px;
+        color: #38bdf8;
+    }
+
+    .bcet-post-desc {
+        font-size: 13.5px;
+        line-height: 1.55;
+        color: var(--text-muted);
+        margin: 0 0 14px 0;
+        flex: 1 1 auto;
+    }
+
+    /* External link chip */
+    .bcet-post-link-bar {
+        margin-bottom: 14px;
+    }
+
+    .bcet-chip-link {
+        border-color: rgba(56, 189, 248, 0.4) !important;
+        color: #38bdf8 !important;
+        background: rgba(56, 189, 248, 0.08) !important;
+        font-size: 12px !important;
+        padding: 5px 12px !important;
+    }
+
+    .bcet-chip-link:hover {
+        background: rgba(56, 189, 248, 0.18) !important;
+        border-color: #38bdf8 !important;
+        color: #ffffff !important;
+    }
+
+    /* Post gallery thumbs */
+    .bcet-post-gallery {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 6px;
+        margin-bottom: 14px;
+    }
+
+    .bcet-gallery-thumb {
+        width: 58px;
+        height: 58px;
+        border-radius: 6px;
+        overflow: hidden;
+        flex-shrink: 0;
+        border: 1px solid var(--border-color);
+    }
+
+    .bcet-gallery-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .bcet-post-card-foot {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 14px;
+        border-top: 1px solid var(--border-color);
+        margin-top: auto;
+    }
+
+    .bcet-post-sub-actions {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .bcet-inline-form {
+        display: inline;
+    }
+
+    /* Empty state card */
+    .bcet-empty-posts {
+        text-align: center;
+        padding: 50px 20px;
+        background-color: var(--card-bg);
+        border: 1px dashed var(--border-color);
+        border-radius: 14px;
+        color: var(--text-muted);
+    }
+
+    .bcet-empty-posts svg {
+        width: 44px;
+        height: 44px;
+        color: var(--text-muted);
+        margin-bottom: 12px;
+    }
+
+    .bcet-empty-posts h3 {
+        color: var(--text-primary);
+        font-size: 17px;
+        font-weight: 700;
+        margin: 0 0 6px 0;
+    }
+
+    .bcet-empty-posts p {
+        font-size: 13.5px;
+        margin: 0 auto 18px auto;
+        max-width: 460px;
+    }
+
+    /* Mobile media adjustments */
     @media (max-width: 768px) {
-        .profile {
-            gap: 15px;
+        .bcet-profile-head {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 16px;
         }
-        .profile-info h1 {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--text-primary);
+
+        .bcet-title-row {
+            flex-direction: column;
+            justify-content: center;
         }
-        .social-links a span{
+
+        .bcet-profile-socials {
+            justify-content: center;
+        }
+
+        .bcet-chip-login {
+            margin-left: 0;
+        }
+
+        .bcet-owner-status {
+            justify-content: center;
+        }
+
+        .bcet-owner-actions {
+            justify-content: center;
+        }
+
+        .bcet-posts-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .bcet-action-btn span {
             display: none;
         }
     }
 
-</style>
+    .first-post-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        width: fit-content;
+        max-width: 100%;
+        white-space: nowrap;
+        text-decoration: none;
+        border: 1px solid var(--border-color);
+        border-radius: 5px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-primary);
+        transition: all 0.15s ease;
+    }
 
+    .first-post-btn i,
+    .first-post-btn svg {
+        width: 14px !important;
+        height: 14px !important;
+        flex-shrink: 0;
+    }
+
+</style>
 {% endblock %}

@@ -1,0 +1,232 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Community Login - BCETHub{% endblock %}
+
+{% block content %}
+<div class="bcet-login-wrapper">
+    <!-- Club login card -->
+    <div class="bcet-login-card">
+        <div class="bcet-login-header">
+            <div class="bcet-login-icon">
+                <i data-lucide="shield-check"></i>
+            </div>
+            <h2>Club Representative Login</h2>
+            <p>Access your campus community dashboard to publish announcements, events, and club blogs.</p>
+        </div>
+
+        <form method="POST" action="{% url 'community_login' %}" class="bcet-login-form">
+            {% csrf_token %}
+            {% if next %}
+            <input type="hidden" name="next" value="{{ next }}">
+            {% endif %}
+
+            <div class="bcet-form-field">
+                <label for="username">
+                    <i data-lucide="user"></i> Club Username
+                </label>
+                <div class="bcet-input-wrap">
+                    <span class="bcet-input-prefix">@</span>
+                    <input type="text" id="username" name="username" placeholder="e.g. gdg_bcet" required autofocus autocomplete="username" class="bcet-input">
+                </div>
+            </div>
+
+            <div class="bcet-form-field">
+                <label for="password">
+                    <i data-lucide="lock"></i> Password
+                </label>
+                <div class="bcet-input-wrap">
+                    <input type="password" id="password" name="password" placeholder="Enter club password" required autocomplete="current-password" class="bcet-input">
+                </div>
+            </div>
+
+            <button type="submit" class="bcet-btn-login google-glow-border">
+                <i data-lucide="log-in"></i>
+                <span>Sign In to Dashboard</span>
+            </button>
+        </form>
+
+        <div class="bcet-login-footer">
+            <p><i data-lucide="info"></i> Credentials are provided by the developer of the BCETHub.</p>
+            <a href="{% url 'community' %}" class="bcet-social-btn google-glow-border">
+                <i data-lucide="arrow-left"></i>
+                <span>Back to Communities</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bcet-login-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 75vh;
+        padding: 24px 16px;
+    }
+
+    .bcet-login-card {
+        width: 100%;
+        max-width: 440px;
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 30px 24px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .bcet-login-header {
+        text-align: center;
+        margin-bottom: 24px;
+    }
+
+    .bcet-login-icon {
+        width: 48px;
+        height: 48px;
+        margin: 0 auto 12px;
+        border-radius: 50%;
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .bcet-login-icon svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    .bcet-login-header h2 {
+        font-size: 19px;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0 0 6px 0;
+    }
+
+    .bcet-login-header p {
+        font-size: 13px;
+        color: var(--text-muted);
+        line-height: 1.5;
+        margin: 0;
+    }
+
+    .bcet-login-form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .bcet-form-field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .bcet-form-field label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-primary);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .bcet-form-field label svg {
+        width: 14px;
+        height: 14px;
+        color: var(--text-muted);
+    }
+
+    .bcet-input-wrap {
+        display: flex;
+        align-items: center;
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        overflow: hidden;
+        transition: border-color 0.15s ease;
+    }
+
+    .bcet-input-wrap:focus-within {
+        border-color: #0284c7;
+    }
+
+    .bcet-input-prefix {
+        padding: 0 10px;
+        color: var(--text-muted);
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .bcet-input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        outline: none;
+        padding: 10px 12px;
+        color: var(--text-primary);
+        font-size: 14px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .bcet-input::placeholder {
+        color: var(--text-muted);
+    }
+
+    .bcet-btn-login {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 16px;
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-primary);
+        cursor: pointer;
+        transition: all 0.15s ease;
+        margin-top: 6px;
+    }
+
+    .bcet-btn-login:hover {
+        border-color: #0284c7;
+        color: #ffffff;
+    }
+
+    .bcet-btn-login svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .bcet-login-footer {
+        margin-top: 20px;
+        padding-top: 16px;
+        border-top: 1px solid var(--border-color);
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .bcet-login-footer p {
+        font-size: 12px;
+        color: var(--text-muted);
+        margin: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+    }
+
+    .bcet-login-footer p svg {
+        width: 13px;
+        height: 13px;
+    }
+</style>
+{% endblock %}

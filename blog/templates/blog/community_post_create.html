@@ -1,0 +1,557 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if is_edit %}Edit Post - {{ post.title }}{% else %}Create Post - {{ community.group_name }}{% endif %} | BCETHub{% endblock %}
+
+{% block content %}
+<div class="bcet-post-create-wrapper">
+    <div class="bcet-post-card">
+        <!-- Post header bar -->
+        <div class="bcet-post-header">
+            <div class="bcet-post-header-top">
+                <a href="{% url 'community_page' username=community.username %}" class="bcet-back-btn">
+                    <i data-lucide="arrow-left"></i>
+                    <span>Back to Club</span>
+                </a>
+                <span class="bcet-category-tag">
+                    <i data-lucide="tag"></i>
+                    {{ community.get_group_type_display }}
+                </span>
+            </div>
+            <h2>{% if is_edit %}Edit Community Post{% else %}Create New Post{% endif %}</h2>
+            <p>Publishing on behalf of <strong>{{ community.group_name }}</strong> (@{{ community.username }})</p>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" class="bcet-post-form">
+            {% csrf_token %}
+
+            <div class="bcet-form-grid">
+                <div class="bcet-form-field full-width">
+                    <label for="title"><i data-lucide="type"></i> Post Title *</label>
+                    <input type="text" id="title" name="title" value="{{ post.title|default:'' }}" required placeholder="e.g. Annual Tech Symposium or Workshop Highlights" class="bcet-input">
+                </div>
+
+                <div class="bcet-form-field">
+                    <label for="post_type"><i data-lucide="bookmark"></i> Post Type *</label>
+                    <select id="post_type" name="post_type" class="bcet-select">
+                        {% for val, label in post_types %}
+                        <option value="{{ val }}" {% if post.post_type == val or not post and val == 'BLOG' %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="bcet-form-field">
+                    <label for="status"><i data-lucide="eye"></i> Visibility Status *</label>
+                    <select id="status" name="status" class="bcet-select">
+                        {% for val, label in status_choices %}
+                        <option value="{{ val }}" {% if post.status == val or not post and val == 'PUBLISHED' %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Markdown editor wrapper -->
+                <div class="bcet-form-field full-width">
+                    <label for="description"><i data-lucide="align-left"></i> Content (Markdown Supported) *</label>
+
+                    <div class="bcet-md-editor-wrap">
+                        <div class="bcet-md-toolbar">
+                            <div class="bcet-md-tools">
+                                <button type="button" class="bcet-md-tool-btn" onclick="insertMd('**', '**', 'bold text')" title="Bold"><b>B</b></button>
+                                <button type="button" class="bcet-md-tool-btn" onclick="insertMd('*', '*', 'italic text')" title="Italic"><i>I</i></button>
+                                <button type="button" class="bcet-md-tool-btn" onclick="insertMd('### ', '', 'Heading')" title="Heading">H</button>
+                                <button type="button" class="bcet-md-tool-btn" onclick="insertMd('- ', '', 'List item')" title="Bullet List">• List</button>
+                                <button type="button" class="bcet-md-tool-btn" onclick="insertMd('[', '](url)', 'link text')" title="Link">Link</button>
+                                <button type="button" class="bcet-md-tool-btn" onclick="insertMd('> ', '', 'Quote text')" title="Quote">Quote</button>
+                                <button type="button" class="bcet-md-tool-btn" onclick="insertMd('```\n', '\n```', 'code block')" title="Code">Code</button>
+                            </div>
+                            <div class="bcet-md-tabs">
+                                <button type="button" class="bcet-md-tab-btn is-active" id="btn-tab-write" onclick="setEditorTab('write')">Write</button>
+                                <button type="button" class="bcet-md-tab-btn" id="btn-tab-preview" onclick="setEditorTab('preview')">Preview</button>
+                            </div>
+                        </div>
+
+                        <div id="pane-write">
+                            <textarea id="description" name="description" rows="11" required placeholder="Write post content using markdown (# Heading, **bold**, - list, > quote, ``` code, etc.)..." class="bcet-textarea">{{ post.description|default:'' }}</textarea>
+                        </div>
+                        <div id="pane-preview" style="display: none;" class="bcet-md-preview-box">
+                            <div id="preview-content">Type in Write tab to see preview...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- External form links -->
+                <div class="bcet-form-field">
+                    <label for="link_title"><i data-lucide="tag"></i> Link Title (Optional)</label>
+                    <input type="text" id="link_title" name="link_title" value="{{ post.link_title|default:'' }}" placeholder="e.g. Registration Form / WhatsApp Group" class="bcet-input">
+                    <span class="bcet-input-hint">Button title shown to students</span>
+                </div>
+
+                <div class="bcet-form-field">
+                    <label for="link_url"><i data-lucide="link"></i> Link URL (Optional)</label>
+                    <input type="url" id="link_url" name="link_url" value="{{ post.link_url|default:'' }}" placeholder="https://forms.gle/... or https://..." class="bcet-input">
+                    <span class="bcet-input-hint">Direct form or registration link</span>
+                </div>
+
+                <div class="bcet-form-field">
+                    <label for="cover_image"><i data-lucide="image"></i> Cover Banner Image</label>
+                    <input type="file" id="cover_image" name="cover_image" accept="image/*" class="bcet-file-input">
+                    <span class="bcet-input-hint">Recommended banner ratio 16:9 (JPG, PNG, WebP)</span>
+                </div>
+
+                <div class="bcet-form-field">
+                    <label for="gallery_images"><i data-lucide="images"></i> Additional Gallery Photos</label>
+                    <input type="file" id="gallery_images" name="gallery_images" accept="image/*" multiple class="bcet-file-input">
+                    <span class="bcet-input-hint">Select multiple event photos for the gallery</span>
+                </div>
+
+                <div class="bcet-form-field">
+                    <label for="event_date"><i data-lucide="calendar"></i> Event Date &amp; Time (Optional)</label>
+                    <input type="datetime-local" id="event_date" name="event_date" value="{{ post.event_date|date:'Y-m-d\TH:i' }}" class="bcet-input">
+                </div>
+
+                <div class="bcet-form-field">
+                    <label for="venue"><i data-lucide="map-pin"></i> Venue / Location (Optional)</label>
+                    <input type="text" id="venue" name="venue" value="{{ post.venue|default:'' }}" placeholder="e.g. Auditorium / Seminar Hall / Online" class="bcet-input">
+                </div>
+
+                <div class="bcet-form-field full-width">
+                    <label for="event_status"><i data-lucide="activity"></i> Manual Event Status (Optional Override)</label>
+                    <select id="event_status" name="event_status" class="bcet-select">
+                        <option value="">Auto (Upcoming before date, Completed after date)</option>
+                        <option value="UPCOMING" {% if post.event_status == 'UPCOMING' %}selected{% endif %}>Upcoming</option>
+                        <option value="COMPLETED" {% if post.event_status == 'COMPLETED' %}selected{% endif %}>Completed</option>
+                        <option value="CANCELLED" {% if post.event_status == 'CANCELLED' %}selected{% endif %}>Cancelled</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Form submission actions -->
+            <div class="bcet-form-actions">
+                <a href="{% url 'community_page' username=community.username %}" class="bcet-btn-cancel">Cancel</a>
+                <button type="submit" class="bcet-btn-publish">
+                    <i data-lucide="{% if is_edit %}save{% else %}send{% endif %}"></i>
+                    <span>{% if is_edit %}Update Post{% else %}Publish Post{% endif %}</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.9/dist/purify.min.js"></script>
+<script>
+    // Tab toggle helper
+    function setEditorTab(tab) {
+        const writePane = document.getElementById('pane-write');
+        const prevPane = document.getElementById('pane-preview');
+        const btnWrite = document.getElementById('btn-tab-write');
+        const btnPrev = document.getElementById('btn-tab-preview');
+        const textVal = document.getElementById('description').value;
+
+        if (tab === 'preview') {
+            writePane.style.display = 'none';
+            prevPane.style.display = 'block';
+            btnWrite.classList.remove('is-active');
+            btnPrev.classList.add('is-active');
+
+            if (window.marked && window.DOMPurify) {
+                const html = DOMPurify.sanitize(marked.parse(textVal || '*Nothing to preview yet.*'));
+                document.getElementById('preview-content').innerHTML = html;
+            }
+        } else {
+            writePane.style.display = 'block';
+            prevPane.style.display = 'none';
+            btnWrite.classList.add('is-active');
+            btnPrev.classList.remove('is-active');
+        }
+    }
+
+    // Insert markdown tags
+    function insertMd(prefix, suffix, defaultVal) {
+        const ta = document.getElementById('description');
+        if (!ta) return;
+        setEditorTab('write');
+
+        const start = ta.selectionStart;
+        const end = ta.selectionEnd;
+        const selected = ta.value.substring(start, end) || defaultVal;
+        const replacement = prefix + selected + suffix;
+
+        ta.value = ta.value.substring(0, start) + replacement + ta.value.substring(end);
+        ta.focus();
+        ta.setSelectionRange(start + prefix.length, start + prefix.length + selected.length);
+    }
+</script>
+
+<style>
+    /* Wrapper container styles */
+    .bcet-post-create-wrapper {
+        width: 100%;
+        max-width: 880px;
+        margin: 20px auto 40px auto;
+        padding: 0 16px;
+        box-sizing: border-box;
+    }
+
+    .bcet-post-card {
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 30px;
+        box-sizing: border-box;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    }
+
+    /* Form header styling */
+    .bcet-post-header {
+        margin-bottom: 24px;
+        padding-bottom: 18px;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .bcet-post-header-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+    }
+
+    .bcet-back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-primary);
+        text-decoration: none;
+        transition: all 0.15s ease;
+    }
+
+    .bcet-back-btn:hover {
+        border-color: #0284c7;
+        color: #38bdf8;
+    }
+
+    .bcet-back-btn svg {
+        width: 15px;
+        height: 15px;
+    }
+
+    .bcet-category-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        background: rgba(56, 189, 248, 0.1);
+        border: 1px solid rgba(56, 189, 248, 0.3);
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
+        color: #38bdf8;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .bcet-category-tag svg {
+        width: 13px;
+        height: 13px;
+    }
+
+    .bcet-post-header h2 {
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin: 0 0 6px 0;
+    }
+
+    .bcet-post-header p {
+        font-size: 13px;
+        color: var(--text-muted);
+        margin: 0;
+    }
+
+    /* Form grid layout */
+    .bcet-form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+    }
+
+    .full-width {
+        grid-column: 1 / -1;
+    }
+
+    .bcet-form-field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .bcet-form-field label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-primary);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .bcet-form-field label svg {
+        width: 14px;
+        height: 14px;
+        color: #38bdf8;
+    }
+
+    .bcet-input,
+    .bcet-select,
+    .bcet-textarea {
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        color: var(--text-primary);
+        padding: 11px 14px;
+        border-radius: 8px;
+        font-size: 14px;
+        box-sizing: border-box;
+        outline: none;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        font-family: inherit;
+    }
+
+    .bcet-input:focus,
+    .bcet-select:focus,
+    .bcet-textarea:focus {
+        border-color: #0284c7;
+        box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.2);
+    }
+
+    .bcet-select option {
+        background-color: #1e293b;
+        color: #ffffff;
+    }
+
+    .bcet-file-input {
+        background-color: rgba(15, 23, 42, 0.4);
+        border: 1px dashed var(--border-color);
+        padding: 10px 14px;
+        border-radius: 8px;
+        color: var(--text-muted);
+        font-size: 13px;
+        cursor: pointer;
+        transition: border-color 0.15s ease;
+    }
+
+    .bcet-file-input:hover {
+        border-color: #0284c7;
+    }
+
+    .bcet-input-hint {
+        font-size: 11.5px;
+        color: var(--text-muted);
+        margin-top: 2px;
+    }
+
+    /* Editor container styles */
+    .bcet-md-editor-wrap {
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        overflow: hidden;
+        background-color: var(--card-bg);
+    }
+
+    .bcet-md-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 12px;
+        border-bottom: 1px solid var(--border-color);
+        background-color: rgba(255, 255, 255, 0.02);
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .bcet-md-tools,
+    .bcet-md-tabs {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    .bcet-md-tool-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 30px;
+        height: 30px;
+        padding: 0 8px;
+        background: transparent;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        color: var(--text-primary);
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+
+    .bcet-md-tool-btn:hover {
+        border-color: #0284c7;
+        color: #38bdf8;
+        background: rgba(2, 132, 199, 0.1);
+    }
+
+    .bcet-md-tab-btn {
+        padding: 5px 14px;
+        background: transparent;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        color: var(--text-muted);
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+
+    .bcet-md-tab-btn.is-active {
+        border-color: #0284c7;
+        background: rgba(2, 132, 199, 0.15);
+        color: #38bdf8;
+    }
+
+    .bcet-textarea {
+        width: 100%;
+        border: none;
+        border-radius: 0;
+        resize: vertical;
+        min-height: 230px;
+        padding: 14px;
+        line-height: 1.6;
+        box-sizing: border-box;
+    }
+
+    .bcet-md-preview-box {
+        padding: 16px;
+        min-height: 230px;
+        color: var(--text-color);
+        font-size: 14px;
+        line-height: 1.7;
+        word-break: break-word;
+        background: rgba(15, 23, 42, 0.3);
+    }
+
+    .bcet-md-preview-box h1,
+    .bcet-md-preview-box h2,
+    .bcet-md-preview-box h3 {
+        color: var(--text-primary);
+        margin: 14px 0 8px 0;
+    }
+
+    .bcet-md-preview-box p {
+        margin-bottom: 12px;
+    }
+
+    .bcet-md-preview-box ul,
+    .bcet-md-preview-box ol {
+        padding-left: 20px;
+        margin-bottom: 12px;
+    }
+
+    .bcet-md-preview-box blockquote {
+        border-left: 3px solid #0284c7;
+        padding: 8px 14px;
+        background: rgba(2, 132, 199, 0.08);
+        border-radius: 4px;
+        margin: 12px 0;
+        color: var(--text-muted);
+    }
+
+    .bcet-md-preview-box pre {
+        background: #11141a;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 12px;
+        overflow-x: auto;
+        margin: 12px 0;
+        font-family: monospace;
+        font-size: 13px;
+    }
+
+    .bcet-md-preview-box code {
+        font-family: monospace;
+        background: rgba(255, 255, 255, 0.08);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 13px;
+    }
+
+    /* Form actions bar */
+    .bcet-form-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 26px;
+        padding-top: 20px;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .bcet-btn-cancel {
+        padding: 10px 20px;
+        background: transparent;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        color: var(--text-muted);
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.15s ease;
+    }
+
+    .bcet-btn-cancel:hover {
+        border-color: #64748b;
+        color: var(--text-primary);
+    }
+
+    .bcet-btn-publish {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 24px;
+        border: 1px solid #0284c7;
+        border-radius: 8px;
+        background: rgba(2, 132, 199, 0.1);
+        color: #38bdf8;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .bcet-btn-publish:hover {
+        background: #0284c7;
+        color: #ffffff;
+        box-shadow: 0 4px 16px rgba(2, 132, 199, 0.35);
+        transform: translateY(-1px);
+    }
+
+    .bcet-btn-publish svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    /* Mobile media query */
+    @media (max-width: 640px) {
+        .bcet-form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .bcet-post-card {
+            padding: 20px 16px;
+        }
+    }
+</style>
+{% endblock %}

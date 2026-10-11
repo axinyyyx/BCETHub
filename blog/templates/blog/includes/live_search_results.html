@@ -1,10 +1,23 @@
 {% if query %}
     <div class="live-search-dropdown">
-        {% if faculty_results or routine_results or mess_results or induction_results or branch_results or notes_results or pyqs_results or assignments_results or community_results %}
-            <!-- Faculty Matches -->
+        {% if post_results or faculty_results or routine_results or mess_results or induction_results or branch_results or notes_results or pyqs_results or assignments_results or community_results %}
+            <!-- Post results list -->
+            {% if post_results %}
+                <div class="live-search-cat">
+                    <span class="cat-label">Posts &amp; Updates</span>
+                    {% for post in post_results|slice:":4" %}
+                        <a href="{% url 'community_post_detail' username=post.community.username slug=post.slug %}" class="live-search-item">
+                            <span class="item-title">{{ post.title }}</span>
+                            <span class="item-sub">{{ post.community.group_name }} • {{ post.get_post_type_display }}</span>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Faculty results list -->
             {% if faculty_results %}
                 <div class="live-search-cat">
-                    <span class="cat-label">Faculty & Staff</span>
+                    <span class="cat-label">Faculty &amp; Staff</span>
                     {% for fac in faculty_results|slice:":4" %}
                         <a href="{% url 'search' %}?q={{ fac.name|urlencode }}" class="live-search-item">
                             <span class="item-title">{{ fac.name }}</span>
@@ -14,10 +27,23 @@
                 </div>
             {% endif %}
 
-            <!-- Routine / Subject Matches -->
+            <!-- Community clubs list -->
+            {% if community_results %}
+                <div class="live-search-cat">
+                    <span class="cat-label">Clubs &amp; Communities</span>
+                    {% for com in community_results|slice:":4" %}
+                        <a href="{% url 'community_page' username=com.username %}" class="live-search-item">
+                            <span class="item-title">{{ com.group_name }}</span>
+                            <span class="item-sub">{{ com.get_group_type_display }}</span>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Routine slot list -->
             {% if routine_results %}
                 <div class="live-search-cat">
-                    <span class="cat-label">Routine & Subjects</span>
+                    <span class="cat-label">Routine &amp; Subjects</span>
                     {% for slot in routine_results|slice:":4" %}
                         <a href="{% url 'routine' %}?sec={{ slot.section_name|urlencode }}&day={{ slot.day }}" class="live-search-item">
                             <span class="item-title">{{ slot.subject_code }} - {{ slot.subject_name }}</span>
@@ -27,7 +53,7 @@
                 </div>
             {% endif %}
 
-            <!-- Mess Menu Matches -->
+            <!-- Mess menu list -->
             {% if mess_results %}
                 <div class="live-search-cat">
                     <span class="cat-label">Hostel Mess Menu</span>
@@ -40,7 +66,7 @@
                 </div>
             {% endif %}
 
-            <!-- Induction Matches -->
+            <!-- Induction program list -->
             {% if induction_results %}
                 <div class="live-search-cat">
                     <span class="cat-label">Induction Schedule</span>
@@ -53,7 +79,7 @@
                 </div>
             {% endif %}
 
-            <!-- Branch Matches -->
+            <!-- Department branches list -->
             {% if branch_results %}
                 <div class="live-search-cat">
                     <span class="cat-label">Departments</span>
@@ -65,7 +91,7 @@
                 </div>
             {% endif %}
 
-            <!-- Note Matches -->
+            <!-- Study notes list -->
             {% if notes_results %}
                 <div class="live-search-cat">
                     <span class="cat-label">Notes</span>
@@ -78,7 +104,7 @@
                 </div>
             {% endif %}
 
-            <!-- Pyq Matches -->
+            <!-- Question paper list -->
             {% if pyqs_results %}
                 <div class="live-search-cat">
                     <span class="cat-label">Previous Year Questions</span>
@@ -91,26 +117,14 @@
                 </div>
             {% endif %}
 
-            <!-- Assignment Matches -->
+            <!-- Student assignments list -->
             {% if assignments_results %}
                 <div class="live-search-cat">
                     <span class="cat-label">Assignments</span>
                     {% for assignment in assignments_results|slice:":3" %}
                         <a href="{% url 'search' %}?q={{ assignment.title|urlencode }}" class="live-search-item">
                             <span class="item-title">{{ assignment.title }}</span>
-                            <span class="item-sub">{{ assignment.subject.name }} ({{ assignment.subject.code }}) - {{ assignment.deadline|date:"d M Y" }}</span>
-                        </a>
-                    {% endfor %}
-                </div>
-            {% endif %}
-
-            <!-- Community Matches -->
-            {% if community_results %}
-                <div class="live-search-cat">
-                    <span class="cat-label">Community</span>
-                    {% for community in community_results|slice:":3" %}
-                        <a href="{% url 'search' %}?q={{ community.group_name|urlencode }}" class="live-search-item">
-                            <span class="item-title">{{ community.group_name }}</span>
+                            <span class="item-sub">{{ assignment.subject.name }} ({{ assignment.subject.code }})</span>
                         </a>
                     {% endfor %}
                 </div>
