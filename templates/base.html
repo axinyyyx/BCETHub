@@ -7,13 +7,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}BCETH{% endblock %}</title>
 
+    <!-- Page meta tags -->
+    {% block meta %}
+    <meta name="description" content="BCETHub - Official Student Portal for Bengal College of Engineering and Technology.">
+    <meta property="og:site_name" content="BCETHub">
+    <meta property="og:title" content="BCETHub - Student Portal">
+    <meta property="og:description" content="Routine, Notes, PYQs, Mess Menu, and Clubs at BCET.">
+    <meta property="og:type" content="website">
+    {% endblock %}
+
     <link rel="icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
 
-    <link rel="stylesheet" href="{% static 'css/main-style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/main-style.css' %}?v=2.5">
 
     <script src="https://unpkg.com/htmx.org@2.0.6"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -276,7 +285,7 @@
 
     {% include 'includes/footer.html' %}
 
-    <script src="{% static 'js/main-script.js' %}"></script>
+    <!-- <script src="{% static 'js/main-script.js' %}"></script> -->
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -312,6 +321,51 @@
                 }, 4000);
             }
         });
+
+        // Global modal controls
+        function openGalleryModal(target, caption) {
+            const m = document.getElementById(target);
+            if (m) {
+                m.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+                return;
+            }
+            // Dynamic image preview
+            let lightbox = document.getElementById('global-image-lightbox');
+            if (!lightbox) {
+                lightbox = document.createElement('div');
+                lightbox.id = 'global-image-lightbox';
+                lightbox.className = 'modal-overlay';
+                lightbox.style.display = 'none';
+                lightbox.innerHTML = `
+                    <div class="modal-content" style="max-width: 900px; text-align: center; background: #16181d; border: 1px solid var(--border-color); border-radius: 14px; overflow: hidden;">
+                        <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; border-bottom: 1px solid var(--border-color);">
+                            <h3 id="global-lightbox-caption" style="font-size: 15px; margin: 0; color: var(--text-primary);"></h3>
+                            <button type="button" class="close-btn" onclick="closeGalleryModal('global-image-lightbox')" style="background: none; border: none; font-size: 24px; color: var(--text-muted); cursor: pointer;">&times;</button>
+                        </div>
+                        <div class="modal-body" style="padding: 16px; display: flex; justify-content: center; align-items: center; max-height: 80vh; overflow: auto;">
+                            <img id="global-lightbox-img" src="" alt="Preview" style="max-width: 100%; max-height: 75vh; object-fit: contain; border-radius: 8px;">
+                        </div>
+                    </div>`;
+                document.body.appendChild(lightbox);
+                lightbox.addEventListener('click', function (e) {
+                    if (e.target === lightbox) closeGalleryModal('global-image-lightbox');
+                });
+            }
+            const img = document.getElementById('global-lightbox-img');
+            const cap = document.getElementById('global-lightbox-caption');
+            if (img) img.src = target;
+            if (cap) cap.textContent = caption || 'Photo Preview';
+            lightbox.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+        function closeGalleryModal(id) {
+            const m = document.getElementById(id);
+            if (m) {
+                m.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
     </script>
 
     <script src="{% static 'js/google-glow-border.js' %}"></script>

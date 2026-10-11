@@ -1,4 +1,4 @@
-// Theme Toggle Logic
+// Theme toggle setup
 const themeToggleBtn = document.getElementById('theme-toggle');
 const htmlElement = document.documentElement;
 
@@ -31,16 +31,7 @@ const setTheme = (theme) => {
 
 setTheme('dark');
 
-// if (themeToggleBtn) {
-//     themeToggleBtn.addEventListener('click', (e) => {
-//         e.preventDefault();
-//         const currentTheme = htmlElement.getAttribute('data-theme');
-//         const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-//         setTheme(newTheme);
-//     });
-// }
-
-// popup close when clicking outside the search container
+// Close search popup
 document.addEventListener('click', function(event) {
     const searchContainer = document.querySelector('.search-container');
     const popup = document.getElementById('live-search-popup');
@@ -49,7 +40,7 @@ document.addEventListener('click', function(event) {
     }
 });
 
-// disable developer tools
+// Protect keyboard shortcuts
 document.addEventListener('contextmenu', function(e) {
     e.preventDefault();
 });
@@ -64,15 +55,3 @@ document.addEventListener('keydown', function(e) {
         return false;
     }
 });
-
-// Nav Mobile Screen Span Text 4 Letters
-// document.querySelectorAll('.nav-links span').forEach(span => {
-//     const text = span.textContent.trim();
-
-//     if (text.length === 4) {
-//         span.textContent = text.slice(0, 4)
-//     }
-//     if (text.length > 2 && text.length !== 4) {
-//         span.textContent = text.slice(0, 2) + ".." + text.slice(-1);
-//     }
-// });
