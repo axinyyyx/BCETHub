@@ -3,18 +3,36 @@ import datetime
 from django.conf import settings
 from django.shortcuts import render, redirect, HttpResponse
 from django.contrib import messages
+from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.utils import timezone
 from django.http import JsonResponse
 from django.db.models import Q
 from .models import (
     Branch, AcademicYear, Pooling, Faculty, InductionProgram, RoutineSlot, 
     MessTiming, DailyMessMenu, Feedback, Section, Notes, Course, Subject, 
-    PYQ, Assignment, Notice, Community
+    PYQ, Assignment, Notice, Community, CommunityGroupType, 
+    CommunityPost, CommunityPostImage
 )
 from .routine_utils import (
     read_routine_csv, get_routine_file_version, get_filtered_routine_csv,
     evaluate_slot_status
 )
+
+# Greeting Function
+def get_greeting(request):
+    now = timezone.localtime()
+    current_hour = now.hour
+
+    if 4 <= current_hour < 12:
+        greeting = "Good Morning"
+    elif 12 <= current_hour < 17:
+        greeting = "Good Afternoon"
+    else:
+        greeting = "Good Evening"
+
+    username = request.user.username
+
+    return HttpResponse(f"<strong>{greeting}, <span>@{username}</span></strong>")
 
 DAYS_MAP = {
     0: ('MON', 'Monday'),
@@ -272,6 +290,21 @@ def home(request):
 
     notice = Notice.objects.all()
 
+    # fetch active events
+    active_club_events = CommunityPost.objects.filter(
+        status='PUBLISHED'
+    ).filter(
+        Q(event_status='CANCELLED') |
+        Q(event_status='UPCOMING') |
+        Q(event_date__gte=now) |
+        Q(post_type='EVENT')
+    ).select_related('community').order_by('event_date', '-created_at')[:4]
+
+    # recent club posts
+    recent_club_posts = CommunityPost.objects.filter(
+        status='PUBLISHED'
+    ).select_related('community').order_by('-created_at')[:6]
+
     context = {
         'now': now,
         'today_date_str': now.strftime('%A, %d %B %Y'),
@@ -292,19 +325,27 @@ def home(request):
         'p_induction': p_induction,
         'p_routine': p_routine,
         'notice': notice,
+        'active_club_events': active_club_events,
+        'recent_club_posts': recent_club_posts,
     }
     return render(request, 'blog/home.html', context)
 
-# Live Search View
-def live_search(request):
-    query = request.GET.get('q', '').strip()
+# Fetch search results
+def get_search_data(query):
+    query = (query or '').strip()
     query_lower = query.lower()
+    terms = [t for t in query.split() if t]
 
     mess_results = None
     routine_results = None
     induction_results = None
     faculty_results = None
     branch_results = None
+    notes_results = None
+    assignments_results = None
+    pyqs_results = None
+    community_results = None
+    post_results = None
 
     if query:
         day_code = DAY_LOOKUP.get(query_lower)
@@ -312,193 +353,141 @@ def live_search(request):
             mess_results = DailyMessMenu.objects.filter(day_of_week=day_code)
             routine_results = RoutineSlot.objects.filter(day=day_code)
 
-        faculty_results = Faculty.objects.filter(
-            Q(name__icontains=query) |
-            Q(short_code__icontains=query) |
-            Q(designation__icontains=query)
-        )
+        if any(w in query_lower for w in ['1st', 'first', '1']):
+            r_1st = RoutineSlot.objects.filter(section_name__name__icontains='1st')
+            routine_results = (routine_results | r_1st).distinct() if routine_results else r_1st
+        elif any(w in query_lower for w in ['2nd', 'second', '2']):
+            r_2nd = RoutineSlot.objects.filter(section_name__name__icontains='2nd')
+            routine_results = (routine_results | r_2nd).distinct() if routine_results else r_2nd
 
-        routine_matches = RoutineSlot.objects.filter(
+        fac_q = Q(name__icontains=query) | Q(short_code__icontains=query) | Q(designation__icontains=query)
+        for w in terms:
+            fac_q |= Q(name__icontains=w) | Q(short_code__icontains=w)
+        faculty_results = Faculty.objects.filter(fac_q).select_related('branch').distinct()[:15]
+
+        routine_q = (
             Q(subject_code__icontains=query) |
             Q(subject_name__icontains=query) |
             Q(faculty_code__icontains=query) |
             Q(lh_room__icontains=query) |
             Q(section_name__name__icontains=query)
         )
+        for w in terms:
+            routine_q |= Q(subject_code__icontains=w) | Q(subject_name__icontains=w) | Q(faculty_code__icontains=w)
+        routine_matches = RoutineSlot.objects.filter(routine_q)
         routine_results = (routine_results | routine_matches).distinct() if routine_results else routine_matches
 
-        induction_results = InductionProgram.objects.filter(
-            Q(topic_programme__icontains=query) |
-            Q(venue__icontains=query) |
-            Q(assigned_persons_text__icontains=query)
-        )
-
-        mess_matches = DailyMessMenu.objects.filter(
-            Q(breakfast__icontains=query) |
-            Q(lunch__icontains=query) |
-            Q(hi_tea__icontains=query) |
-            Q(dinner__icontains=query)
-        )
-        mess_results = (mess_results | mess_matches).distinct() if mess_results else mess_matches
-
-        branch_results = Branch.objects.filter(
-            Q(name__icontains=query) | Q(code__icontains=query)
-        )
-
-        notes_results = Notes.objects.filter(
-            Q(title__icontains=query) |
-            Q(description__icontains=query) |
-            Q(subject__name__icontains=query) |
-            Q(subject__code__icontains=query) |
-            Q(cr_name__icontains=query) |
-            Q(cr__name__icontains=query)
-        ).distinct()
-        
-        assignments_results = Assignment.objects.filter(
-            Q(title__icontains=query) |
-            Q(description__icontains=query) |
-            Q(subject__name__icontains=query) |
-            Q(subject__code__icontains=query) |
-            Q(author__icontains=query)
-        ).distinct()
-
-        pyqs_results = PYQ.objects.filter(
-            Q(title__icontains=query) |
-            Q(description__icontains=query) |
-            Q(subject__name__icontains=query) |
-            Q(subject__code__icontains=query) |
-            Q(cr_name__icontains=query)
-        ).distinct()
-        
-        community_filter = (
-            Q(group_type__icontains=query) |
-            Q(group_name__icontains=query) | 
-            Q(group_dec__icontains=query) 
-        )
-
-        # Match group type display labels like "Tech Club"
-        for code, label in Community._meta.get_field('group_type').choices:
-            if query.strip().lower() in label.lower():
-                community_filter |= Q(group_type=code)
-
-        community_results = Community.objects.filter(
-            community_filter
-        ).distinct()
-
-    context = {
-        'query': query,
-        'faculty_results': faculty_results,
-        'routine_results': routine_results,
-        'mess_results': mess_results,
-        'induction_results': induction_results,
-        'branch_results': branch_results,
-        'community_results': community_results,
-        'notes_results': notes_results,
-        'assignments_results': assignments_results,
-        'pyqs_results': pyqs_results,
-    }
-    return render(request, 'blog/includes/live_search_results.html', context)
-
-# Search View
-def search(request):
-    query = request.GET.get('q', '').strip()
-    query_lower = query.lower()
-
-    mess_results = None
-    routine_results = None
-    induction_results = None
-    faculty_results = None
-    branch_results = None
-
-    now = get_ist_now()
-
-    if query:
-        day_code = DAY_LOOKUP.get(query_lower)
-        if day_code:
-            mess_results = DailyMessMenu.objects.filter(day_of_week=day_code)
-            routine_results = RoutineSlot.objects.filter(day=day_code)
-
-        if '1st' in query_lower or '1' in query_lower or 'first' in query_lower:
-            routine_results = (routine_results | RoutineSlot.objects.filter(section_name__name__icontains='1st')).distinct() if routine_results else RoutineSlot.objects.filter(section_name__name__icontains='1st')
-        elif '2nd' in query_lower or '2' in query_lower or 'second' in query_lower:
-            routine_results = RoutineSlot.objects.filter(section_name__name__icontains='2nd')
-        
-        faculty_results = Faculty.objects.filter(
-            Q(name__icontains=query) |
-            Q(short_code__icontains=query) |
-            Q(designation__icontains=query)
-        )
-
-        induction_results = InductionProgram.objects.filter(
+        ind_q = (
             Q(topic_programme__icontains=query) |
             Q(venue__icontains=query) |
             Q(assigned_persons_text__icontains=query) |
             Q(external_guest__icontains=query)
         )
+        for w in terms:
+            ind_q |= Q(topic_programme__icontains=w) | Q(assigned_persons_text__icontains=w)
+        induction_results = InductionProgram.objects.filter(ind_q).distinct()[:10]
 
-        routine_matches = RoutineSlot.objects.filter(
-            Q(subject_code__icontains=query) |
-            Q(subject_name__icontains=query) |
-            Q(faculty_code__icontains=query) |
-            Q(lh_room__icontains=query) |
-            Q(section_name__name__icontains=query)
-        )
-        routine_results = (routine_results | routine_matches).distinct() if routine_results else routine_matches
-
-        mess_matches = DailyMessMenu.objects.filter(
+        mess_q = (
             Q(breakfast__icontains=query) |
             Q(lunch__icontains=query) |
             Q(hi_tea__icontains=query) |
             Q(dinner__icontains=query)
         )
+        for w in terms:
+            mess_q |= (
+                Q(breakfast__icontains=w) |
+                Q(lunch__icontains=w) |
+                Q(hi_tea__icontains=w) |
+                Q(dinner__icontains=w)
+            )
+        mess_matches = DailyMessMenu.objects.filter(mess_q)
         mess_results = (mess_results | mess_matches).distinct() if mess_results else mess_matches
 
         branch_results = Branch.objects.filter(
             Q(name__icontains=query) | Q(code__icontains=query)
-        )
+        )[:10]
 
-        notes_results = Notes.objects.filter(
+        notes_q = (
             Q(title__icontains=query) |
             Q(description__icontains=query) |
             Q(subject__name__icontains=query) |
             Q(subject__code__icontains=query) |
+            Q(module__name__icontains=query) |
             Q(cr_name__icontains=query) |
             Q(cr__name__icontains=query)
-        ).distinct()
-        
-        assignments_results = Assignment.objects.filter(
+        )
+        for w in terms:
+            notes_q |= (
+                Q(title__icontains=w) |
+                Q(description__icontains=w) |
+                Q(subject__name__icontains=w) |
+                Q(subject__code__icontains=w)
+            )
+        notes_results = Notes.objects.filter(notes_q).select_related('course', 'branch', 'year', 'section', 'subject').distinct()[:15]
+
+        assign_q = (
             Q(title__icontains=query) |
             Q(description__icontains=query) |
             Q(subject__name__icontains=query) |
             Q(subject__code__icontains=query) |
             Q(author__icontains=query)
-        ).distinct()
+        )
+        for w in terms:
+            assign_q |= (
+                Q(title__icontains=w) |
+                Q(description__icontains=w) |
+                Q(subject__name__icontains=w) |
+                Q(subject__code__icontains=w)
+            )
+        assignments_results = Assignment.objects.filter(assign_q).select_related('course', 'branch', 'year', 'subject').distinct()[:15]
 
-        pyqs_results = PYQ.objects.filter(
+        pyqs_q = (
             Q(title__icontains=query) |
             Q(description__icontains=query) |
             Q(subject__name__icontains=query) |
             Q(subject__code__icontains=query) |
             Q(cr_name__icontains=query)
-        ).distinct()
-
-        community_filter = (
-            Q(group_type__icontains=query) |
-            Q(group_name__icontains=query) | 
-            Q(group_dec__icontains=query)
         )
+        for w in terms:
+            pyqs_q |= (
+                Q(title__icontains=w) |
+                Q(description__icontains=w) |
+                Q(subject__name__icontains=w) |
+                Q(subject__code__icontains=w)
+            )
+        pyqs_results = PYQ.objects.filter(pyqs_q).select_related('course', 'branch', 'year', 'subject').distinct()[:15]
 
-        # Match group type display labels like "Tech Club"
-        for code, label in Community._meta.get_field('group_type').choices:
-            if query.strip().lower() in label.lower():
-                community_filter |= Q(group_type=code)
+        comm_q = (
+            Q(group_name__icontains=query) |
+            Q(group_dec__icontains=query) |
+            Q(group_type__name__icontains=query) |
+            Q(user__username__icontains=query)
+        )
+        for w in terms:
+            comm_q |= (
+                Q(group_name__icontains=w) |
+                Q(group_dec__icontains=w) |
+                Q(group_type__name__icontains=w)
+            )
+        community_results = Community.objects.filter(Q(is_active=True) & comm_q).select_related('group_type', 'user').distinct()[:15]
 
-        community_results = Community.objects.filter(
-            community_filter
-        ).distinct()
+        post_q = (
+            Q(title__icontains=query) |
+            Q(description__icontains=query) |
+            Q(venue__icontains=query) |
+            Q(post_type__icontains=query) |
+            Q(community__group_name__icontains=query) |
+            Q(community__user__username__icontains=query)
+        )
+        for w in terms:
+            post_q |= (
+                Q(title__icontains=w) |
+                Q(description__icontains=w) |
+                Q(community__group_name__icontains=w)
+            )
+        post_results = CommunityPost.objects.filter(Q(status='PUBLISHED') & post_q).select_related('community', 'community__user').distinct()[:20]
 
-    context = {
-        'query': query,
+    return {
         'mess_results': mess_results,
         'routine_results': routine_results,
         'induction_results': induction_results,
@@ -508,9 +497,23 @@ def search(request):
         'assignments_results': assignments_results,
         'pyqs_results': pyqs_results,
         'community_results': community_results,
-        'now': now,
+        'post_results': post_results,
     }
-    return render(request, 'blog/search.html', context)
+
+# Live search view
+def live_search(request):
+    query = request.GET.get('q', '').strip()
+    data = get_search_data(query)
+    data['query'] = query
+    return render(request, 'blog/includes/live_search_results.html', data)
+
+# Search page view
+def search(request):
+    query = request.GET.get('q', '').strip()
+    data = get_search_data(query)
+    data['query'] = query
+    data['now'] = get_ist_now()
+    return render(request, 'blog/search.html', data)
 
 # Routine View
 def routine(request):
@@ -608,6 +611,10 @@ def about(request):
     faculties = Faculty.objects.filter(is_active=True).select_related('branch')
     branches = Branch.objects.all()
     return render(request, 'blog/about.html', {'faculties': faculties, 'branches': branches})
+
+# show 403 page
+def custom_403(request, exception=None):
+    return render(request, 'errors/403.html', status=403)
 
 def custom_404(request, exception=None):
     return render(request, 'errors/404.html', status=404)
@@ -848,22 +855,255 @@ def assignments(request):
     }
     return render(request, 'blog/assignments.html', context)
 
+# show community list
 def community(request):
-    community = Community.objects.all().order_by("group_type", "id")
-    context = {
-        "community": community,
-       "coming_soon": "Community features are rolling out step by step. Stay tuned as new tools arrive!"
-    }
-    return render(request, 'blog/community.html', context)
-
-def community_page(request, slug):
-    try:
-        community = Community.objects.get(slug=slug)
-    except Community.DoesNotExist:
-        return render(request, 'errors/404.html', status=404)
-
+    community = Community.objects.filter(is_active=True).select_related('group_type', 'user').order_by('group_type__name', 'id')
     context = {
         "community": community,
         "coming_soon": "Community features are rolling out step by step. Stay tuned as new tools arrive!"
     }
+    return render(request, 'blog/community.html', context)
+
+# single community profile
+def community_page(request, username):
+    community = Community.objects.filter(user__username__iexact=username, is_active=True).select_related('group_type', 'user').first()
+    if not community:
+        return render(request, 'errors/404.html', status=404)
+
+    is_owner = request.user.is_authenticated and (request.user == community.user or request.user.is_superuser)
+    
+    # get club posts
+    if is_owner:
+        posts = community.posts.all().prefetch_related('images').order_by('-created_at')
+    else:
+        posts = community.posts.filter(status='PUBLISHED').prefetch_related('images').order_by('-created_at')
+
+    context = {
+        "community": community,
+        "is_owner": is_owner,
+        "posts": posts,
+    }
     return render(request, 'blog/includes/community_page.html', context)
+
+# View post detail
+def community_post_detail(request, username, slug):
+    community = Community.objects.filter(user__username__iexact=username, is_active=True).select_related('group_type', 'user').first()
+    if not community:
+        return render(request, 'errors/404.html', status=404)
+
+    is_owner = request.user.is_authenticated and (request.user == community.user or request.user.is_superuser)
+
+    # Fetch post item
+    post_qs = community.posts.prefetch_related('images')
+    if not is_owner:
+        post_qs = post_qs.filter(status='PUBLISHED')
+
+    post = post_qs.filter(slug=slug).first()
+    if not post and slug.isdigit():
+        post = post_qs.filter(id=int(slug)).first()
+
+    if not post:
+        return render(request, 'errors/404.html', status=404)
+
+    context = {
+        "community": community,
+        "post": post,
+        "is_owner": is_owner,
+    }
+    return render(request, 'blog/community_post_detail.html', context)
+
+# user login page
+def community_login(request):
+    # check user login
+    if request.user.is_authenticated:
+        if hasattr(request.user, 'community_profile') and request.user.community_profile:
+            return redirect('community_page', username=request.user.username)
+        return redirect('home')
+
+    next_url = request.GET.get('next') or request.POST.get('next') or ''
+
+    # check form post
+    if request.method == 'POST':
+        uname = request.POST.get('username', '').strip().lower()
+        pwd = request.POST.get('password', '').strip()
+
+        # check user pass
+        user = authenticate(request, username=uname, password=pwd)
+        if user is not None:
+            auth_login(request, user)
+            messages.success(request, f"Welcome back, @{user.username}!")
+            if next_url:
+                return redirect(next_url)
+            if hasattr(user, 'community_profile') and user.community_profile:
+                return redirect('community_page', username=user.username)
+            return redirect('home')
+        else:
+            messages.error(request, "Invalid username or password.")
+
+    return render(request, 'blog/community_login.html', {'next': next_url})
+
+# user logout view
+def community_logout(request):
+    auth_logout(request)
+    messages.info(request, "Logged out successfully.")
+    return redirect('community')
+
+# add post view
+def community_post_create(request, username):
+    # check login user
+    if not request.user.is_authenticated:
+        messages.warning(request, "Please login first to create posts.")
+        return redirect(f"/login?next=/community/{username}/post/")
+
+    community = Community.objects.filter(user__username__iexact=username, is_active=True).select_related('group_type', 'user').first()
+    if not community:
+        return render(request, 'errors/404.html', status=404)
+
+    # check owner access
+    if request.user != community.user and not request.user.is_superuser:
+        return render(request, 'errors/403.html', status=403)
+
+    # save form data
+    if request.method == 'POST':
+        title = request.POST.get('title', '').strip()
+        description = request.POST.get('description', '').strip()
+        post_type = request.POST.get('post_type', 'BLOG')
+        status = request.POST.get('status', 'PUBLISHED')
+        venue = request.POST.get('venue', '').strip()
+        event_status = request.POST.get('event_status', '')
+        link_title = request.POST.get('link_title', '').strip()
+        link_url = request.POST.get('link_url', '').strip()
+        cover_image = request.FILES.get('cover_image')
+        event_date = request.POST.get('event_date') or None
+
+        # validate title text
+        if not title or not description:
+            messages.error(request, "Title and description are required.")
+            return render(request, 'blog/community_post_create.html', {
+                'community': community,
+                'post_types': CommunityPost.POST_TYPES,
+                'status_choices': CommunityPost.STATUS_CHOICES,
+            })
+
+        # create new post
+        post = CommunityPost.objects.create(
+            community=community,
+            title=title,
+            description=description,
+            post_type=post_type,
+            status=status,
+            venue=venue,
+            event_status=event_status,
+            link_title=link_title,
+            link_url=link_url,
+            cover_image=cover_image,
+            event_date=event_date,
+            published_at=timezone.now() if status == 'PUBLISHED' else None
+        )
+
+        # save gallery images
+        gallery_images = request.FILES.getlist('gallery_images')
+        for idx, img in enumerate(gallery_images):
+            CommunityPostImage.objects.create(post=post, image=img, order=idx)
+
+        messages.success(request, "Post created successfully!")
+        return redirect('community_page', username=community.username)
+
+    return render(request, 'blog/community_post_create.html', {
+        'community': community,
+        'post_types': CommunityPost.POST_TYPES,
+        'status_choices': CommunityPost.STATUS_CHOICES,
+    })
+
+# edit post view
+def community_post_edit(request, username, post_id):
+    # check login user
+    if not request.user.is_authenticated:
+        messages.warning(request, "Please login first to edit posts.")
+        return redirect('community_login')
+
+    community = Community.objects.filter(user__username__iexact=username, is_active=True).first()
+    if not community:
+        return render(request, 'errors/404.html', status=404)
+
+    # check owner access
+    if request.user != community.user and not request.user.is_superuser:
+        return render(request, 'errors/403.html', status=403)
+
+    post = CommunityPost.objects.filter(community=community, id=post_id).first()
+    if not post:
+        return render(request, 'errors/404.html', status=404)
+
+    # update post data
+    if request.method == 'POST':
+        title = request.POST.get('title', '').strip()
+        description = request.POST.get('description', '').strip()
+        post_type = request.POST.get('post_type', 'BLOG')
+        status = request.POST.get('status', 'PUBLISHED')
+        venue = request.POST.get('venue', '').strip()
+        event_status = request.POST.get('event_status', '')
+        link_title = request.POST.get('link_title', '').strip()
+        link_url = request.POST.get('link_url', '').strip()
+        cover_image = request.FILES.get('cover_image')
+        event_date = request.POST.get('event_date') or None
+
+        # validate title text
+        if not title or not description:
+            messages.error(request, "Title and description are required.")
+            return render(request, 'blog/community_post_create.html', {
+                'community': community,
+                'post': post,
+                'is_edit': True,
+                'post_types': CommunityPost.POST_TYPES,
+                'status_choices': CommunityPost.STATUS_CHOICES,
+            })
+
+        post.title = title
+        post.description = description
+        post.post_type = post_type
+        post.status = status
+        post.venue = venue
+        post.event_status = event_status
+        post.link_title = link_title
+        post.link_url = link_url
+        post.event_date = event_date
+
+        if cover_image:
+            post.cover_image = cover_image
+
+        if status == 'PUBLISHED' and not post.published_at:
+            post.published_at = timezone.now()
+
+        post.save()
+
+        # save gallery images
+        gallery_images = request.FILES.getlist('gallery_images')
+        for idx, img in enumerate(gallery_images):
+            CommunityPostImage.objects.create(post=post, image=img, order=idx)
+
+        messages.success(request, "Post updated successfully!")
+        return redirect('community_post_detail', username=community.username, slug=post.slug)
+
+    return render(request, 'blog/community_post_create.html', {
+        'community': community,
+        'post': post,
+        'is_edit': True,
+        'post_types': CommunityPost.POST_TYPES,
+        'status_choices': CommunityPost.STATUS_CHOICES,
+    })
+
+# delete post item
+def community_post_delete(request, username, post_id):
+    # check login user
+    if not request.user.is_authenticated:
+        return redirect('community_login')
+
+    community = Community.objects.filter(user__username__iexact=username).first()
+    if not community or (request.user != community.user and not request.user.is_superuser):
+        return render(request, 'errors/403.html', status=403)
+
+    post = CommunityPost.objects.filter(community=community, id=post_id).first()
+    if post:
+        post.delete()
+        messages.success(request, "Post deleted successfully.")
+    return redirect('community_page', username=username)

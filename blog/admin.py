@@ -3,7 +3,8 @@ from .models import (
     Branch, AcademicYear, Pooling, Faculty, InductionProgram, 
     MessTiming, DailyMessMenu, RoutineSlot, RoutineFile, Feedback, Section, 
     Course, CRProfile, Notes, NoteImage, Module, Subject, PYQ, 
-    PYQImage, Assignment, Notice, Community
+    PYQImage, Assignment, Notice, Community, CommunityGroupType,
+    CommunityPost, CommunityPostImage
 )
 
 
@@ -135,8 +136,32 @@ class NoticeAdmin(admin.ModelAdmin):
     list_display = ('notice', 'n_url', 'is_active', 'updated_at')
     list_filter = ('is_active', 'updated_at')
 
+# group admin register
+@admin.register(CommunityGroupType)
+class CommunityGroupTypeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'slug')
+    prepopulated_fields = {'slug': ('name',)}
+    search_fields = ('name',)
 
+# club admin register
 @admin.register(Community)
 class CommunityAdmin(admin.ModelAdmin):
-    list_display = ('group_type', 'group_name')
-    list_filter = ('group_type', 'group_name', 'group_dec')
+    list_display = ('get_username', 'group_name', 'group_type')
+    list_filter = ('group_type',)
+    search_fields = ('user__username', 'group_name')
+
+    @admin.display(description='Username')
+    def get_username(self, obj):
+        return obj.user.username if obj.user_id else '-'
+
+class CommunityPostImageInline(admin.TabularInline):
+    model = CommunityPostImage
+    extra = 1
+
+# post admin register
+@admin.register(CommunityPost)
+class CommunityPostAdmin(admin.ModelAdmin):
+    list_display = ('title', 'community', 'post_type', 'status', 'created_at')
+    list_filter = ('post_type', 'status', 'community')
+    search_fields = ('title', 'description')
+    inlines = [CommunityPostImageInline]
