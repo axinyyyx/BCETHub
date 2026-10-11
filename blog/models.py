@@ -498,31 +498,242 @@ class RoutineFile(models.Model):
             os.makedirs(os.path.dirname(dest_static), exist_ok=True)
             shutil.copy(self.file.path, dest_static)
 
-_group = [
-    ('TC', 'Tech Club'),
-    ('SC', 'Sports Club'),
-    ('SOC', 'Social'),
-    ('other', 'Other')
-]
+# group type model
+class CommunityGroupType(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    slug = models.SlugField(max_length=120, unique=True, blank=True)
 
-class Community(models.Model):
-    group_type = models.CharField(max_length=2000, choices=_group)
-    group_name = models.CharField(max_length=2000)
-    group_dec = models.CharField(max_length=5000)
-    group_logo = models.FileField(upload_to='group-logo/', blank=True, null=True, help_text="Upload Group Logo's")
-    instagram =  models.CharField(max_length=2000, blank=True, null=True)
-    facebook =  models.CharField(max_length=2000, blank=True, null=True)
-    linkedin =  models.CharField(max_length=2000, blank=True, null=True)
-    discord =  models.CharField(max_length=2000, blank=True, null=True)
-    other =  models.CharField(max_length=2000, blank=True, null=True)
-    other_title =  models.CharField(max_length=2000, blank=True, null=True)
-    join =  models.CharField(max_length=2000, blank=True, null=True, help_text="WhatsApp Group Link")
-    slug = models.SlugField(max_length=2000, unique=True, blank=True, null=True)
+    class Meta:
+        verbose_name = "Community Group Type"
+        verbose_name_plural = "Community Group Types"
 
+    # save group slug
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.group_name)
+            self.slug = slugify(self.name)
         super().save(*args, **kwargs)
 
+    # show group name
     def __str__(self):
-        return f"{self.group_type} & {self.group_name}"
+        return self.name
+
+
+# club community model
+class Community(models.Model):
+    group_type = models.ForeignKey(
+        CommunityGroupType,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='communities'
+    )
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='community_profile',
+        null=True,
+        blank=True,
+    )
+
+    group_name = models.CharField(max_length=2000)
+    group_dec = models.CharField(max_length=5000)
+
+    group_logo = models.FileField(
+        upload_to='group-logo/',
+        blank=True,
+        null=True
+    )
+
+    instagram = models.CharField(max_length=2000, blank=True, null=True)
+    facebook = models.CharField(max_length=2000, blank=True, null=True)
+    linkedin = models.CharField(max_length=2000, blank=True, null=True)
+    discord = models.CharField(max_length=2000, blank=True, null=True)
+    other = models.CharField(max_length=2000, blank=True, null=True)
+    other_title = models.CharField(max_length=2000, blank=True, null=True)
+    join = models.CharField(max_length=2000, blank=True, null=True)
+
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+
+    # return username string
+    @property
+    def username(self):
+        return self.user.username if self.user else ""
+
+    # return group title
+    @property
+    def get_group_type_display(self):
+        return self.group_type.name if self.group_type else "Other"
+
+    # save user community
+    def save(self, *args, **kwargs):
+        if self.user:
+            self.user.username = self.user.username.strip().lower()
+        super().save(*args, **kwargs)
+
+    # show club name
+    def __str__(self):
+        if self.user_id:
+            return f"@{self.user.username} - {self.group_name}"
+        return self.group_name
+
+class CommunityPost(models.Model):
+
+    POST_TYPES = [
+        ('EVENT', 'Event'),
+        ('ACTIVITY', 'Activity'),
+        ('ACHIEVEMENT', 'Achievement'),
+        ('BLOG', 'Blog'),
+        ('ANNOUNCEMENT', 'Announcement'),
+    ]
+
+    STATUS_CHOICES = [
+        ('DRAFT', 'Draft'),
+        ('PUBLISHED', 'Published'),
+    ]
+
+    EVENT_STATUS_CHOICES = [
+        ('UPCOMING', 'Upcoming'),
+        ('COMPLETED', 'Completed'),
+        ('CANCELLED', 'Cancelled'),
+    ]
+
+    community = models.ForeignKey(
+        Community,
+        on_delete=models.CASCADE,
+        related_name='posts'
+    )
+
+    title = models.CharField(max_length=200)
+    slug = models.SlugField(max_length=220)
+    post_type = models.CharField(
+        max_length=20,
+        choices=POST_TYPES,
+        default='BLOG'
+    )
+
+    description = models.TextField()
+    cover_image = models.ImageField(
+        upload_to='community_posts/covers/',
+        blank=True,
+        null=True
+    )
+
+    event_date = models.DateTimeField(
+        blank=True,
+        null=True
+    )
+    venue = models.CharField(
+        max_length=255,
+        blank=True
+    )
+    event_status = models.CharField(
+        max_length=20,
+        choices=EVENT_STATUS_CHOICES,
+        blank=True
+    )
+
+    link_title = models.CharField(
+        max_length=100,
+        blank=True
+    )
+    link_url = models.URLField(
+        max_length=2000,
+        blank=True,
+        null=True
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='DRAFT'
+    )
+
+    published_at = models.DateTimeField(
+        blank=True,
+        null=True
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['community', 'slug'],
+                name='unique_community_post_slug'
+            )
+        ]
+
+    # dynamic event status
+    @property
+    def computed_event_status(self):
+        if self.event_status == 'CANCELLED':
+            return 'CANCELLED'
+        if self.event_date:
+            now = timezone.localtime()
+            if self.event_date > now:
+                return 'UPCOMING'
+            else:
+                return 'COMPLETED'
+        return self.event_status or ''
+
+    # dynamic status label
+    @property
+    def computed_status_label(self):
+        st = self.computed_event_status
+        if st == 'CANCELLED':
+            return 'Cancelled'
+        elif st == 'UPCOMING':
+            return 'Upcoming'
+        elif st == 'COMPLETED':
+            return 'Completed'
+        return ''
+
+    # clean text snippet
+    @property
+    def clean_snippet(self):
+        import re
+        txt = self.description or ''
+        txt = re.sub(r'#+\s*', '', txt)
+        txt = re.sub(r'[*_`~>\[\]]', '', txt)
+        words = txt.split()
+        if len(words) > 22:
+            return ' '.join(words[:22]) + '...'
+        return ' '.join(words)
+
+    # save post slug
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_slug = slugify(self.title) or "post"
+            slug = base_slug
+            counter = 1
+            while CommunityPost.objects.filter(community=self.community, slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
+
+    # return post title
+    def __str__(self):
+        return f"{self.community.username}: {self.title}"
+
+class CommunityPostImage(models.Model):
+    post = models.ForeignKey(
+        CommunityPost,
+        on_delete=models.CASCADE,
+        related_name='images'
+    )
+    image = models.ImageField(
+        upload_to='community_posts/gallery/'
+    )
+    caption = models.CharField(
+        max_length=200,
+        blank=True
+    )
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['order', 'id']
+
