@@ -189,7 +189,6 @@
                 <a href="{% url 'routine' %}?sec={{ selected_sec|urlencode }}" class="btn-link">View Full Section Timetable <i data-lucide="arrow-right"></i></a>
             </div>
         </section>
-
     </div>
 
     <!-- Quick Navigation Hub -->
@@ -200,18 +199,11 @@
             <p>Explore weekly routines for CSE, AIML, ECE, EE, IT, ME, CE sections</p>
         </a>
 
-        <!-- <a href="{% url 'induction' %}" class="quick-nav-card">
-            <i data-lucide="award" class="quick-icon"></i>
-            <h4>Induction Schedule</h4>
-            <p>Full 21-day induction program topics, guest speakers & venues</p>
-        </a> -->
-    
         <a href="{% url 'study' %}" class="quick-nav-card">
             <i data-lucide="award" class="quick-icon"></i>
             <h4>Study Materials</h4>
             <p>Notes, PYQ's & Assigments Reference</p>
         </a>
-
 
         <a href="{% url 'about' %}" class="quick-nav-card">
             <i data-lucide="users" class="quick-icon"></i>
@@ -224,8 +216,7 @@
             <h4>Hostel Mess Menu</h4>
             <p>7-day breakfast, lunch, hi-tea & dinner menu with batch timings</p>
         </a>
-     
     </section>
-   {% include 'blog/dev.html' %} 
+    {% include 'blog/dev.html' %}
 </div>
 {% endblock %}

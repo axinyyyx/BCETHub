@@ -176,6 +176,27 @@
             </section>
         {% endif %}
 
+        <!-- Community post results -->
+        {% if post_results %}
+            <section class="search-section">
+                <h3 class="section-title"><i data-lucide="newspaper"></i> Community Posts &amp; Updates ({{ post_results|length }})</h3>
+                <div class="card-grid">
+                    {% for post in post_results %}
+                        <div class="result-card post-result-card">
+                            <div class="card-badge">{{ post.get_post_type_display }}</div>
+                            <small class="post-club-sub"><i data-lucide="users"></i> {{ post.community.group_name }}</small>
+                            <h4><a href="{% url 'community_post_detail' username=post.community.username slug=post.slug %}" class="post-title-link">{{ post.title }}</a></h4>
+                            <p class="post-desc-snippet">{{ post.description|striptags|truncatewords:20 }}</p>
+                            <div class="card-bottom-bar">
+                                <span><i data-lucide="calendar"></i> {{ post.created_at|date:"d M Y" }}</span>
+                                <a href="{% url 'community_post_detail' username=post.community.username slug=post.slug %}" class="bcet-social-btn btn-sm">Read Post →</a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+        {% endif %}
+
         <!-- Community Results -->
         {% if community_results %}
             <section class="search-section">
@@ -188,11 +209,11 @@
             </section>
         {% endif %}
 
-        {% if not faculty_results and not induction_results and not routine_results and not mess_results and not branch_results and not notes_results and not assignments_results and not pyqs_results and not community_results %}
+        {% if not post_results and not faculty_results and not induction_results and not routine_results and not mess_results and not branch_results and not notes_results and not assignments_results and not pyqs_results and not community_results %}
             <div class="empty-state-box">
                 <i data-lucide="search-x" class="empty-icon"></i>
                 <h3>No exact matches found for "{{ query }}"</h3>
-                <p>Try searching for terms like <strong>"Sunday"</strong>, <strong>"CSE"</strong>, <strong>"1st Year"</strong>, <strong>"Mr. Sk. Abdul Rahim"</strong>, or <strong>"SAR"</strong>.</p>
+                <p>Try searching for terms like <strong>"Sunday"</strong>, <strong>"CSE"</strong>, <strong>"1st Year"</strong>, <strong>"SK"</strong>, or <strong>"Tech Club"</strong>.</p>
             </div>
         {% endif %}
     {% endif %}
