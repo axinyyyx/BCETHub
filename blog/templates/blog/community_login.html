@@ -27,7 +27,7 @@
                 </label>
                 <div class="bcet-input-wrap">
                     <span class="bcet-input-prefix">@</span>
-                    <input type="text" id="username" name="username" placeholder="e.g. gdg_bcet" required autofocus autocomplete="username" class="bcet-input">
+                    <input type="text" id="username" name="username" placeholder="e.g. {% if username_url %}{{username_url}}{% else %}gdg_bcet{% endif %}" required autofocus autocomplete="username" class="bcet-input">
                 </div>
             </div>
 
@@ -62,7 +62,7 @@
         align-items: center;
         justify-content: center;
         min-height: 75vh;
-        padding: 24px 16px;
+        /* padding: 24px 16px; */
     }
 
     .bcet-login-card {
