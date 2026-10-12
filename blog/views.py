@@ -17,6 +17,7 @@ from .routine_utils import (
     read_routine_csv, get_routine_file_version, get_filtered_routine_csv,
     evaluate_slot_status
 )
+from urllib.parse import urlparse
 
 # Greeting Function
 def get_greeting(request):
@@ -922,6 +923,11 @@ def community_login(request):
 
     next_url = request.GET.get('next') or request.POST.get('next') or ''
 
+    # Extract username from next URL
+    parts = urlparse(next_url).path.strip('/').split('/')
+    username_url = parts[1] if len(parts) > 1 and parts[0] == 'community' else False
+    print(username_url)
+    
     # check form post
     if request.method == 'POST':
         uname = request.POST.get('username', '').strip().lower()
@@ -929,18 +935,25 @@ def community_login(request):
 
         # check user pass
         user = authenticate(request, username=uname, password=pwd)
+
         if user is not None:
             auth_login(request, user)
             messages.success(request, f"Welcome back, @{user.username}!")
+
             if next_url:
                 return redirect(next_url)
+
             if hasattr(user, 'community_profile') and user.community_profile:
                 return redirect('community_page', username=user.username)
+
             return redirect('home')
         else:
             messages.error(request, "Invalid username or password.")
 
-    return render(request, 'blog/community_login.html', {'next': next_url})
+    return render(request, 'blog/community_login.html', {
+        'next': next_url,
+        'username_url': username_url
+    })
 
 # user logout view
 def community_logout(request):
