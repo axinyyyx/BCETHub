@@ -1,0 +1,328 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Edit Profile - {{ community.group_name }}{% endblock %}
+
+{% block content %}
+
+<div class="community-edit-wrapper">
+
+    
+    <div class="community-edit-card">
+
+        <div class="bcet-post-top-nav">
+            <a href="{% url 'community_page' username=community.username %}" class="bcet-chip">
+                <i data-lucide="arrow-left"></i>
+                <span>Back to {{ community.group_name }}</span>
+            </a>
+        </div>
+
+        <div class="edit-header">
+            <h1>Edit Club Profile</h1>
+            <p>Update your club information and social links.</p>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="edit-message {{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST"
+              enctype="multipart/form-data"
+              class="community-edit-form">
+
+            {% csrf_token %}
+
+            <!-- Current logo -->
+            <div class="form-group">
+                <label>Club Logo</label>
+
+                {% if community.group_logo %}
+                    <div class="current-logo">
+                        <img src="{{ community.group_logo.url }}"
+                             alt="{{ community.group_name }}">
+                    </div>
+                {% endif %}
+
+                <input type="file"
+                       name="group_logo"
+                       accept="image/*">
+
+                <small>Choose a new image to replace the current logo.</small>
+            </div>
+
+            <!-- Club name -->
+            <div class="form-group">
+                <label for="group_name">Club Name *</label>
+                <input type="text"
+                       id="group_name"
+                       name="group_name"
+                       value="{{ community.group_name }}"
+                       maxlength="2000"
+                       required>
+            </div>
+
+            <!-- Group type -->
+            <div class="form-group">
+                <label for="group_type">Club Category</label>
+
+                <select name="group_type" id="group_type">
+                    <option value="">Other</option>
+
+                    {% for type in group_types %}
+                        <option value="{{ type.pk }}"
+                            {% if community.group_type_id == type.pk %}
+                                selected
+                            {% endif %}>
+                            {{ type.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Description -->
+            <div class="form-group">
+                <label for="group_dec">Club Description</label>
+                <textarea id="group_dec"
+                          name="group_dec"
+                          rows="5"
+                          maxlength="5000">{{ community.group_dec }}</textarea>
+            </div>
+
+            <h2>Social Links</h2>
+
+            <div class="form-group">
+                <label for="instagram">Instagram URL</label>
+                <input type="url" id="instagram"
+                       name="instagram"
+                       value="{{ community.instagram|default:'' }}"
+                       placeholder="https://instagram.com/yourclub">
+            </div>
+
+            <div class="form-group">
+                <label for="facebook">Facebook URL</label>
+                <input type="url" id="facebook"
+                       name="facebook"
+                       value="{{ community.facebook|default:'' }}"
+                       placeholder="https://facebook.com/yourclub">
+            </div>
+
+            <div class="form-group">
+                <label for="linkedin">LinkedIn URL</label>
+                <input type="url" id="linkedin"
+                       name="linkedin"
+                       value="{{ community.linkedin|default:'' }}"
+                       placeholder="https://linkedin.com/company/yourclub">
+            </div>
+
+            <div class="form-group">
+                <label for="discord">Discord Invite URL</label>
+                <input type="url" id="discord"
+                       name="discord"
+                       value="{{ community.discord|default:'' }}"
+                       placeholder="https://discord.gg/...">
+            </div>
+
+            <div class="form-group">
+                <label for="other_title">Other Link Title</label>
+                <input type="text" id="other_title"
+                       name="other_title"
+                       value="{{ community.other_title|default:'' }}"
+                       placeholder="Website">
+            </div>
+
+            <div class="form-group">
+                <label for="other">Website / Other URL</label>
+                <input type="url" id="other"
+                       name="other"
+                       value="{{ community.other|default:'' }}"
+                       placeholder="https://example.com">
+            </div>
+
+            <div class="form-group">
+                <label for="join">Join Club URL</label>
+                <input type="url" id="join"
+                       name="join"
+                       value="{{ community.join|default:'' }}"
+                       placeholder="https://example.com/join">
+            </div>
+
+            <div class="edit-actions">
+                <button type="submit" class="save-btn">
+                    Save Changes
+                </button>
+
+                <a href="{% url 'community_page' username=community.username %}"
+                   class="cancel-btn">
+                    Cancel
+                </a>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+    <style>
+    .community-edit-wrapper {
+        max-width: 760px;
+        margin: 30px auto;
+        /* padding: 0 16px 40px; */
+        color: var(--text-primary);
+    }
+
+    .bcet-post-top-nav {
+        margin-bottom: 18px;
+    }
+
+    .community-edit-card {
+        padding: 28px;
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+    }
+
+    .edit-header {
+        margin-bottom: 24px;
+    }
+
+    .back-link {
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 14px;
+    }
+
+    .edit-header h1 {
+        margin: 18px 0 8px;
+        font-size: 26px;
+    }
+
+    .edit-header p,
+    .form-group small {
+        color: var(--text-muted);
+    }
+
+    .community-edit-form h2 {
+        font-size: 18px;
+        margin: 28px 0 18px;
+        padding-top: 20px;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 12px;
+        color: var(--text-primary);
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        font: inherit;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+        outline: 2px solid #38bdf8;
+        outline-offset: 1px;
+    }
+
+    .form-group textarea {
+        resize: vertical;
+    }
+
+    .current-logo img {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 1px solid var(--border-color);
+    }
+
+    .edit-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 28px;
+    }
+
+    .save-btn,
+    .cancel-btn {
+        background-color: var(--card-bg);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 11px 18px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .save-btn {
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+    }
+
+    
+    .cancel-btn {
+        color: var(--text-primary);
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+    }
+    
+    .save-btn:hover, .cancel-btn:hover {
+        border-color: var(--text-primary);
+    }
+
+    .edit-message {
+        padding: 12px;
+        margin-bottom: 16px;
+        border-radius: 8px;
+        font-size: 14px;
+    }
+
+    .edit-message.success {
+        background: rgba(34, 197, 94, 0.12);
+        color: #22c55e;
+    }
+
+    .edit-message.error {
+        background: rgba(239, 68, 68, 0.12);
+        color: #ef4444;
+    }
+
+    @media (max-width: 600px) {
+        .community-edit-card {
+            padding: 18px;
+        }
+
+        .edit-header h1 {
+            font-size: 22px;
+        }
+
+        .edit-actions > * {
+            flex: 1;
+        }
+    }
+</style>
+
+{% endblock %}
