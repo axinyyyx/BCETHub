@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 {% extends 'base.html' %}
 {% load static %}
 
@@ -44,51 +43,4 @@
     </div>
 </div>
 
-=======
-{% extends 'base.html' %}
-{% load static %}
-
-{% block title %}Community & Clubs - BCET{% endblock %}
-
-{% block content %}
-<div class="bcet-community-wrapper">
-    <div class="bcet-hero">
-        <h2 class="bcet-hero-title">Student Clubs &amp; Communities</h2>
-        {% if coming_soon %}
-            <p class="bcet-hero-desc">{{ coming_soon }}</p>
-        {% else %}
-            <p class="bcet-hero-desc">Explore student organizations, build connections, collaborate on projects, and follow official activities.</p>
-        {% endif %}
-    </div>
-
-    <div class="bcet-content-area">
-        {% regroup community by get_group_type_display as grouped_clubs %}
-
-        {% for group in grouped_clubs %}
-            <div class="bcet-group-block">
-                <div class="bcet-group-header">
-                    <div class="bcet-group-left">
-                        <span class="bcet-indicator"></span>
-                        <h2 class="bcet-group-title">{{ group.grouper }}</h2>
-                    </div>
-                    <span class="bcet-group-counter">{{ group.list|length }} Active</span>
-                </div>
-
-                <div class="bcet-card-grid">
-                    {% for com in group.list %}
-                        {% include 'blog/includes/c_club.html' %}
-                    {% endfor %}
-                </div>
-            </div>
-        {% empty %}
-            <div class="bcet-empty-view">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M16 16s-1.5-2-4-2-4 2-4 2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
-                <h3>No clubs available</h3>
-                <p>New campus groups will be listed here soon.</p>
-            </div>
-        {% endfor %}
-    </div>
-</div>
-
->>>>>>> origin/main
 {% endblock %}

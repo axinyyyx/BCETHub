@@ -6,167 +6,7 @@
 
 {% block content %}
 
-<div class="community-edit-wrapper">
-
-    
-    <div class="community-edit-card">
-
-        <div class="bcet-post-top-nav">
-            <a href="{% url 'community_page' username=community.username %}" class="bcet-chip">
-                <i data-lucide="arrow-left"></i>
-                <span>Back to {{ community.group_name }}</span>
-            </a>
-        </div>
-
-        <div class="edit-header">
-            <h1>Edit Club Profile</h1>
-            <p>Update your club information and social links.</p>
-        </div>
-
-        {% if messages %}
-            {% for message in messages %}
-                <div class="edit-message {{ message.tags }}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
-
-        <form method="POST"
-              enctype="multipart/form-data"
-              class="community-edit-form">
-
-            {% csrf_token %}
-
-            <!-- Current logo -->
-            <div class="form-group">
-                <label>Club Logo</label>
-
-                {% if community.group_logo %}
-                    <div class="current-logo">
-                        <img src="{{ community.group_logo.url }}"
-                             alt="{{ community.group_name }}">
-                    </div>
-                {% endif %}
-
-                <input type="file"
-                       name="group_logo"
-                       accept="image/*">
-
-                <small>Choose a new image to replace the current logo.</small>
-            </div>
-
-            <!-- Club name -->
-            <div class="form-group">
-                <label for="group_name">Club Name *</label>
-                <input type="text"
-                       id="group_name"
-                       name="group_name"
-                       value="{{ community.group_name }}"
-                       maxlength="2000"
-                       required>
-            </div>
-
-            <!-- Group type -->
-            <div class="form-group">
-                <label for="group_type">Club Category</label>
-
-                <select name="group_type" id="group_type">
-                    <option value="">Other</option>
-
-                    {% for type in group_types %}
-                        <option value="{{ type.pk }}"
-                            {% if community.group_type_id == type.pk %}
-                                selected
-                            {% endif %}>
-                            {{ type.name }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <!-- Description -->
-            <div class="form-group">
-                <label for="group_dec">Club Description</label>
-                <textarea id="group_dec"
-                          name="group_dec"
-                          rows="5"
-                          maxlength="5000">{{ community.group_dec }}</textarea>
-            </div>
-
-            <h2>Social Links</h2>
-
-            <div class="form-group">
-                <label for="instagram">Instagram URL</label>
-                <input type="url" id="instagram"
-                       name="instagram"
-                       value="{{ community.instagram|default:'' }}"
-                       placeholder="https://instagram.com/yourclub">
-            </div>
-
-            <div class="form-group">
-                <label for="facebook">Facebook URL</label>
-                <input type="url" id="facebook"
-                       name="facebook"
-                       value="{{ community.facebook|default:'' }}"
-                       placeholder="https://facebook.com/yourclub">
-            </div>
-
-            <div class="form-group">
-                <label for="linkedin">LinkedIn URL</label>
-                <input type="url" id="linkedin"
-                       name="linkedin"
-                       value="{{ community.linkedin|default:'' }}"
-                       placeholder="https://linkedin.com/company/yourclub">
-            </div>
-
-            <div class="form-group">
-                <label for="discord">Discord Invite URL</label>
-                <input type="url" id="discord"
-                       name="discord"
-                       value="{{ community.discord|default:'' }}"
-                       placeholder="https://discord.gg/...">
-            </div>
-
-            <div class="form-group">
-                <label for="other_title">Other Link Title</label>
-                <input type="text" id="other_title"
-                       name="other_title"
-                       value="{{ community.other_title|default:'' }}"
-                       placeholder="Website">
-            </div>
-
-            <div class="form-group">
-                <label for="other">Website / Other URL</label>
-                <input type="url" id="other"
-                       name="other"
-                       value="{{ community.other|default:'' }}"
-                       placeholder="https://example.com">
-            </div>
-
-            <div class="form-group">
-                <label for="join">Join Club URL</label>
-                <input type="url" id="join"
-                       name="join"
-                       value="{{ community.join|default:'' }}"
-                       placeholder="https://example.com/join">
-            </div>
-
-            <div class="edit-actions">
-                <button type="submit" class="save-btn">
-                    Save Changes
-                </button>
-
-                <a href="{% url 'community_page' username=community.username %}"
-                   class="cancel-btn">
-                    Cancel
-                </a>
-            </div>
-
-        </form>
-    </div>
-</div>
-
-    <style>
+<style>
     .community-edit-wrapper {
         max-width: 760px;
         margin: 30px auto;
@@ -324,5 +164,165 @@
         }
     }
 </style>
+
+
+<div class="community-edit-wrapper">
+    
+    <div class="community-edit-card">
+
+        <div class="bcet-post-top-nav">
+            <a href="{% url 'community_page' username=community.username %}" class="bcet-chip">
+                <i data-lucide="arrow-left"></i>
+                <span>Back to {{ community.group_name }}</span>
+            </a>
+        </div>
+
+        <div class="edit-header">
+            <h1>Edit Club Profile</h1>
+            <p>Update your club information and social links.</p>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="edit-message {{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST"
+              enctype="multipart/form-data"
+              class="community-edit-form">
+
+            {% csrf_token %}
+
+            <!-- Current logo -->
+            <div class="form-group">
+                <label>Club Logo</label>
+
+                {% if community.group_logo %}
+                    <div class="current-logo">
+                        <img src="{{ community.group_logo.url }}"
+                             alt="{{ community.group_name }}">
+                    </div>
+                {% endif %}
+
+                <input type="file"
+                       name="group_logo"
+                       accept="image/*">
+
+                <small>Choose a new image to replace the current logo.</small>
+            </div>
+
+            <!-- Club name -->
+            <div class="form-group">
+                <label for="group_name">Club Name *</label>
+                <input type="text"
+                       id="group_name"
+                       name="group_name"
+                       value="{{ community.group_name }}"
+                       maxlength="2000"
+                       required>
+            </div>
+
+            <!-- Group type -->
+            <div class="form-group">
+                <label for="group_type">Club Category</label>
+
+                <select name="group_type" id="group_type">
+                    <option value="">Other</option>
+
+                    {% for type in group_types %}
+                        <option value="{{ type.pk }}"
+                            {% if community.group_type_id == type.pk %}
+                                selected
+                            {% endif %}>
+                            {{ type.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Description -->
+            <div class="form-group">
+                <label for="group_dec">Club Description</label>
+                <textarea id="group_dec"
+                          name="group_dec"
+                          rows="5"
+                          maxlength="5000">{{ community.group_dec }}</textarea>
+            </div>
+
+            <h2>Social Links</h2>
+
+            <div class="form-group">
+                <label for="instagram">Instagram URL</label>
+                <input type="url" id="instagram"
+                       name="instagram"
+                       value="{{ community.instagram|default:'' }}"
+                       placeholder="https://instagram.com/yourclub">
+            </div>
+
+            <div class="form-group">
+                <label for="facebook">Facebook URL</label>
+                <input type="url" id="facebook"
+                       name="facebook"
+                       value="{{ community.facebook|default:'' }}"
+                       placeholder="https://facebook.com/yourclub">
+            </div>
+
+            <div class="form-group">
+                <label for="linkedin">LinkedIn URL</label>
+                <input type="url" id="linkedin"
+                       name="linkedin"
+                       value="{{ community.linkedin|default:'' }}"
+                       placeholder="https://linkedin.com/company/yourclub">
+            </div>
+
+            <div class="form-group">
+                <label for="discord">Discord Invite URL</label>
+                <input type="url" id="discord"
+                       name="discord"
+                       value="{{ community.discord|default:'' }}"
+                       placeholder="https://discord.gg/...">
+            </div>
+
+            <div class="form-group">
+                <label for="other_title">Other Link Title</label>
+                <input type="text" id="other_title"
+                       name="other_title"
+                       value="{{ community.other_title|default:'' }}"
+                       placeholder="Website">
+            </div>
+
+            <div class="form-group">
+                <label for="other">Website / Other URL</label>
+                <input type="url" id="other"
+                       name="other"
+                       value="{{ community.other|default:'' }}"
+                       placeholder="https://example.com">
+            </div>
+
+            <div class="form-group">
+                <label for="join">Join Club URL</label>
+                <input type="url" id="join"
+                       name="join"
+                       value="{{ community.join|default:'' }}"
+                       placeholder="https://example.com/join">
+            </div>
+
+            <div class="edit-actions">
+                <button type="submit" class="save-btn">
+                    Save Changes
+                </button>
+
+                <a href="{% url 'community_page' username=community.username %}"
+                   class="cancel-btn">
+                    Cancel
+                </a>
+            </div>
+
+        </form>
+    </div>
+</div>
 
 {% endblock %}
