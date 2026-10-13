@@ -517,7 +517,6 @@ class CommunityGroupType(models.Model):
     def __str__(self):
         return self.name
 
-
 # club community model
 class Community(models.Model):
     group_type = models.ForeignKey(
@@ -568,8 +567,6 @@ class Community(models.Model):
 
     # save user community
     def save(self, *args, **kwargs):
-        if self.user:
-            self.user.username = self.user.username.strip().lower()
         super().save(*args, **kwargs)
 
     # show club name
@@ -578,6 +575,7 @@ class Community(models.Model):
             return f"@{self.user.username} - {self.group_name}"
         return self.group_name
 
+# community post model
 class CommunityPost(models.Model):
 
     POST_TYPES = [
@@ -719,6 +717,7 @@ class CommunityPost(models.Model):
     def __str__(self):
         return f"{self.community.username}: {self.title}"
 
+# community multiple imge post model
 class CommunityPostImage(models.Model):
     post = models.ForeignKey(
         CommunityPost,

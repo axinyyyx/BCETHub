@@ -70,7 +70,7 @@
         <h1 class="bcet-detail-title">{{ post.title }}</h1>
         <div class="bcet-post-time">
             <i data-lucide="calendar"></i>
-            <span>Published {{ post.created_at|date:"d M Y" }}</span>
+            <span>Published {{ post.published_at|date:"d M Y" }}</span>
         </div>
 
         <!-- Event detail box -->
@@ -226,9 +226,8 @@
 
     .bcet-chip:hover {
         border-color: #0284c7;
-        color: #38bdf8;
+        color: var(--text-primary);
         transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2);
     }
 
     .bcet-chip svg,
@@ -316,7 +315,7 @@
         width: 100%;
         max-width: 900px;
         margin: 0 auto;
-        padding: 16px 16px 40px 16px;
+        /* padding: 16px 16px 40px 16px; */
         box-sizing: border-box;
     }
 

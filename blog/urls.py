@@ -3,7 +3,7 @@ from . import views
 
 urlpatterns = [
     path('', views.home, name="home"),
-    path('/greetings/', views.get_greeting, name="greetings"),
+    path('greetings/', views.get_greeting, name="greetings"),
     path('live-search', views.live_search, name="live_search"),
     path('search', views.search, name="search"),
     path('routine', views.routine, name="routine"),
@@ -28,6 +28,7 @@ urlpatterns = [
     path('community/<str:username>/post/<int:post_id>/edit/', views.community_post_edit, name="community_post_edit"),
     path('community/<str:username>/post/<int:post_id>/edit', views.community_post_edit, name="community_post_edit_alt"),
     path('community/<str:username>/post/<int:post_id>/delete/', views.community_post_delete, name="community_post_delete"),
+    path('community/<str:username>/edit', views.community_edit, name="community_edit"),
     path('about', views.about, name="about"),
     path('attendance/', views.pooling_page, name='pooling_page'),
     path('attendance/mark/', views.mark_attendance, name='mark_attendance'),

@@ -1,3 +1,4 @@
+from django.http import request
 import os
 import datetime
 from django.conf import settings
@@ -18,6 +19,7 @@ from .routine_utils import (
     evaluate_slot_status
 )
 from urllib.parse import urlparse
+from django.contrib.auth.decorators import login_required
 
 # Greeting Function
 def get_greeting(request):
@@ -927,7 +929,7 @@ def community_login(request):
     parts = urlparse(next_url).path.strip('/').split('/')
     username_url = parts[1] if len(parts) > 1 and parts[0] == 'community' else False
     print(username_url)
-    
+
     # check form post
     if request.method == 'POST':
         uname = request.POST.get('username', '').strip().lower()
@@ -962,6 +964,7 @@ def community_logout(request):
     return redirect('community')
 
 # add post view
+@login_required(login_url='community_login')
 def community_post_create(request, username):
     # check login user
     if not request.user.is_authenticated:
@@ -1029,6 +1032,7 @@ def community_post_create(request, username):
     })
 
 # edit post view
+@login_required(login_url='community_login')
 def community_post_edit(request, username, post_id):
     # check login user
     if not request.user.is_authenticated:
@@ -1106,6 +1110,7 @@ def community_post_edit(request, username, post_id):
     })
 
 # delete post item
+@login_required(login_url='community_login')
 def community_post_delete(request, username, post_id):
     # check login user
     if not request.user.is_authenticated:
@@ -1120,3 +1125,73 @@ def community_post_delete(request, username, post_id):
         post.delete()
         messages.success(request, "Post deleted successfully.")
     return redirect('community_page', username=username)
+
+# community edit
+def community_edit(request, username):
+    community = Community.objects.filter(
+        user__username__iexact=username
+    ).first()
+
+    # Check profile ownership
+    if not community or (
+        request.user != community.user
+        and not request.user.is_superuser
+    ):
+        return render(
+            request,
+            'errors/403.html',
+            status=403
+        )
+
+    if request.method == 'POST':
+        group_name = request.POST.get('group_name', '').strip()
+        group_dec = request.POST.get('group_dec', '').strip()
+
+        if not group_name:
+            messages.error(request, 'Club name is required.')
+        else:
+            community.group_name = group_name
+            community.group_dec = group_dec
+
+            # Update group type
+            group_type_id = request.POST.get('group_type')
+            if group_type_id:
+                community.group_type = CommunityGroupType.objects.filter(
+                    pk=group_type_id
+                ).first()
+            else:
+                community.group_type = None
+
+            # Update social links
+            for field in [
+                'instagram', 'facebook', 'linkedin',
+                'discord', 'other', 'other_title', 'join'
+            ]:
+                setattr(
+                    community,
+                    field,
+                    request.POST.get(field, '').strip()
+                )
+
+            # Update logo only if a new file is uploaded
+            if request.FILES.get('group_logo'):
+                community.group_logo = request.FILES['group_logo']
+
+            community.save()
+            messages.success(request, 'Profile updated successfully!')
+
+            return redirect(
+                'community_page',
+                username=community.username
+            )
+
+    context = {
+        'community': community,
+        'group_types': CommunityGroupType.objects.all().order_by('name'),
+    }
+
+    return render(
+        request,
+        'blog/community_edit.html',
+        context
+    )

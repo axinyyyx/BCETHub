@@ -3,313 +3,8 @@
 
 {% block title %}{{ community.group_name }} - BCETHub{% endblock %}
 
+
 {% block content %}
-<div class="bcet-profile-wrapper">
-    <!-- Club admin bar -->
-    {% if is_owner %}
-    <div class="bcet-owner-banner">
-        <div
-            class="bcet-owner-status"
-            hx-get="{% url 'greetings' %}"
-            hx-trigger="load"
-            hx-target="#output-div"
-            hx-swap="innerHTML"
-        >
-            <div>
-                <strong id="output-div">
-                </strong>
-            </div>
-        </div>
-        <div class="bcet-owner-actions">
-            <a href="{% url 'community_post_create' username=community.username %}" class="bcet-action-btn google-glow-border">
-                <i data-lucide="plus-circle"></i>
-                <span>Create Post</span>
-            </a>
-            <a href="{% url 'community_logout' %}" class="bcet-action-btn bcet-btn-danger">
-                <i data-lucide="log-out"></i>
-                <span>Logout</span>
-            </a>
-        </div>
-    </div>
-    {% endif %}
-
-    <!-- Club profile card -->
-    <div class="bcet-profile-card">
-        <div class="bcet-profile-head">
-            <!-- Club avatar box -->
-            <div class="bcet-profile-avatar">
-                {% if community.group_logo %}
-                <img src="{{ community.group_logo.url }}" alt="{{ community.group_name }}" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';">
-                <span class="bcet-avatar-fallback" style="display: none;">{{ community.group_name|slice:":2"|upper }}</span>
-                {% else %}
-                <span class="bcet-avatar-fallback">{{ community.group_name|slice:":2"|upper }}</span>
-                {% endif %}
-            </div>
-
-            <div class="bcet-profile-details">
-                <div class="bcet-title-row">
-                    <h1 class="bcet-profile-name">{{ community.group_name }}</h1>
-                    <span class="bcet-category-pill">{{ community.get_group_type_display }}</span>
-                </div>
-                <div class="bcet-handle-row">
-                    <span class="bcet-username-handle">@{{ community.username }}</span>
-                </div>
-                <p class="bcet-profile-desc">
-                    {{ community.group_dec|default:"Welcome to our official BCET campus club. Follow our latest updates, activities, and events below." }}
-                </p>
-            </div>
-        </div>
-
-        <!-- Social link chips -->
-        <div class="bcet-profile-socials">
-            {% if community.instagram %}
-            <a href="{{ community.instagram }}" target="_blank" rel="noopener" class="bcet-chip social-links google-glow-border">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
-                <span>Instagram</span>
-            </a>
-            {% endif %}
-
-            {% if community.facebook %}
-            <a href="{{ community.facebook }}" target="_blank" rel="noopener" class="bcet-chip social-links google-glow-border">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
-                <span>Facebook</span>
-            </a>
-            {% endif %}
-
-            {% if community.linkedin %}
-            <a href="{{ community.linkedin }}" target="_blank" rel="noopener" class="bcet-chip social-links google-glow-border">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
-                <span>LinkedIn</span>
-            </a>
-            {% endif %}
-
-            {% if community.discord %}
-            <a href="{{ community.discord }}" target="_blank" rel="noopener" class="bcet-chip social-links google-glow-border">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 5.5a16.04 16.04 0 0 0-4.04-1.23A10.85 10.85 0 0 0 13.5 6.2a15.82 15.82 0 0 0-5 0A10.85 10.85 0 0 0 7.04 4.27 16.04 16.04 0 0 0 3 5.5c-2.58 6.02-3.29 11.85-1.42 17.58a16.3 16.3 0 0 0 5.11 2.58c.41-.56.78-1.16 1.09-1.8a10.88 10.88 0 0 1-1.74-.84c.12-.09.24-.19.35-.29 3.34 1.55 6.96 1.55 10.26 0 .12.1.24.2.35.29-.55.32-1.13.6-1.74.84.31.64.68 1.24 1.09 1.8a16.3 16.3 0 0 0 5.12-2.58c2.09-6.33-.48-12.15-1.42-17.58ZM8.82 17.5c-1.01 0-1.84-.94-1.84-2.1 0-1.16.85-2.1 1.84-2.1 1.01 0 1.86.95 1.84 2.1 0 1.16-.84 2.1-1.84 2.1Zm6.36 0c-1.01 0-1.84-.94-1.84-2.1 0-1.16.85-2.1 1.84-2.1 1.01 0 1.86.95 1.84 2.1 0 1.16-.83 2.1-1.84 2.1Z"/></svg>
-                <span>Discord</span>
-            </a>
-            {% endif %}
-
-            {% if community.other %}
-            <a href="{{ community.other }}" target="_blank" rel="noopener" class="bcet-chip social-links google-glow-border">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                <span>{{ community.other_title|default:"Website" }}</span>
-            </a>
-            {% endif %}
-
-            {% if community.join %}
-            <a href="{{ community.join }}" target="_blank" rel="noopener" class="bcet-chip bcet-chip-join social-links google-glow-border">
-                <i data-lucide="user-plus"></i>
-                <span>Join Club</span>
-            </a>
-            {% endif %}
-
-            <button type="button" onclick="navigator.share ? navigator.share({title: '{{ community.group_name|escapejs }} - BCETHub', url: window.location.href}) : copyCommunityUrl(this)" class="bcet-chip social-links google-glow-border" id="btn-share-club">
-                <i data-lucide="share-2"></i>
-                <span>Share</span>
-            </button>
-
-            {% if not is_owner %}
-            <a href="{% url 'community_login' %}?next={{ request.path }}" class="bcet-chip bcet-chip-login social-links google-glow-border">
-                <i data-lucide="shield-check"></i>
-                <span>Club Login</span>
-            </a>
-            {% endif %}
-        </div>
-    </div>
-
-    <!-- Feed posts section -->
-    <div class="bcet-posts-section">
-        <div class="bcet-section-header">
-            <div class="bcet-section-title-wrap">
-                <i data-lucide="rss"></i>
-                <h2>Community Feed &amp; Updates</h2>
-            </div>
-            <span class="bcet-post-count">{{ posts|length }} Post{{ posts|length|pluralize }}</span>
-        </div>
-
-        <!-- Post filter tabs -->
-        <div class="bcet-feed-tabs" id="feed-filter-tabs">
-            <button type="button" class="bcet-tab-btn is-active" onclick="filterPosts('all', this)">All ({{ posts|length }})</button>
-            <button type="button" class="bcet-tab-btn google-glow-border" onclick="filterPosts('event', this)">Events</button>
-            <button type="button" class="bcet-tab-btn google-glow-border" onclick="filterPosts('announcement', this)">Announcements</button>
-            <button type="button" class="bcet-tab-btn google-glow-border" onclick="filterPosts('activity', this)">Activities</button>
-            <button type="button" class="bcet-tab-btn google-glow-border" onclick="filterPosts('blog', this)">Blogs</button>
-            <button type="button" class="bcet-tab-btn google-glow-border" onclick="filterPosts('achievement', this)">Achievements</button>
-        </div>
-
-        {% if posts %}
-        <div class="bcet-posts-grid" id="bcet-posts-container">
-            {% for post in posts %}
-            <div class="bcet-post-item" data-type="{{ post.post_type|lower }}">
-                {% if post.cover_image %}
-                <div class="bcet-post-cover">
-                    <a href="{% url 'community_post_detail' username=community.username slug=post.slug %}">
-                        <img src="{{ post.cover_image.url }}" alt="{{ post.title }}" loading="lazy">
-                    </a>
-                </div>
-                {% endif %}
-
-                <div class="bcet-post-body">
-                    <div class="bcet-post-meta">
-                        <span class="bcet-type-tag {{ post.post_type|lower }}">{{ post.get_post_type_display }}</span>
-                        
-                        {% if post.computed_status_label %}
-                            <span class="bcet-event-status-tag {{ post.computed_event_status|lower }}">{{ post.computed_status_label }}</span>
-                        {% endif %}
-
-                        {% if is_owner %}
-                            <span class="bcet-status-pill {{ post.status|lower }}">{{ post.get_status_display }}</span>
-                        {% endif %}
-
-                        <span class="bcet-post-date">{{ post.created_at|date:"d M Y" }}</span>
-                    </div>
-
-                    <h3 class="bcet-post-title">
-                        <a href="{% url 'community_post_detail' username=community.username slug=post.slug %}" class="bcet-post-title-link">
-                            {{ post.title }}
-                        </a>
-                    </h3>
-
-                    {% if post.event_date or post.venue %}
-                    <div class="bcet-event-details">
-                        {% if post.event_date %}
-                        <span><i data-lucide="calendar"></i> {{ post.event_date|date:"d M Y, h:i A" }}</span>
-                        {% endif %}
-                        {% if post.venue %}
-                        <span><i data-lucide="map-pin"></i> {{ post.venue }}</span>
-                        {% endif %}
-                    </div>
-                    {% endif %}
-
-                    <p class="bcet-post-desc">{{ post.clean_snippet }}</p>
-
-                    <!-- Registration action link -->
-                    {% if post.link_url %}
-                    <div class="bcet-post-link-bar">
-                        <a href="{{ post.link_url }}" target="_blank" rel="noopener" class="bcet-chip bcet-chip-link">
-                            <i data-lucide="external-link"></i>
-                            <span>{{ post.link_title|default:"Registration / Form Link" }}</span>
-                        </a>
-                    </div>
-                    {% endif %}
-
-                    {% if post.images.all %}
-                    <div class="bcet-post-gallery">
-                        {% for img in post.images.all %}
-                        <a href="{{ img.image.url }}" target="_blank" class="bcet-gallery-thumb">
-                            <img src="{{ img.image.url }}" alt="Gallery Image" loading="lazy">
-                        </a>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
-
-                    <div class="bcet-post-card-foot">
-                        <a href="{% url 'community_post_detail' username=community.username slug=post.slug %}" class="bcet-chip bcet-chip-read">
-                            <span>Read Full Post</span>
-                            <i data-lucide="arrow-right"></i>
-                        </a>
-
-                        <div class="bcet-post-sub-actions">
-                            <button type="button" onclick="navigator.share ? navigator.share({title: '{{ post.title|escapejs }} - {{ community.group_name|escapejs }}', url: window.location.origin + '{% url 'community_post_detail' username=community.username slug=post.slug %}'}) : copyPostUrl(this, window.location.origin + '{% url 'community_post_detail' username=community.username slug=post.slug %}')" class="bcet-chip btn-icon-only" title="Share Post">
-                                <i data-lucide="share-2"></i>
-                            </button>
-
-                            {% if is_owner %}
-                            <a href="{% url 'community_post_edit' username=community.username post_id=post.id %}" class="bcet-chip btn-icon-only" title="Edit Post">
-                                <i data-lucide="edit-3"></i>
-                            </a>
-                            <form method="POST" action="{% url 'community_post_delete' username=community.username post_id=post.id %}" onsubmit="return confirm('Delete this post?');" class="bcet-inline-form">
-                                {% csrf_token %}
-                                <button type="submit" class="bcet-chip btn-icon-only bcet-btn-danger" title="Delete Post">
-                                    <i data-lucide="trash-2"></i>
-                                </button>
-                            </form>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-        <div id="filter-empty-state" class="bcet-empty-posts" style="display: none;">
-            <i data-lucide="filter"></i>
-            <h3>No posts found</h3>
-            <p>No community updates match this specific post type category.</p>
-        </div>
-        {% else %}
-        <div class="bcet-empty-posts">
-            <i data-lucide="newspaper"></i>
-            <h3>No updates published yet</h3>
-            <p>Stay tuned! {{ community.group_name }} will publish upcoming events, announcements, and blogs here.</p>
-            {% if is_owner %}
-            <a href="{% url 'community_post_create' username=community.username %}" class="first-post-btn">
-                <i data-lucide="plus"></i>
-                <span>Create First Post</span>
-            </a>
-            {% endif %}
-        </div>
-        {% endif %}
-    </div>
-</div>
-
-<script>
-    // Filter feed posts
-    function filterPosts(type, btn) {
-        const tabs = document.querySelectorAll('#feed-filter-tabs .bcet-tab-btn');
-        tabs.forEach(t => t.classList.remove('is-active') || t.classList.add('google-glow-border'));
-        if (btn) btn.classList.add('is-active') || btn.classList.remove('google-glow-border');
-
-        const items = document.querySelectorAll('#bcet-posts-container .bcet-post-item');
-        let visibleCount = 0;
-
-        items.forEach(item => {
-            const itemType = item.getAttribute('data-type');
-            if (type === 'all' || itemType === type) {
-                item.style.display = 'flex';
-                visibleCount++;
-            } else {
-                item.style.display = 'none';
-            }
-        });
-
-        const empty = document.getElementById('filter-empty-state');
-        if (empty) {
-            empty.style.display = (visibleCount === 0 && items.length > 0) ? 'block' : 'none';
-        }
-    }
-
-    // Copy community link
-    function copyCommunityUrl(btn) {
-        navigator.clipboard.writeText(window.location.href).then(() => {
-            if (btn) {
-                const orig = btn.innerHTML;
-                btn.innerHTML = '<i data-lucide="check"></i> <span>Copied!</span>';
-                if (window.lucide) lucide.createIcons();
-                setTimeout(() => {
-                    btn.innerHTML = orig;
-                    if (window.lucide) lucide.createIcons();
-                }, 2000);
-            }
-        });
-    }
-
-    // Copy post link
-    function copyPostUrl(btn, url) {
-        navigator.clipboard.writeText(url).then(() => {
-            if (btn) {
-                const orig = btn.innerHTML;
-                btn.innerHTML = '<i data-lucide="check"></i>';
-                if (window.lucide) lucide.createIcons();
-                setTimeout(() => {
-                    btn.innerHTML = orig;
-                    if (window.lucide) lucide.createIcons();
-                }, 2000);
-            }
-        });
-    }
-</script>
-
 <style>
     /* Chip outline buttons */
     .bcet-chip {
@@ -420,7 +115,7 @@
         width: 100%;
         max-width: 1100px;
         margin: 0 auto;
-        padding: 0 16px 40px 16px;
+        /* padding: 0 16px 40px 16px; */
         box-sizing: border-box;
     }
 
@@ -519,26 +214,49 @@
         height: 96px;
         min-width: 96px;
         border-radius: 50%;
-        background-color: var(--card-bg);
-        border: 2px solid var(--border-color);
-        display: flex;
+        position: relative;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
-        overflow: hidden;
+        overflow: visible !important;
         flex-shrink: 0;
-    }
+        }
 
-    .bcet-profile-avatar img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
+        .bcet-profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+        }
 
-    .bcet-profile-avatar span {
-        font-size: 30px;
-        font-weight: 800;
-        color: var(--text-muted);
-    }
+        .p-edit {
+            position: absolute;
+            right: -3px;
+            bottom: -4px;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #ffffff;
+            color: var(--card-bg);
+            border: 3px solid var(--card-bg);
+            border-radius: 50%;
+            /* box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25); */
+            text-decoration: none;
+            z-index: 9999;
+        }
+
+        .p-edit i,
+        .p-edit svg {
+            width: 17px;
+            height: 17px;
+        }
+
+        .p-edit:hover {
+            background: #eaeaea;
+        }
 
     .bcet-profile-details {
         flex: 1 1 auto;
@@ -973,8 +691,9 @@
             grid-template-columns: 1fr;
         }
 
-        .bcet-action-btn span {
-            display: none;
+        .bcet-owner-banner {
+            flex-direction: row;
+            align-items: center;
         }
     }
 
@@ -1003,4 +722,270 @@
     }
 
 </style>
+
+
+<div class="bcet-profile-wrapper">
+    <!-- Club admin bar -->
+    {% if is_owner %}
+    <div class="bcet-owner-banner">
+        <div
+            class="bcet-owner-status"
+            hx-get="{% url 'greetings' %}"
+            hx-trigger="load"
+            hx-target="#output-div"
+            hx-swap="innerHTML"
+        >
+            <div>
+                <strong id="output-div">
+                </strong>
+            </div>
+        </div>
+        <div class="bcet-owner-actions">
+            <a href="{% url 'community_post_create' username=community.username %}" class="bcet-action-btn google-glow-border">
+                <i data-lucide="plus-circle"></i>
+                <span>Create Post</span>
+            </a>
+            <a href="{% url 'community_logout' %}" class="bcet-action-btn bcet-btn-danger">
+                <i data-lucide="log-out"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Club profile card -->
+    <div class="bcet-profile-card">
+        <div class="bcet-profile-head">
+            <div class="bcet-profile-avatar">
+                {% if community.group_logo %}
+                    <img src="{{ community.group_logo.url }}"
+                        alt="{{ community.group_name }}"
+                        onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';">
+
+                    <span class="bcet-avatar-fallback" style="display: none;">
+                        {{ community.group_name|slice:":2"|upper }}
+                    </span>
+                {% else %}
+                    <span class="bcet-avatar-fallback">
+                        {{ community.group_name|slice:":2"|upper }}
+                    </span>
+                {% endif %}
+                
+                {% if is_owner %}
+                <a href="{% url 'community_edit' username=community.username %}"
+                class="p-edit"
+                title="Edit Profile">
+                    <i data-lucide="pencil"></i>
+                </a>
+                {% endif %}
+            </div>
+
+            <div class="bcet-profile-details">
+                <div class="bcet-title-row">
+                    <h1 class="bcet-profile-name">{{ community.group_name }}</h1>
+                    <span class="bcet-category-pill">{{ community.get_group_type_display }}</span>
+                </div>
+                <div class="bcet-handle-row">
+                    <span class="bcet-username-handle">@{{ community.username }}</span>
+                </div>
+                <p class="bcet-profile-desc">
+                    {{ community.group_dec|default:"Welcome to our official BCET campus club. Follow our latest updates, activities, and events below." }}
+                </p>
+            </div>
+        </div>
+
+        <!-- Social link chips -->
+        <div class="bcet-profile-socials">
+            {% if community.instagram %}
+            <a href="{{ community.instagram }}" target="_blank" rel="noopener" class="bcet-chip social-links google-glow-border">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                <span>Instagram</span>
+            </a>
+            {% endif %}
+
+            {% if community.facebook %}
+            <a href="{{ community.facebook }}" target="_blank" rel="noopener" class="bcet-chip social-links google-glow-border">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                <span>Facebook</span>
+            </a>
+            {% endif %}
+
+            {% if community.linkedin %}
+            <a href="{{ community.linkedin }}" target="_blank" rel="noopener" class="bcet-chip social-links google-glow-border">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+                <span>LinkedIn</span>
+            </a>
+            {% endif %}
+
+            {% if community.discord %}
+            <a href="{{ community.discord }}" target="_blank" rel="noopener" class="bcet-chip social-links google-glow-border">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 5.5a16.04 16.04 0 0 0-4.04-1.23A10.85 10.85 0 0 0 13.5 6.2a15.82 15.82 0 0 0-5 0A10.85 10.85 0 0 0 7.04 4.27 16.04 16.04 0 0 0 3 5.5c-2.58 6.02-3.29 11.85-1.42 17.58a16.3 16.3 0 0 0 5.11 2.58c.41-.56.78-1.16 1.09-1.8a10.88 10.88 0 0 1-1.74-.84c.12-.09.24-.19.35-.29 3.34 1.55 6.96 1.55 10.26 0 .12.1.24.2.35.29-.55.32-1.13.6-1.74.84.31.64.68 1.24 1.09 1.8a16.3 16.3 0 0 0 5.12-2.58c2.09-6.33-.48-12.15-1.42-17.58ZM8.82 17.5c-1.01 0-1.84-.94-1.84-2.1 0-1.16.85-2.1 1.84-2.1 1.01 0 1.86.95 1.84 2.1 0 1.16-.84 2.1-1.84 2.1Zm6.36 0c-1.01 0-1.84-.94-1.84-2.1 0-1.16.85-2.1 1.84-2.1 1.01 0 1.86.95 1.84 2.1 0 1.16-.83 2.1-1.84 2.1Z"/></svg>
+                <span>Discord</span>
+            </a>
+            {% endif %}
+
+            {% if community.other %}
+            <a href="{{ community.other }}" target="_blank" rel="noopener" class="bcet-chip social-links google-glow-border">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                <span>{{ community.other_title|default:"Website" }}</span>
+            </a>
+            {% endif %}
+
+            {% if community.join %}
+            <a href="{{ community.join }}" target="_blank" rel="noopener" class="bcet-chip bcet-chip-join social-links google-glow-border">
+                <i data-lucide="user-plus"></i>
+                <span>Join Club</span>
+            </a>
+            {% endif %}
+
+            <button type="button" onclick="navigator.share ? navigator.share({title: '{{ community.group_name|escapejs }} - BCETHub', url: window.location.href}) : copyCommunityUrl(this)" class="bcet-chip social-links google-glow-border" id="btn-share-club">
+                <i data-lucide="share-2"></i>
+                <span>Share</span>
+            </button>
+
+            {% if not is_owner %}
+            <a href="{% url 'community_login' %}?next={{ request.path }}" class="bcet-chip bcet-chip-login social-links google-glow-border">
+                <i data-lucide="shield-check"></i>
+                <span>Club Login</span>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Feed posts section -->
+    <div class="bcet-posts-section">
+        <div class="bcet-section-header">
+            <div class="bcet-section-title-wrap">
+                <i data-lucide="rss"></i>
+                <h2>Community Feed &amp; Updates</h2>
+            </div>
+            <span class="bcet-post-count">{{ posts|length }} Post{{ posts|length|pluralize }}</span>
+        </div>
+
+        <!-- Post filter tabs -->
+        <div class="bcet-feed-tabs" id="feed-filter-tabs">
+            <button type="button" class="bcet-tab-btn is-active" onclick="filterPosts('all', this)">All ({{ posts|length }})</button>
+            <button type="button" class="bcet-tab-btn google-glow-border" onclick="filterPosts('event', this)">Events</button>
+            <button type="button" class="bcet-tab-btn google-glow-border" onclick="filterPosts('announcement', this)">Announcements</button>
+            <button type="button" class="bcet-tab-btn google-glow-border" onclick="filterPosts('activity', this)">Activities</button>
+            <button type="button" class="bcet-tab-btn google-glow-border" onclick="filterPosts('blog', this)">Blogs</button>
+            <button type="button" class="bcet-tab-btn google-glow-border" onclick="filterPosts('achievement', this)">Achievements</button>
+        </div>
+
+        {% if posts %}
+        <div class="bcet-posts-grid" id="bcet-posts-container">
+            {% for post in posts %}
+            <div class="bcet-post-item" data-type="{{ post.post_type|lower }}">
+                {% if post.cover_image %}
+                <div class="bcet-post-cover">
+                    <a href="{% url 'community_post_detail' username=community.username slug=post.slug %}">
+                        <img src="{{ post.cover_image.url }}" alt="{{ post.title }}" loading="lazy">
+                    </a>
+                </div>
+                {% endif %}
+
+                <div class="bcet-post-body">
+                    <div class="bcet-post-meta">
+                        <span class="bcet-type-tag {{ post.post_type|lower }}">{{ post.get_post_type_display }}</span>
+                        
+                        {% if post.computed_status_label %}
+                            <span class="bcet-event-status-tag {{ post.computed_event_status|lower }}">{{ post.computed_status_label }}</span>
+                        {% endif %}
+
+                        {% if is_owner %}
+                            <span class="bcet-status-pill {{ post.status|lower }}">{{ post.get_status_display }}</span>
+                        {% endif %}
+
+                        <span class="bcet-post-date">{{ post.published_at|date:"d M Y" }}</span>
+                    </div>
+
+                    <h3 class="bcet-post-title">
+                        <a href="{% url 'community_post_detail' username=community.username slug=post.slug %}" class="bcet-post-title-link">
+                            {{ post.title }}
+                        </a>
+                    </h3>
+
+                    {% if post.event_date or post.venue %}
+                    <div class="bcet-event-details">
+                        {% if post.event_date %}
+                        <span><i data-lucide="calendar"></i> {{ post.event_date|date:"d M Y, h:i A" }}</span>
+                        {% endif %}
+                        {% if post.venue %}
+                        <span><i data-lucide="map-pin"></i> {{ post.venue }}</span>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <p class="bcet-post-desc">{{ post.clean_snippet }}</p>
+
+                    <!-- Registration action link -->
+                    {% if post.link_url %}
+                    <div class="bcet-post-link-bar">
+                        <a href="{{ post.link_url }}" target="_blank" rel="noopener" class="bcet-chip bcet-chip-link">
+                            <i data-lucide="external-link"></i>
+                            <span>{{ post.link_title|default:"Registration / Form Link" }}</span>
+                        </a>
+                    </div>
+                    {% endif %}
+
+                    {% if post.images.all %}
+                    <div class="bcet-post-gallery">
+                        {% for img in post.images.all %}
+                        <a href="{{ img.image.url }}" target="_blank" class="bcet-gallery-thumb">
+                            <img src="{{ img.image.url }}" alt="Gallery Image" loading="lazy">
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <div class="bcet-post-card-foot">
+                        <a href="{% url 'community_post_detail' username=community.username slug=post.slug %}" class="bcet-chip bcet-chip-read">
+                            <span>Read Full Post</span>
+                            <i data-lucide="arrow-right"></i>
+                        </a>
+
+                        <div class="bcet-post-sub-actions">
+                            <button type="button" onclick="navigator.share ? navigator.share({title: '{{ post.title|escapejs }} - {{ community.group_name|escapejs }}', url: window.location.origin + '{% url 'community_post_detail' username=community.username slug=post.slug %}'}) : copyPostUrl(this, window.location.origin + '{% url 'community_post_detail' username=community.username slug=post.slug %}')" class="bcet-chip btn-icon-only" title="Share Post">
+                                <i data-lucide="share-2"></i>
+                            </button>
+
+                            {% if is_owner %}
+                            <a href="{% url 'community_post_edit' username=community.username post_id=post.id %}" class="bcet-chip btn-icon-only" title="Edit Post">
+                                <i data-lucide="edit-3"></i>
+                            </a>
+                            <form method="POST" action="{% url 'community_post_delete' username=community.username post_id=post.id %}" onsubmit="return confirm('Delete this post?');" class="bcet-inline-form">
+                                {% csrf_token %}
+                                <button type="submit" class="bcet-chip btn-icon-only bcet-btn-danger" title="Delete Post">
+                                    <i data-lucide="trash-2"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div id="filter-empty-state" class="bcet-empty-posts" style="display: none;">
+            <i data-lucide="filter"></i>
+            <h3>No posts found</h3>
+            <p>No community updates match this specific post type category.</p>
+        </div>
+        {% else %}
+        <div class="bcet-empty-posts">
+            <i data-lucide="newspaper"></i>
+            <h3>No updates published yet</h3>
+            <p>Stay tuned! {{ community.group_name }} will publish upcoming events, announcements, and blogs here.</p>
+            {% if is_owner %}
+            <a href="{% url 'community_post_create' username=community.username %}" class="first-post-btn">
+                <i data-lucide="plus"></i>
+                <span>Create First Post</span>
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script src="{% static 'js/community_page.js' %}"></script>
 {% endblock %}

@@ -1507,9 +1507,9 @@ footer {
         } */
     }
 
-    .social-links span {
+    /* .social-links span {
         display: none;
-    }
+    } */
 
 }
 
@@ -2086,13 +2086,10 @@ footer {
   color: var(--text-primary);
   text-decoration: none;
   cursor: pointer;
-  transition: transform 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
 .bcet-chip:hover {
-  transform: translateY(-2px);
-  border-color: #0284c7;
-  color: #38bdf8;
+  border-color: var(--text-primary);
 }
 
 .bcet-chip svg,
