@@ -552,6 +552,7 @@ class Community(models.Model):
     other_title = models.CharField(max_length=2000, blank=True, null=True)
     join = models.CharField(max_length=2000, blank=True, null=True)
 
+    is_bluetick = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
 

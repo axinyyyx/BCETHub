@@ -29,6 +29,7 @@ urlpatterns = [
     path('community/<str:username>/post/<int:post_id>/edit', views.community_post_edit, name="community_post_edit_alt"),
     path('community/<str:username>/post/<int:post_id>/delete/', views.community_post_delete, name="community_post_delete"),
     path('community/<str:username>/edit', views.community_edit, name="community_edit"),
+    path("check-username/", views.check_username, name="check_username"),
     path('about', views.about, name="about"),
     path('attendance/', views.pooling_page, name='pooling_page'),
     path('attendance/mark/', views.mark_attendance, name='mark_attendance'),
