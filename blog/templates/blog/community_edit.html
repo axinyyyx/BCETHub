@@ -163,6 +163,10 @@
             flex: 1;
         }
     }
+
+    #username-result{
+        margin: 5px;
+    }
 </style>
 
 
@@ -178,8 +182,8 @@
         </div>
 
         <div class="edit-header">
-            <h1>Edit Club Profile</h1>
-            <p>Update your club information and social links.</p>
+            <h1>Edit {% if community.group_type.name != 'Social' %}Club{% else %}Your {% endif %} Profile</h1>
+            <p>Update your {% if community.group_type.name != 'Social' %}Club{% else %}Proflie{% endif %} information and social links.</p>
         </div>
 
         {% if messages %}
@@ -214,9 +218,26 @@
                 <small>Choose a new image to replace the current logo.</small>
             </div>
 
-            <!-- Club name -->
+            <!-- Club and User Name -->
             <div class="form-group">
-                <label for="group_name">Club Name *</label>
+                <label for="user_name">Username *</label>
+                <input
+                    type="text"
+                    id="user_name"
+                    name="user_name"
+                    value="{{ community.user.username }}"
+                    maxlength="20"
+                    pattern="[a-z0-9_.]+"
+                    hx-get="{% url 'check_username' %}"
+                    hx-trigger="input changed delay:400ms"
+                    hx-target="#username-result"
+                    hx-swap="innerHTML"
+                    hx-vals='{"current_username": "{{ community.user.username|escapejs }}"}'
+                    required
+                >
+                <div id="username-result"></div>
+
+                <label for="group_name">{% if community.group_type.name != 'Social' %}Club Name{% else %}Name{% endif %} *</label>
                 <input type="text"
                        id="group_name"
                        name="group_name"
@@ -225,7 +246,7 @@
                        required>
             </div>
 
-            <!-- Group type -->
+            <!-- Group type
             <div class="form-group">
                 <label for="group_type">Club Category</label>
 
@@ -241,11 +262,11 @@
                         </option>
                     {% endfor %}
                 </select>
-            </div>
+            </div> -->
 
             <!-- Description -->
             <div class="form-group">
-                <label for="group_dec">Club Description</label>
+                <label for="group_dec">{% if community.group_type.name != 'Social' %}Club Description{% else %}Bio{% endif %}</label>
                 <textarea id="group_dec"
                           name="group_dec"
                           rows="5"
@@ -253,29 +274,33 @@
             </div>
 
             <h2>Social Links</h2>
+                
+            {% if community.group_type.name != 'Social' %}
 
-            <div class="form-group">
-                <label for="instagram">Instagram URL</label>
-                <input type="url" id="instagram"
-                       name="instagram"
-                       value="{{ community.instagram|default:'' }}"
-                       placeholder="https://instagram.com/yourclub">
-            </div>
+                <div class="form-group">
+                    <label for="instagram">Instagram URL</label>
+                    <input type="url" id="instagram"
+                        name="instagram"
+                        value="{{ community.instagram|default:'' }}"
+                        placeholder="https://instagram.com/yourclub">
+                </div>
 
-            <div class="form-group">
-                <label for="facebook">Facebook URL</label>
-                <input type="url" id="facebook"
-                       name="facebook"
-                       value="{{ community.facebook|default:'' }}"
-                       placeholder="https://facebook.com/yourclub">
-            </div>
+                <div class="form-group">
+                    <label for="facebook">Facebook URL</label>
+                    <input type="url" id="facebook"
+                        name="facebook"
+                        value="{{ community.facebook|default:'' }}"
+                        placeholder="https://facebook.com/yourclub">
+                </div>
+
+            {% endif %}
 
             <div class="form-group">
                 <label for="linkedin">LinkedIn URL</label>
                 <input type="url" id="linkedin"
                        name="linkedin"
                        value="{{ community.linkedin|default:'' }}"
-                       placeholder="https://linkedin.com/company/yourclub">
+                       placeholder="https://linkedin.com/company/username">
             </div>
 
             <div class="form-group">
@@ -301,14 +326,16 @@
                        value="{{ community.other|default:'' }}"
                        placeholder="https://example.com">
             </div>
-
-            <div class="form-group">
-                <label for="join">Join Club URL</label>
-                <input type="url" id="join"
-                       name="join"
-                       value="{{ community.join|default:'' }}"
-                       placeholder="https://example.com/join">
-            </div>
+            {% if community.group_type.name != 'Social' %}
+                <div class="form-group">
+                    <label for="join">Join Club URL</label>
+                    <input type="url" id="join"
+                    name="join"
+                    value="{{ community.join|default:'' }}"
+                    placeholder="https://example.com/join">
+                </div>
+            {% else %}
+            {% endif %} 
 
             <div class="edit-actions">
                 <button type="submit" class="save-btn">

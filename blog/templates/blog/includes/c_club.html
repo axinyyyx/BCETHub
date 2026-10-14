@@ -6,7 +6,9 @@
                 {% if com.group_logo %}
                     <img src="{{ com.group_logo.url }}" alt="{{ com.group_name }}">
                 {% else %}
-                    <span>{{ com.group_name|slice:":2"|upper }}</span>
+                    <span>{% with words=com.group_name.split %}
+                                {{ words.0|slice:":1"|upper }}{{ words.1|slice:":1"|upper }}
+                            {% endwith %}</span>
                 {% endif %}
             </div>
             </a>
@@ -16,7 +18,7 @@
                         {{ com.group_name }}
                     </a>
                     </h3>
-                <span class="bcet-club-category">{{ com.get_group_type_display }}</span>
+                <span class="bcet-club-username">{{ com.user }}{% if com.is_bluetick %}<i data-lucide="badge-check"></i>{% endif %}</span>
             </div>
         </div>
         {% if com.join %}
@@ -206,7 +208,7 @@
         min-width: 48px;
         max-width: 48px;
         border-radius: 50%;
-        background: #f8fafc;
+        background: var(--card-bg);
         border: 1px solid var(--border-color);
         display: flex;
         align-items: center;
@@ -225,7 +227,7 @@
     .bcet-club-avatar span {
         font-size: 15px;
         font-weight: 800;
-        color: #b8b8b9;
+        color: var(--text-primary);
     }
 
     .bcet-club-info {
@@ -247,16 +249,26 @@
         word-break: break-word;
     }
 
-    .bcet-club-category {
-        display: block;
+    .bcet-club-username {
+        display: flex;
+        align-items: center;
+        gap: 4px;
         font-size: 11px;
         font-weight: 600;
         color: #7d7e80;
-        text-transform: uppercase;
         letter-spacing: 0.5px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+    }
+
+    .bcet-club-username svg {
+        width: 14px;
+        height: 14px;
+        min-width: 14px;
+        min-height: 14px;
+        flex-shrink: 0;
+        color: blue;
     }
 
    .bcet-btn-join {

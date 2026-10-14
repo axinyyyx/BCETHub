@@ -4,7 +4,7 @@ import datetime
 from django.conf import settings
 from django.shortcuts import render, redirect, HttpResponse
 from django.contrib import messages
-from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
+from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout, get_user_model
 from django.utils import timezone
 from django.http import JsonResponse
 from django.db.models import Q
@@ -20,6 +20,32 @@ from .routine_utils import (
 )
 from urllib.parse import urlparse
 from django.contrib.auth.decorators import login_required
+import re
+
+User = get_user_model()
+
+# restricted username
+RESTRICTED_USERNAMES = {
+    "admin",
+    "administrator",
+    "root",
+    "superuser",
+    "staff",
+    "support",
+    "moderator",
+    "system",
+    "login",
+    "logout",
+    "register",
+    "signup",
+    "api",
+    "bcethub",
+    "rishabhsahil",
+    "rishabh",
+    "sahil",
+    "rishabhkumar",
+    "sahilkumar"
+}
 
 # Greeting Function
 def get_greeting(request):
@@ -860,7 +886,7 @@ def assignments(request):
 
 # show community list
 def community(request):
-    community = Community.objects.filter(is_active=True).select_related('group_type', 'user').order_by('group_type__name', 'id')
+    community = Community.objects.filter(is_active=True).select_related('group_type', 'user').order_by('-group_type__name', 'id')    
     context = {
         "community": community,
         "coming_soon": "Community features are rolling out step by step. Stay tuned as new tools arrive!"
@@ -880,7 +906,7 @@ def community_page(request, username):
         posts = community.posts.all().prefetch_related('images').order_by('-created_at')
     else:
         posts = community.posts.filter(status='PUBLISHED').prefetch_related('images').order_by('-created_at')
-
+        
     context = {
         "community": community,
         "is_owner": is_owner,
@@ -1126,7 +1152,59 @@ def community_post_delete(request, username, post_id):
         messages.success(request, "Post deleted successfully.")
     return redirect('community_page', username=username)
 
+# username check
+@login_required(login_url='community_login')
+def check_username(request):
+    username = request.GET.get("user_name", "").strip()
+    current_username = request.GET.get("current_username", "").strip()
+
+    if not username:
+        return HttpResponse(
+            '<span style="color:red">Username required</span>'
+        )
+    
+    if len(username)<4:
+        return HttpResponse(
+            '<span style="color:red">Username must be at least 4 characters long.</span>'
+        )
+
+    if not re.fullmatch(r"[a-z0-9_.]{1,20}", username):
+        return HttpResponse(
+            '<span style="color:red">Only lowercase letters, numbers, _ and . allowed</span>'
+        )
+
+    if (
+        username.startswith((".", "_"))
+        or username.endswith((".", "_"))
+        or ".." in username
+    ):
+        return HttpResponse(
+            '<span style="color:red">Invalid username format</span>'
+        )
+
+    if username in RESTRICTED_USERNAMES:
+        return HttpResponse(
+            '<span style="color:red">This username is reserved</span>'
+        )
+
+    # Current username ko pehchano
+    if username == current_username:
+        return HttpResponse(
+            '<span style="color:gray">This is your current username</span>'
+        )
+
+    # Baaki users ke usernames check karo
+    if User.objects.filter(username__iexact=username).exists():
+        return HttpResponse(
+            '<span style="color:red">Username already exists</span>'
+        )
+
+    return HttpResponse(
+        '<span style="color:green">Username available</span>'
+    )
+
 # community edit
+@login_required(login_url='community_login')
 def community_edit(request, username):
     community = Community.objects.filter(
         user__username__iexact=username
@@ -1144,28 +1222,88 @@ def community_edit(request, username):
         )
 
     if request.method == 'POST':
-        group_name = request.POST.get('group_name', '').strip()
-        group_dec = request.POST.get('group_dec', '').strip()
+        user_name = request.POST.get(
+            'user_name', ''
+        ).strip()
 
+        group_name = request.POST.get(
+            'group_name', ''
+        ).strip()
+
+        group_dec = request.POST.get(
+            'group_dec', ''
+        ).strip()
+
+        # Validate club name
         if not group_name:
-            messages.error(request, 'Club name is required.')
+            messages.error(
+                request,
+                'Club name is required.'
+            )
+
+        # Validate username
+        elif not re.fullmatch(r'[a-z0-9_.]{4,20}', user_name):
+            messages.error(
+                request,
+                'Username must be 4-20 characters long and contain only lowercase letters, numbers, _ and .'
+            )
+
+        elif (
+            user_name.startswith(('.', '_'))
+            or user_name.endswith(('.', '_'))
+            or '..' in user_name
+        ):
+            messages.error(
+                request,
+                'Username cannot start or end with . or _, or contain consecutive dots.'
+            )
+
+        elif user_name in RESTRICTED_USERNAMES:
+            messages.error(
+                request,
+                'This username is reserved. Please choose another.'
+            )
+
+        elif User.objects.filter(
+            username__iexact=user_name
+        ).exclude(
+            pk=community.user_id
+        ).exists():
+            messages.error(
+                request,
+                'Username already exists. Please choose another.'
+            )
+
         else:
+            # Update username only when valid
+            community.user.username = user_name
+            community.user.save(update_fields=['username'])
+
+            # Update community details
             community.group_name = group_name
             community.group_dec = group_dec
 
             # Update group type
             group_type_id = request.POST.get('group_type')
+
             if group_type_id:
-                community.group_type = CommunityGroupType.objects.filter(
-                    pk=group_type_id
-                ).first()
+                community.group_type = (
+                    CommunityGroupType.objects.filter(
+                        pk=group_type_id
+                    ).first()
+                )
             else:
                 community.group_type = None
 
             # Update social links
             for field in [
-                'instagram', 'facebook', 'linkedin',
-                'discord', 'other', 'other_title', 'join'
+                'instagram',
+                'facebook',
+                'linkedin',
+                'discord',
+                'other',
+                'other_title',
+                'join',
             ]:
                 setattr(
                     community,
@@ -1178,11 +1316,15 @@ def community_edit(request, username):
                 community.group_logo = request.FILES['group_logo']
 
             community.save()
-            messages.success(request, 'Profile updated successfully!')
+
+            messages.success(
+                request,
+                'Profile updated successfully!'
+            )
 
             return redirect(
                 'community_page',
-                username=community.username
+                username=community.user.username
             )
 
     context = {

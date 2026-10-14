@@ -107,7 +107,14 @@
     .bcet-avatar-fallback {
         font-size: 26px;
         font-weight: 800;
-        color: #38bdf8;
+        color: var(--text-primary);
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        border: 2px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     /* Profile wrapper */
@@ -298,6 +305,18 @@
         font-size: 13px;
         font-weight: 600;
         color: var(--text-muted);
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .bcet-username-handle svg {
+        width: 16px;
+        height: 16px;
+        min-width: 16px;
+        min-height: 16px;
+        flex-shrink: 0;
+        color: blue;
     }
 
     .bcet-profile-desc {
@@ -763,11 +782,15 @@
                         onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';">
 
                     <span class="bcet-avatar-fallback" style="display: none;">
-                        {{ community.group_name|slice:":2"|upper }}
+                        {% with name_list=community.group_name.split %}
+                            {{ name_list.0|slice:":1"|upper }}{{ name_list.1|slice:":1"|upper }}
+                        {% endwith %}
                     </span>
                 {% else %}
                     <span class="bcet-avatar-fallback">
-                        {{ community.group_name|slice:":2"|upper }}
+                        {% with name_list=community.group_name.split %}
+                            {{ name_list.0|slice:":1"|upper }}{{ name_list.1|slice:":1"|upper }}
+                        {% endwith %}
                     </span>
                 {% endif %}
                 
@@ -786,7 +809,7 @@
                     <span class="bcet-category-pill">{{ community.get_group_type_display }}</span>
                 </div>
                 <div class="bcet-handle-row">
-                    <span class="bcet-username-handle">@{{ community.username }}</span>
+                    <span class="bcet-username-handle">@{{ community.username }}{% if community.is_bluetick %}<i data-lucide="badge-check"></i>{% endif %}</span>
                 </div>
                 <p class="bcet-profile-desc">
                     {{ community.group_dec|default:"Welcome to our official BCET campus club. Follow our latest updates, activities, and events below." }}
