@@ -12,57 +12,55 @@
     <!-- Today Highlights Container -->
     <div class="home-dynamic-cards" style="display: flex; flex-direction: column; gap: 1.5rem;">
 
-        <!-- Active Meal Card -->
-        <div class="dash-card lunch-highlight-card" style="order: {{ p_meal }};">
-            <div class="card-header">
-                <div class="header-left">
-                    <div>
-                        <h3>{{ displayed_meal.title }}</h3>
-                        <span class="day-tag">{{ today_day_name }} Special</span>
+        {% if active_mess_holidays %}
+        {% else %}
+            <!-- Active Meal Card -->
+            <div class="dash-card lunch-highlight-card" style="order: {{ p_meal }};">
+                <div class="card-header">
+                    <div class="header-left">
+                        <div>
+                            <h3>{{ displayed_meal.title }}</h3>
+                            <span class="day-tag">{{ today_day_name }} Special</span>
+                        </div>
                     </div>
+                    {% if displayed_meal.is_serving %}
+                        <span class="status-badge badge-live">
+                            <span class="pulse-dot"></span>
+                        </span>
+                    {% else %}
+                        <span class="status-badge badge-info">
+                            <i data-lucide="clock"></i>
+                        </span>
+                    {% endif %}
                 </div>
-                {% if active_mess_holidays %}
-                    <span class="status-badge badge-info" style="color: red">
-                        <i data-lucide="calendar-days"></i> Holiday
-                    </span>
-                {% elif displayed_meal.is_serving %}
-                    <span class="status-badge badge-live">
-                        <span class="pulse-dot"></span>
-                    </span>
-                {% else %}
-                    <span class="status-badge badge-info">
-                        <i data-lucide="clock"></i>
-                    </span>
-                {% endif %}
-            </div>
 
-            <div class="card-body">
-                {% if displayed_meal.food %}
-                    <div class="meal-food-box">
-                        <div class="food-icon-tag"><i data-lucide="{{ displayed_meal.icon }}"></i></div>
-                        <p class="food-description">{{ displayed_meal.food }}</p>
-                    </div>
-
-                    <div class="timings-dual-row">
-                        <div class="timing-badge-item">
-                            <span class="year-label">1st & 2nd Year:</span>
-                            <span class="time-value">{{ displayed_meal.time_1_2 }}</span>
+                <div class="card-body">
+                    {% if displayed_meal.food %}
+                        <div class="meal-food-box">
+                            <div class="food-icon-tag"><i data-lucide="{{ displayed_meal.icon }}"></i></div>
+                            <p class="food-description">{{ displayed_meal.food }}</p>
                         </div>
-                        <div class="timing-badge-item">
-                            <span class="year-label">3rd & 4th Year:</span>
-                            <span class="time-value">{{ displayed_meal.time_3_4 }}</span>
+
+                        <div class="timings-dual-row">
+                            <div class="timing-badge-item">
+                                <span class="year-label">1st & 2nd Year:</span>
+                                <span class="time-value">{{ displayed_meal.time_1_2 }}</span>
+                            </div>
+                            <div class="timing-badge-item">
+                                <span class="year-label">3rd & 4th Year:</span>
+                                <span class="time-value">{{ displayed_meal.time_3_4 }}</span>
+                            </div>
                         </div>
-                    </div>
-                {% else %}
-                    <p class="empty-state">Mess menu info not available for today.</p>
-                {% endif %}
-            </div>
+                    {% else %}
+                        <p class="empty-state">Mess menu info not available for today.</p>
+                    {% endif %}
+                </div>
 
-            <div class="card-footer">
-                <a href="{% url 'mess_menu' %}" class="btn-link">View Full Week Mess Menu <i data-lucide="arrow-right"></i></a>
+                <div class="card-footer">
+                    <a href="{% url 'mess_menu' %}" class="btn-link">View Full Week Mess Menu <i data-lucide="arrow-right"></i></a>
+                </div>
             </div>
-        </div>
-
+        {% endif %}
         <!-- Today Induction Card -->
         <!-- <div class="dash-card induction-highlight-card" style="order: {{ p_induction }};">
             <div class="card-header">
@@ -110,111 +108,101 @@
             </div>
         </div> -->
 
-        <!-- Class Routine Section -->
-        <section class="routine-section dash-card" style="order: {{ p_routine }};">
-            <div class="card-header routine-header">
-                <div class="header-left">
-                    <div>
-                        <h3>{% if active_class_holidays %}No{% endif %} Today's Class Routine & Live Tracker</h3>
-                        <span class="day-tag">{{ today_day_name }} Routine</span>
+        {% if active_class_holidays %}
+        <div class="dash-card">
+            <center>Today is Holiday</center>
+        </div>
+        {% else %}
+            <!-- Class Routine Section -->
+            <section class="routine-section dash-card" style="order: {{ p_routine }};">
+                <div class="card-header routine-header">
+                    <div class="header-left">
+                        <div>
+                            <h3>Today's Class Routine & Live Tracker</h3>
+                            <span class="day-tag">{{ today_day_name }} Routine</span>
+                        </div>
                     </div>
+
+                    <form method="GET" action="{% url 'home' %}" class="sec-select-form" style="display: flex; gap: 10px; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 4px;">
+                            <label for="yr-select">Year:</label>
+                            <select name="year" id="yr-select" class="custom-select" onchange="this.form.submit()">
+                                {% for yr in all_years %}
+                                    <option value="{{ yr.year }}" {% if yr.year == selected_year or yr.id|slugify == selected_year %}selected{% endif %}>{{ yr.get_year_display }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 4px;">
+                            <label for="sec-select">Section:</label>
+                            <select name="sec" id="sec-select" class="custom-select" onchange="this.form.submit()">
+                                {% for sec in all_sections %}
+                                    <option value="{{ sec.name }}" {% if sec.name == selected_sec %}selected{% endif %}>{{ sec.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </form>
                 </div>
 
-                <form method="GET" action="{% url 'home' %}" class="sec-select-form" style="display: flex; gap: 10px; align-items: center;">
-                    <div style="display: flex; align-items: center; gap: 4px;">
-                        <label for="yr-select">Year:</label>
-                        <select name="year" id="yr-select" class="custom-select" onchange="this.form.submit()">
-                            {% for yr in all_years %}
-                                <option value="{{ yr.year }}" {% if yr.year == selected_year or yr.id|slugify == selected_year %}selected{% endif %}>{{ yr.get_year_display }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 4px;">
-                        <label for="sec-select">Section:</label>
-                        <select name="sec" id="sec-select" class="custom-select" onchange="this.form.submit()">
-                            {% for sec in all_sections %}
-                                <option value="{{ sec.name }}" {% if sec.name == selected_sec %}selected{% endif %}>{{ sec.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </form>
-            </div>
-
-            <div class="card-body routine-card-body">
-                {% if active_class_holidays %}
-                    <div class="empty-state holiday-state" style="text-align: center; padding: 28px 16px;">
-                        <i data-lucide="calendar-off" style="width: 36px; height: 36px; margin: 0 auto 10px; display: inline-block; color: var(--text-muted);"></i>
-                        <h4 style="font-size: 16px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px;">Class Holiday</h4>
-                        {% for holiday in active_class_holidays %}
-                            <p style="color: red; font-size: 13px;">
-                                No routine classes scheduled for {{ selected_sec }} today Holiday.
-                            </p>
-                            {% if holiday.dec and holiday.dec != holiday.title %}
-                            <p style="color: red font-size: 13px;">
-                                No routine classes scheduled for {{ selected_sec }} today Holiday.
-                            </p>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-
-                {% elif evaluated_routine %}
-                    <div class="routine-table-responsive">
-                        <table class="routine-table">
-                            <thead>
-                                <tr>
-                                    <th>Slot</th>
-                                    <th>Time</th>
-                                    <th>Subject Code</th>
-                                    <th>Subject Title</th>
-                                    <th>Faculty</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for item in evaluated_routine %}
-                                    <tr class="slot-row status-row-{{ item.status|lower }}">
-                                        <td><span class="slot-num-pill">{{ item.slot_number_display }}</span></td>
-                                        <td class="time-cell">{{ item.start_time|time:"h:i A" }} - {{ item.end_time|time:"h:i A" }}</td>
-                                        <td><span class="code-badge">{{ item.subject_code }}</span></td>
-                                        <td class="sub-name-cell">{{ item.subject_name }}</td>
-                                        <td class="fac-cell">
-                                            {% if item.faculty_ref %}
-                                                <a href="{% url 'search' %}?q={{ item.faculty_ref.name }}" class="fac-link">
-                                                    <i data-lucide="user-check"></i> {{ item.faculty_code }}
-                                                </a>
-                                            {% elif item.faculty_code and item.faculty_code != '--' %}
-                                                <span class="fac-code-raw">{{ item.faculty_code }}</span>
-                                            {% else %}
-                                                <span class="fac-code-raw">--</span>
-                                            {% endif %}
-                                        </td>
-                                        <td>
-                                            <span class="status-badge badge-{{ item.status|lower }}">
-                                                {% if item.status == 'LIVE' %}
-                                                    <span class="pulse-dot"></span> LIVE NOW
-                                                {% elif item.status == 'UPCOMING' %}
-                                                    <i data-lucide="clock"></i> UPCOMING
-                                                {% else %}
-                                                    <i data-lucide="check-circle"></i> COMPLETED
-                                                {% endif %}
-                                            </span>
-                                        </td>
+                <div class="card-body routine-card-body">
+                    {% if evaluated_routine %}
+                        <div class="routine-table-responsive">
+                            <table class="routine-table">
+                                <thead>
+                                    <tr>
+                                        <th>Slot</th>
+                                        <th>Time</th>
+                                        <th>Subject Code</th>
+                                        <th>Subject Title</th>
+                                        <th>Faculty</th>
+                                        <th>Status</th>
                                     </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                {% else %}
-                    <p class="empty-state">
-                        No routine classes scheduled for {{ selected_sec }} today ({{ today_day_name }}).
-                    </p>
-                {% endif %}
-            </div>
+                                </thead>
+                                <tbody>
+                                    {% for item in evaluated_routine %}
+                                        <tr class="slot-row status-row-{{ item.status|lower }}">
+                                            <td><span class="slot-num-pill">{{ item.slot_number_display }}</span></td>
+                                            <td class="time-cell">{{ item.start_time|time:"h:i A" }} - {{ item.end_time|time:"h:i A" }}</td>
+                                            <td><span class="code-badge">{{ item.subject_code }}</span></td>
+                                            <td class="sub-name-cell">{{ item.subject_name }}</td>
+                                            <td class="fac-cell">
+                                                {% if item.faculty_ref %}
+                                                    <a href="{% url 'search' %}?q={{ item.faculty_ref.name }}" class="fac-link">
+                                                        <i data-lucide="user-check"></i> {{ item.faculty_code }}
+                                                    </a>
+                                                {% elif item.faculty_code and item.faculty_code != '--' %}
+                                                    <span class="fac-code-raw">{{ item.faculty_code }}</span>
+                                                {% else %}
+                                                    <span class="fac-code-raw">--</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <span class="status-badge badge-{{ item.status|lower }}">
+                                                    {% if item.status == 'LIVE' %}
+                                                        <span class="pulse-dot"></span> LIVE NOW
+                                                    {% elif item.status == 'UPCOMING' %}
+                                                        <i data-lucide="clock"></i> UPCOMING
+                                                    {% else %}
+                                                        <i data-lucide="check-circle"></i> COMPLETED
+                                                    {% endif %}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="empty-state">
+                            No routine classes scheduled for {{ selected_sec }} today ({{ today_day_name }}).
+                        </p>
+                    {% endif %}
+                </div>
 
-            <div class="card-footer">
-                <a href="{% url 'routine' %}?sec={{ selected_sec|urlencode }}" class="btn-link">View Full Section Timetable <i data-lucide="arrow-right"></i></a>
-            </div>
-        </section>
+                <div class="card-footer">
+                    <a href="{% url 'routine' %}?sec={{ selected_sec|urlencode }}" class="btn-link">View Full Section Timetable <i data-lucide="arrow-right"></i></a>
+                </div>
+            </section>
+        {% endif %}
     </div>
 
     <!-- Quick Navigation Hub -->
