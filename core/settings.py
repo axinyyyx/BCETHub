@@ -4,9 +4,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-!d9g(t+zz^*9(f*!5tj_+$az+p56aobz1@auxk^=i^+)jwrt6x'
 
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['bcet.pythonanywhere.com']
+ALLOWED_HOSTS = ['bcet.pythonanywhere.com','*']
 
 INSTALLED_APPS = [
     'jazzmin',
@@ -42,6 +42,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'blog.context_processors.holiday_',
             ],
         },
     },

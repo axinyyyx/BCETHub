@@ -21,7 +21,12 @@
                     <span class="day-tag">Hostel Batch Schedule</span>
                 </div>
             </div>
-            {% if active_meal %}
+           
+            {% if active_mess_holidays %}
+                <span class="status-badge badge-info" style="color: red">
+                    <i data-lucide="calendar-days"></i> Holiday
+                </span>
+            {% elif active_meal %}
                 <span class="status-badge badge-live"><span class="pulse-dot"></span></span>
             {% else %}
                 <span class="status-badge badge-info"><i data-lucide="clock"></i></span>
@@ -61,7 +66,11 @@
                 <div class="mess-day-header">
                     <h4>{{ menu.get_day_of_week_display }}</h4>
                     {% if menu.day_of_week == today_day_code %}
-                        <span class="status-badge badge-live"><span class="pulse-dot"></span> TODAY</span>
+                        <span class="status-badge badge-live">
+                            {% if active_mess_holidays %}
+                            {% else %}
+                                <span class="pulse-dot"></span> TODAY</span>
+                        {% endif %}
                     {% endif %}
                 </div>
 

@@ -1,4 +1,5 @@
-const CACHE_NAME = 'bcet-portal-v5';
+// cache version
+const CACHE_NAME = 'bcet-portal-v6';
 const STATIC_ASSETS = [
   '/',
   '/routine',

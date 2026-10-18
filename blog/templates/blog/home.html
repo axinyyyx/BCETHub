@@ -21,10 +21,18 @@
                         <span class="day-tag">{{ today_day_name }} Special</span>
                     </div>
                 </div>
-                {% if displayed_meal.is_serving %}
-                    <span class="status-badge badge-live"><span class="pulse-dot"></span></span>
+                {% if active_mess_holidays %}
+                    <span class="status-badge badge-info" style="color: red">
+                        <i data-lucide="calendar-days"></i> Holiday
+                    </span>
+                {% elif displayed_meal.is_serving %}
+                    <span class="status-badge badge-live">
+                        <span class="pulse-dot"></span>
+                    </span>
                 {% else %}
-                    <span class="status-badge badge-info"><i data-lucide="clock"></i></span>
+                    <span class="status-badge badge-info">
+                        <i data-lucide="clock"></i>
+                    </span>
                 {% endif %}
             </div>
 
@@ -107,7 +115,7 @@
             <div class="card-header routine-header">
                 <div class="header-left">
                     <div>
-                        <h3>Today's Class Routine & Live Tracker</h3>
+                        <h3>{% if active_class_holidays %}No{% endif %} Today's Class Routine & Live Tracker</h3>
                         <span class="day-tag">{{ today_day_name }} Routine</span>
                     </div>
                 </div>
@@ -133,7 +141,23 @@
             </div>
 
             <div class="card-body routine-card-body">
-                {% if evaluated_routine %}
+                {% if active_class_holidays %}
+                    <div class="empty-state holiday-state" style="text-align: center; padding: 28px 16px;">
+                        <i data-lucide="calendar-off" style="width: 36px; height: 36px; margin: 0 auto 10px; display: inline-block; color: var(--text-muted);"></i>
+                        <h4 style="font-size: 16px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px;">Class Holiday</h4>
+                        {% for holiday in active_class_holidays %}
+                            <p style="color: red; font-size: 13px;">
+                                No routine classes scheduled for {{ selected_sec }} today Holiday.
+                            </p>
+                            {% if holiday.dec and holiday.dec != holiday.title %}
+                            <p style="color: red font-size: 13px;">
+                                No routine classes scheduled for {{ selected_sec }} today Holiday.
+                            </p>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+                {% elif evaluated_routine %}
                     <div class="routine-table-responsive">
                         <table class="routine-table">
                             <thead>
@@ -181,7 +205,9 @@
                         </table>
                     </div>
                 {% else %}
-                    <p class="empty-state">No routine classes scheduled for {{ selected_sec }} today ({{ today_day_name }}).</p>
+                    <p class="empty-state">
+                        No routine classes scheduled for {{ selected_sec }} today ({{ today_day_name }}).
+                    </p>
                 {% endif %}
             </div>
 

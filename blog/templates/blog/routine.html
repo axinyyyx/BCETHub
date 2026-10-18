@@ -54,7 +54,13 @@
                 <span class="day-tag">{{ day_filter }}</span>
             </div>
             {% if day_filter == today_day_code %}
-                <span class="status-badge badge-live"><span class="pulse-dot"></span></span>
+                {% if active_class_holidays %}
+                    <span class="status-badge badge-info" style="color: red">
+                        <i data-lucide="calendar-days"></i> Holiday
+                    </span>
+                {% else %}
+                    <span class="status-badge badge-live"><span class="pulse-dot"></span></span>
+                {% endif %}
             {% endif %}
         </div>
 

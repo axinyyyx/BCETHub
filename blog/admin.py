@@ -4,7 +4,7 @@ from .models import (
     MessTiming, DailyMessMenu, RoutineSlot, RoutineFile, Feedback, Section, 
     Course, CRProfile, Notes, NoteImage, Module, Subject, PYQ, 
     PYQImage, Assignment, Notice, Community, CommunityGroupType,
-    CommunityPost, CommunityPostImage
+    CommunityPost, CommunityPostImage, Holiday
 )
 
 
@@ -165,3 +165,10 @@ class CommunityPostAdmin(admin.ModelAdmin):
     list_filter = ('post_type', 'status', 'community')
     search_fields = ('title', 'description')
     inlines = [CommunityPostImageInline]
+
+# Holiday admin register
+@admin.register(Holiday)
+class HolidayAdmin(admin.ModelAdmin):
+    list_display = ('title', 'dec', 'holiday_start', 'holiday_end', 'is_class', 'is_mess')
+    list_filter = ('holiday_start', 'holiday_end', 'is_class', 'is_mess')
+    search_fields = ('title', 'dec')
