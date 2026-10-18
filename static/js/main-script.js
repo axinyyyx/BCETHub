@@ -55,3 +55,43 @@ document.addEventListener('keydown', function(e) {
         return false;
     }
 });
+
+// Disable keyboard zoom
+document.addEventListener("keydown", function (e) {
+    if (e.ctrlKey && ["+", "-", "=", "0"].includes(e.key)) {
+        e.preventDefault();
+    }
+});
+
+// Disable pinch zoom on mobile
+document.addEventListener("touchstart", function (e) {
+    if (e.touches.length > 1) {
+        e.preventDefault();
+    }
+}, { passive: false });
+
+document.addEventListener("touchmove", function (e) {
+    if (e.touches.length > 1) {
+        e.preventDefault();
+    }
+}, { passive: false });
+
+// Disable double-tap zoom
+let lastTouchEnd = 0;
+
+document.addEventListener("touchend", function (e) {
+    const now = Date.now();
+
+    if (now - lastTouchEnd <= 300) {
+        e.preventDefault();
+    }
+
+    lastTouchEnd = now;
+}, { passive: false });
+
+// Disable Safari gesture zoom
+["gesturestart", "gesturechange", "gestureend"].forEach(function (event) {
+    document.addEventListener(event, function (e) {
+        e.preventDefault();
+    }, { passive: false });
+});

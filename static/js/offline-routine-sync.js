@@ -146,7 +146,24 @@
         if (isHomePage) {
             dayFilter = todayDayCode;
         } else {
-            dayFilter = (dayFilter || todayDayCode).trim().toUpperCase();
+            dayFilter = String(dayFilter || todayDayCode).trim().toUpperCase();
+        }
+
+        // save holiday html
+        if (cardBody.querySelector('.holiday-state')) {
+            window._cachedHolidayHTML = cardBody.innerHTML;
+        }
+
+        // check holiday
+        if (isHomePage || dayFilter === todayDayCode) {
+            if (cardBody.querySelector('.holiday-state')) {
+                return;
+            }
+            if (window._cachedHolidayHTML) {
+                cardBody.innerHTML = window._cachedHolidayHTML;
+                if (window.lucide) window.lucide.createIcons();
+                return;
+            }
         }
 
         yearFilter = String(yearFilter || '1').trim();
@@ -259,6 +276,11 @@
             const curSec = secElem ? secElem.value : (localStorage.getItem(PREF_SEC_KEY) || 'CSE - A');
             const curDay = dayElem ? dayElem.value : (localStorage.getItem(PREF_DAY_KEY) || getTodayDayCode());
 
+            // check holiday
+            if (document.querySelector('.routine-section') && document.querySelector('.holiday-state')) {
+                return;
+            }
+
             const cachedRoutine = localStorage.getItem(STORAGE_ROUTINE_KEY);
             if (cachedRoutine) {
                 try {
@@ -309,6 +331,7 @@
         const curDay = dayElem ? dayElem.value : (localStorage.getItem(PREF_DAY_KEY) || getTodayDayCode());
 
         const hasExistingRows = document.querySelector('.routine-table tbody tr');
+        const hasHoliday = document.querySelector('.holiday-state') !== null;
 
         if (cachedNotices && !document.querySelector('#global-notice-wrapper .notice-banner')) {
             try {
@@ -316,14 +339,14 @@
             } catch (e) { console.error('Notice parse error:', e); }
         }
 
-        // Only render from LocalStorage if server HTML was empty OR if client is offline
-        if (cachedRoutine && (!hasExistingRows || !navigator.onLine)) {
+        // check holiday
+        if (cachedRoutine && !hasHoliday && (!hasExistingRows || !navigator.onLine)) {
             try {
                 renderRoutineTable(JSON.parse(cachedRoutine), curYear, curSec, curDay);
             } catch (e) { console.error('Routine parse error:', e); }
         }
 
-        // Background Sync Check with Server
+        // background sync
         fetch('/api/sync-check/')
             .then(res => res.json())
             .then(data => {
@@ -336,7 +359,8 @@
                     if (data.routine_version !== localRVer || !cachedRoutine) {
                         localStorage.setItem(STORAGE_ROUTINE_KEY, JSON.stringify(data.routine_data));
                         localStorage.setItem(STORAGE_ROUTINE_VER_KEY, data.routine_version);
-                        if (localRVer) {
+                        const hasHolidayNow = document.querySelector('.holiday-state') !== null;
+                        if (localRVer && !hasHolidayNow) {
                             renderRoutineTable(data.routine_data, curYear, curSec, curDay);
                         }
                         updated = true;
@@ -361,8 +385,12 @@
 
     document.addEventListener('DOMContentLoaded', syncOfflineData);
     
-    // Live slot refresh every 30s
+    // refresh slots
     setInterval(() => {
+        const hasHolidayNow = document.querySelector('.holiday-state') !== null;
+        if (hasHolidayNow && document.querySelector('.routine-section')) {
+            return;
+        }
         const cachedRoutine = localStorage.getItem(STORAGE_ROUTINE_KEY);
         if (cachedRoutine) {
             const yearElem = document.getElementById('year') || document.getElementById('yr-select');
@@ -378,5 +406,6 @@
             } catch(e) {}
         }
     }, 30000);
+
 
 })();

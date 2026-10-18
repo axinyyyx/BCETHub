@@ -737,3 +737,20 @@ class CommunityPostImage(models.Model):
     class Meta:
         ordering = ['order', 'id']
 
+# holidays models
+class Holiday(models.Model):
+    title = models.CharField(max_length=200)
+    dec = models.CharField(max_length=200, blank=True, null=True)
+    holiday_start = models.DateField(null=True, blank=True)
+    holiday_end = models.DateField(null=True, blank=True)
+    is_class = models.BooleanField(default=False)
+    is_mess = models.BooleanField(default=False)
+
+    # auto set date
+    def save(self, *args, **kwargs):
+        if self.holiday_start and not self.holiday_end:
+            self.holiday_end = self.holiday_start
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.title} - {self.holiday_start or 'No Date'}"

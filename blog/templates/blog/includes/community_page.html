@@ -316,7 +316,7 @@
         min-width: 16px;
         min-height: 16px;
         flex-shrink: 0;
-        color: blue;
+        color: #0095FF;
     }
 
     .bcet-profile-desc {
@@ -793,7 +793,7 @@
                         {% endwith %}
                     </span>
                 {% endif %}
-                
+
                 {% if is_owner %}
                 <a href="{% url 'community_edit' username=community.username %}"
                 class="p-edit"
@@ -910,7 +910,7 @@
                 <div class="bcet-post-body">
                     <div class="bcet-post-meta">
                         <span class="bcet-type-tag {{ post.post_type|lower }}">{{ post.get_post_type_display }}</span>
-                        
+
                         {% if post.computed_status_label %}
                             <span class="bcet-event-status-tag {{ post.computed_event_status|lower }}">{{ post.computed_status_label }}</span>
                         {% endif %}
