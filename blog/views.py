@@ -12,7 +12,7 @@ from .models import (
     Branch, AcademicYear, Pooling, Faculty, InductionProgram, RoutineSlot, 
     MessTiming, DailyMessMenu, Feedback, Section, Notes, Course, Subject, 
     PYQ, Assignment, Notice, Community, CommunityGroupType, 
-    CommunityPost, CommunityPostImage
+    CommunityPost, CommunityPostImage, Holiday
 )
 from .routine_utils import (
     read_routine_csv, get_routine_file_version, get_filtered_routine_csv,
@@ -273,6 +273,14 @@ def home(request):
     is_induction_live = (today_induction and today_induction.status(today_date, today_time) == 'LIVE')
     is_routine_live = (live_slot is not None)
     is_meal_live = displayed_meal['is_serving']
+
+    # check holiday
+    if Holiday.objects.filter(is_class=True).filter(Q(holiday_start__lte=today_date, holiday_end__gte=today_date) | Q(holiday_start=today_date, holiday_end__isnull=True) | Q(holiday_start__isnull=True, holiday_end=today_date)).exists():
+        is_routine_live = False
+
+    if Holiday.objects.filter(is_mess=True).filter(Q(holiday_start__lte=today_date, holiday_end__gte=today_date) | Q(holiday_start=today_date, holiday_end__isnull=True) | Q(holiday_start__isnull=True, holiday_end=today_date)).exists():
+        is_meal_live = False
+        displayed_meal['is_serving'] = False
 
     if is_induction_live:
         p_induction = 1
